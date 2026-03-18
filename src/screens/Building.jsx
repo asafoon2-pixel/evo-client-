@@ -1,3 +1,4 @@
+// Enhanced by EVO Agent
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '../context/AppContext'
@@ -42,15 +43,18 @@ export default function Building() {
     }, 620)
 
     const budgetInterval = setInterval(() => {
-      setBudgetPct(p => Math.min(p + 4, 100))
-    }, 60)
+      setBudgetPct(p => {
+        if (p >= 100) { clearInterval(budgetInterval); return 100 }
+        return p + 3
+      })
+    }, 55)
 
     const bgInterval = setInterval(() => {
       setBgIndex(i => (i + 1) % BG_IMAGES.length)
     }, 2000)
 
     const nameTimer = setTimeout(() => setShowName(true), BUILD_STEPS.length * 620 + 300)
-    const navTimer  = setTimeout(() => navigate('package'), BUILD_STEPS.length * 620 + 1600)
+    const navTimer  = setTimeout(() => navigate('package'), BUILD_STEPS.length * 620 + 1800)
 
     return () => {
       clearInterval(stepInterval)
@@ -71,20 +75,25 @@ export default function Building() {
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.08 }}
+          animate={{ opacity: 0.07 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
+          transition={{ duration: 1.5 }}
         />
       </AnimatePresence>
-      <div className="absolute inset-0 bg-gradient-to-b from-evo-black/70 via-transparent to-evo-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-evo-black/80 via-transparent to-evo-black/80" />
 
-      {/* Budget bar */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-evo-border">
+      {/* Progress bar */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-evo-border overflow-hidden">
         <motion.div
-          className="h-full bg-evo-accent"
-          style={{ width: `${budgetPct}%` }}
-          transition={{ duration: 0.15 }}
+          className="h-full bg-evo-accent rounded-full"
+          animate={{ width: `${budgetPct}%` }}
+          transition={{ duration: 0.2, ease: 'linear' }}
         />
+      </div>
+
+      {/* Step counter */}
+      <div className="absolute top-4 right-6 z-10">
+        <p className="text-evo-dim text-xs tabular-nums">{Math.min(stepIndex + 1, BUILD_STEPS.length)} / {BUILD_STEPS.length}</p>
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center px-8 max-w-sm w-full">
@@ -92,26 +101,37 @@ export default function Building() {
           {!showName ? (
             <motion.div
               key="building"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4 }}
               className="flex flex-col items-center"
             >
-              <div className="w-12 h-12 rounded-full border border-evo-accent/30 bg-evo-accent/5 flex items-center justify-center mb-10">
+              {/* Pulsing orb */}
+              <div className="relative w-16 h-16 mb-12 flex items-center justify-center">
+                <motion.div
+                  className="absolute inset-0 rounded-full border border-evo-accent/20"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                <motion.div
+                  className="absolute inset-2 rounded-full border border-evo-accent/30"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
+                  transition={{ duration: 2.5, delay: 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                />
                 <motion.div
                   className="w-3 h-3 rounded-full bg-evo-accent"
-                  animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-                  transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
 
               <AnimatePresence mode="wait">
                 <motion.p
                   key={stepIndex}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
+                  exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.35 }}
                   className="text-white text-lg font-light tracking-wide"
                 >
@@ -119,13 +139,18 @@ export default function Building() {
                 </motion.p>
               </AnimatePresence>
 
+              {/* Step dots */}
               <div className="mt-10 flex gap-2">
                 {BUILD_STEPS.map((_, i) => (
                   <motion.div
                     key={i}
                     className="rounded-full bg-evo-accent"
-                    animate={{ width: i <= stepIndex ? 16 : 4, height: 4, opacity: i <= stepIndex ? 1 : 0.2 }}
-                    transition={{ duration: 0.3 }}
+                    animate={{
+                      width: i <= stepIndex ? 18 : 4,
+                      height: 4,
+                      opacity: i <= stepIndex ? 1 : 0.2,
+                    }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                   />
                 ))}
               </div>
@@ -135,27 +160,27 @@ export default function Building() {
               key="reveal"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 1 }}
               className="flex flex-col items-center"
             >
               <motion.div
                 initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 56, opacity: 1 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
+                animate={{ width: 64, opacity: 1 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className="h-px bg-evo-accent mb-8"
               />
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-xs tracking-[0.3em] uppercase text-evo-accent mb-5"
+                className="text-[10px] tracking-[0.35em] uppercase text-evo-accent mb-5 font-medium"
               >
                 EVO has built your event
               </motion.p>
               <motion.h1
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.7 }}
+                transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 className="text-3xl font-light text-white leading-tight text-center"
               >
                 {eventName}

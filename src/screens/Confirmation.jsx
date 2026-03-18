@@ -1,3 +1,4 @@
+// Enhanced by EVO Agent
 import { motion } from 'framer-motion'
 import { Share2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
@@ -105,12 +106,13 @@ export default function Confirmation() {
           transition={{ duration: 0.6, delay: 1.9 }}
           className="flex flex-col gap-4 mt-10 w-full"
         >
-          <button
+          <motion.button
             onClick={() => navigate('management')}
-            className="w-full py-4 rounded-full border border-evo-accent text-evo-accent text-sm font-medium tracking-[0.12em] uppercase hover:bg-evo-accent hover:text-black transition-all duration-300"
+            whileTap={{ scale: 0.97 }}
+            className="w-full py-4 rounded-full bg-evo-accent text-black text-sm font-semibold tracking-[0.12em] uppercase shadow-[0_4px_24px_rgba(201,169,110,0.25)] hover:bg-[#B8946A] transition-all duration-200"
           >
             Go to My Event
-          </button>
+          </motion.button>
           <button className="flex items-center justify-center gap-2 text-evo-muted text-sm tracking-wide hover:text-white transition-colors py-2">
             <Share2 size={14} />
             Share Event

@@ -1,3 +1,4 @@
+// Enhanced by EVO Agent
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight, Zap, AlertCircle } from 'lucide-react'

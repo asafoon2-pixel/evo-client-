@@ -1,3 +1,4 @@
+// Enhanced by EVO Agent
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
@@ -218,11 +219,19 @@ export default function Brief() {
 
       {/* CTA */}
       <div className="px-6 py-8">
-        <button onClick={advance} disabled={!canAdvance()}
-          className="w-full py-4 rounded-full border border-evo-accent text-evo-accent text-sm font-medium tracking-[0.12em] uppercase hover:bg-evo-accent hover:text-black transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+        <motion.button
+          onClick={advance}
+          disabled={!canAdvance()}
+          whileTap={canAdvance() ? { scale: 0.97 } : {}}
+          className={`w-full py-4 rounded-full text-sm font-semibold tracking-[0.12em] uppercase transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+            canAdvance()
+              ? 'bg-evo-accent text-black shadow-[0_4px_24px_rgba(201,169,110,0.25)] hover:bg-[#B8946A]'
+              : 'border border-evo-accent text-evo-accent'
+          }`}
+        >
           {step < 3 ? 'Continue' : 'Build My Event'}
           <ChevronRight size={16} />
-        </button>
+        </motion.button>
       </div>
     </div>
   )

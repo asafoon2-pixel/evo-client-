@@ -1,3 +1,4 @@
+// Enhanced by EVO Agent
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Clock, Loader, MessageSquare, Send, ChevronRight } from 'lucide-react'

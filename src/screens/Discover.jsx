@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, X, Heart, RotateCcw } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { swipeCards } from '../data/index'
@@ -8,45 +8,46 @@ import SwipeCard from '../components/SwipeCard'
 export default function Discover() {
   const { navigate, addSwipe } = useApp()
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [swipedCards, setSwipedCards] = useState([])
   const [showInsight, setShowInsight] = useState(false)
-  const [insightShown, setInsightShown] = useState(false)
-  const [pendingSwipe, setPendingSwipe] = useState(null)
+  const currentIndexRef = useRef(0)
+  const insightShownRef = useRef(false)
   const insightTimerRef = useRef(null)
+  const navigatingRef = useRef(false)
 
-  const handleSwipe = (direction, card) => {
+  // Keep ref in sync with state
+  useEffect(() => {
+    currentIndexRef.current = currentIndex
+  }, [currentIndex])
+
+  const handleSwipe = useCallback((direction, card) => {
     addSwipe(card, direction)
-    setSwipedCards(prev => [...prev, card])
 
-    const nextIndex = currentIndex + 1
+    const idx = currentIndexRef.current
+    const nextIndex = idx + 1
 
-    if (nextIndex === 6 && !insightShown) {
+    if (nextIndex === 6 && !insightShownRef.current) {
+      insightShownRef.current = true
       setShowInsight(true)
-      setInsightShown(true)
       insightTimerRef.current = setTimeout(() => {
         setShowInsight(false)
-        setCurrentIndex(nextIndex)
+        setCurrentIndex(6)
+        currentIndexRef.current = 6
       }, 2200)
     } else if (nextIndex >= swipeCards.length) {
-      setTimeout(() => {
-        navigate('brief')
-      }, 400)
+      if (navigatingRef.current) return
+      navigatingRef.current = true
+      navigate('brief')
     } else {
       setCurrentIndex(nextIndex)
+      currentIndexRef.current = nextIndex
     }
-  }
+  }, [addSwipe, navigate])
 
   const handleButtonSwipe = (direction) => {
-    if (currentIndex >= swipeCards.length) return
-    setPendingSwipe({ direction, card: swipeCards[currentIndex] })
+    const idx = currentIndexRef.current
+    if (idx >= swipeCards.length || showInsight) return
+    handleSwipe(direction, swipeCards[idx])
   }
-
-  useEffect(() => {
-    if (pendingSwipe) {
-      handleSwipe(pendingSwipe.direction, pendingSwipe.card)
-      setPendingSwipe(null)
-    }
-  }, [pendingSwipe])
 
   useEffect(() => {
     return () => {
