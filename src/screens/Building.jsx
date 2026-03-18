@@ -62,6 +62,7 @@ export default function Building() {
       clearInterval(bgInterval)
       clearTimeout(nameTimer)
       clearTimeout(navTimer)
+      builtRef.current = false
     }
   }, [])
 
