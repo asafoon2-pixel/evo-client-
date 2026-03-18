@@ -49,7 +49,7 @@ function AppContent() {
   const Screen = screenMap[currentScreen] || Entry
   return (
     <div className="w-full min-h-screen bg-evo-black text-white overflow-x-hidden">
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <PageTransition key={currentScreen}>
           <Screen />
         </PageTransition>

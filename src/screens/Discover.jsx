@@ -1,3 +1,4 @@
+// Enhanced by EVO Agent
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, X, Heart, RotateCcw } from 'lucide-react'
@@ -7,55 +8,44 @@ import SwipeCard from '../components/SwipeCard'
 
 export default function Discover() {
   const { navigate, addSwipe } = useApp()
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [swipedCount, setSwipedCount] = useState(0)
   const [showInsight, setShowInsight] = useState(false)
-  const currentIndexRef = useRef(0)
   const insightShownRef = useRef(false)
-  const insightTimerRef = useRef(null)
-  const navigatingRef = useRef(false)
+  const navigatingRef   = useRef(false)
 
-  // Keep ref in sync with state
+  const isDone       = swipedCount >= swipeCards.length
+  const visibleCards = swipeCards.slice(swipedCount, swipedCount + 3)
+
+  // ── Navigate when all cards are done ────────────────────────────────────
   useEffect(() => {
-    currentIndexRef.current = currentIndex
-  }, [currentIndex])
+    if (!isDone) return
+    if (navigatingRef.current) return
+    navigatingRef.current = true
+    navigate('brief')
+  }, [isDone, navigate])
 
+  // ── Show mid-point insight ───────────────────────────────────────────────
+  useEffect(() => {
+    if (swipedCount !== 6) return
+    if (insightShownRef.current) return
+    insightShownRef.current = true
+    setShowInsight(true)
+    const timer = setTimeout(() => setShowInsight(false), 2200)
+    return () => clearTimeout(timer)
+  }, [swipedCount])
+
+  // ── Core swipe handler (called by SwipeCard drag OR buttons) ─────────────
   const handleSwipe = useCallback((direction, card) => {
     addSwipe(card, direction)
+    setSwipedCount(prev => prev + 1)
+  }, [addSwipe])
 
-    const idx = currentIndexRef.current
-    const nextIndex = idx + 1
-
-    if (nextIndex === 6 && !insightShownRef.current) {
-      insightShownRef.current = true
-      setShowInsight(true)
-      insightTimerRef.current = setTimeout(() => {
-        setShowInsight(false)
-        setCurrentIndex(6)
-        currentIndexRef.current = 6
-      }, 2200)
-    } else if (nextIndex >= swipeCards.length) {
-      if (navigatingRef.current) return
-      navigatingRef.current = true
-      navigate('brief')
-    } else {
-      setCurrentIndex(nextIndex)
-      currentIndexRef.current = nextIndex
-    }
-  }, [addSwipe, navigate])
-
+  // ── Button tap handler ───────────────────────────────────────────────────
   const handleButtonSwipe = (direction) => {
-    const idx = currentIndexRef.current
-    if (idx >= swipeCards.length || showInsight) return
-    handleSwipe(direction, swipeCards[idx])
+    if (showInsight || isDone) return
+    const card = swipeCards[swipedCount]
+    if (card) handleSwipe(direction, card)
   }
-
-  useEffect(() => {
-    return () => {
-      if (insightTimerRef.current) clearTimeout(insightTimerRef.current)
-    }
-  }, [])
-
-  const visibleCards = swipeCards.slice(currentIndex, currentIndex + 3)
 
   return (
     <div className="relative w-full h-full min-h-screen flex flex-col bg-evo-black overflow-hidden">
@@ -75,9 +65,9 @@ export default function Discover() {
             <div
               key={i}
               className={`rounded-full transition-all duration-300 ${
-                i < currentIndex
+                i < swipedCount
                   ? 'w-2 h-2 bg-evo-accent'
-                  : i === currentIndex
+                  : i === swipedCount
                   ? 'w-2.5 h-2.5 bg-white'
                   : 'w-1.5 h-1.5 bg-evo-dim'
               }`}
@@ -86,7 +76,7 @@ export default function Discover() {
         </div>
 
         <span className="text-sm text-evo-muted tabular-nums">
-          {Math.min(currentIndex + 1, swipeCards.length)} / {swipeCards.length}
+          {Math.min(swipedCount + 1, swipeCards.length)} / {swipeCards.length}
         </span>
       </div>
 
@@ -119,7 +109,7 @@ export default function Discover() {
             )}
           </AnimatePresence>
 
-          {!showInsight && visibleCards.length > 0 && (
+          {!showInsight && !isDone && visibleCards.length > 0 && (
             <>
               {[...visibleCards].reverse().map((card, reverseIndex) => {
                 const stackIndex = visibleCards.length - 1 - reverseIndex
@@ -137,9 +127,19 @@ export default function Discover() {
             </>
           )}
 
-          {!showInsight && visibleCards.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-evo-muted text-sm tracking-wide">Building your profile...</div>
+          {!showInsight && isDone && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="w-3 h-3 rounded-full bg-evo-accent mb-6 animate-pulse" />
+                <p className="text-white text-lg font-light tracking-wide">
+                  Building your profile...
+                </p>
+              </motion.div>
             </div>
           )}
         </div>
@@ -148,17 +148,15 @@ export default function Discover() {
       {/* Bottom action bar */}
       <div className="relative z-20 flex flex-col items-center pb-12 pt-6">
         <div className="flex items-center gap-6">
-          {/* Pass button */}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => handleButtonSwipe('left')}
-            disabled={showInsight || currentIndex >= swipeCards.length}
+            disabled={showInsight || isDone}
             className="w-16 h-16 rounded-full border border-evo-border bg-evo-card flex items-center justify-center hover:border-white/30 transition-all disabled:opacity-30"
           >
             <X size={22} className="text-white" />
           </motion.button>
 
-          {/* Undo */}
           <motion.button
             whileTap={{ scale: 0.9 }}
             className="w-10 h-10 rounded-full border border-evo-border/50 bg-evo-surface flex items-center justify-center opacity-40"
@@ -167,11 +165,10 @@ export default function Discover() {
             <RotateCcw size={14} className="text-evo-muted" />
           </motion.button>
 
-          {/* Like button */}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => handleButtonSwipe('right')}
-            disabled={showInsight || currentIndex >= swipeCards.length}
+            disabled={showInsight || isDone}
             className="w-16 h-16 rounded-full border border-evo-accent bg-evo-card flex items-center justify-center hover:bg-evo-accent/10 transition-all disabled:opacity-30"
           >
             <Heart size={22} className="text-evo-accent" />
