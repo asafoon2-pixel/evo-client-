@@ -86,11 +86,11 @@ export default function Brief() {
 
   const advance = () => {
     if (step < steps.length - 1) setStep(s => s + 1)
-    else navigate('building')
+    else navigate('discover')
   }
 
   const back = () => {
-    if (step === 0) navigate('discover')
+    if (step === 0) navigate('entry')
     else setStep(s => s - 1)
   }
 

@@ -85,7 +85,7 @@ export default function Entry() {
       <div className="relative z-10 pb-16 flex flex-col items-center gap-4 w-full px-8">
         <motion.button
           {...f(1.0)}
-          onClick={() => navigate('discover')}
+          onClick={() => navigate('brief')}
           whileTap={{ scale: 0.97 }}
           className="w-full max-w-xs py-4 rounded-full bg-evo-accent text-black text-sm font-semibold tracking-[0.15em] uppercase shadow-evo-accent hover:bg-[#B8946A] transition-all duration-200"
         >

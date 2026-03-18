@@ -21,7 +21,7 @@ export default function Discover() {
     if (!isDone) return
     if (navigatingRef.current) return
     navigatingRef.current = true
-    navigate('brief')
+    navigate('building')
   }, [isDone, navigate])
 
   // ── Show mid-point insight ───────────────────────────────────────────────
@@ -52,11 +52,11 @@ export default function Discover() {
       {/* Top bar */}
       <div className="relative z-20 flex items-center justify-between px-6 pt-12 pb-4">
         <button
-          onClick={() => navigate('entry')}
+          onClick={() => navigate('brief')}
           className="flex items-center gap-2 text-evo-muted hover:text-white transition-colors"
         >
           <ArrowLeft size={18} />
-          <span className="text-sm tracking-wide">Discover</span>
+          <span className="text-sm tracking-wide">Back</span>
         </button>
 
         {/* Dot progress */}
