@@ -1,16 +1,15 @@
-// Enhanced by EVO Agent
 import { motion } from 'framer-motion'
 import { useApp } from '../context/AppContext'
 
-const f = (delay = 0, y = 24) => ({
+const f = (delay = 0, y = 20) => ({
   initial: { opacity: 0, y },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
 })
 
 const stats = [
   { value: '2,400+', label: 'Events produced' },
-  { value: '98%',   label: 'Client satisfaction' },
+  { value: '98%',    label: 'Satisfaction' },
   { value: '< 3min', label: 'To your package' },
 ]
 
@@ -18,84 +17,92 @@ export default function Entry() {
   const { navigate } = useApp()
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden bg-evo-black">
-      {/* Background */}
-      <div className="absolute inset-0 overflow-hidden">
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: '#080A0F' }}>
+
+      {/* Ambient dot grid */}
+      <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
+
+      {/* Hero image */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <img
           src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=80"
           alt=""
-          className="w-full h-full object-cover scale-110 blur-sm opacity-20"
+          className="w-full h-full object-cover scale-105 blur-[2px] opacity-15"
           draggable={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-evo-black/70 via-evo-black/20 to-evo-black" />
-        {/* Subtle radial glow */}
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 40%, rgba(201,169,110,0.06) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,10,15,0.6) 0%, rgba(8,10,15,0.2) 40%, rgba(8,10,15,0.95) 100%)' }} />
+        {/* Gold radial glow */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 45% at 50% 38%, rgba(200,169,110,0.07) 0%, transparent 70%)' }} />
       </div>
 
       {/* Wordmark */}
       <div className="relative z-10 pt-16 flex flex-col items-center">
         <motion.div {...f(0.1)}>
-          <div className="flex items-center gap-3">
-            <span className="text-[44px] font-light tracking-[0.4em] text-white select-none leading-none">EVO</span>
-          </div>
+          <span className="text-[42px] font-light tracking-[0.5em] text-white select-none leading-none" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+            EVO
+          </span>
         </motion.div>
-        <motion.div {...f(0.2)} className="mt-2">
-          <div className="h-px w-12 bg-evo-accent mx-auto opacity-60" />
+        <motion.div {...f(0.25)} className="mt-3">
+          <div className="h-px w-10 mx-auto" style={{ background: 'var(--primary)', opacity: 0.5 }} />
         </motion.div>
       </div>
 
-      {/* Center */}
+      {/* Center hero */}
       <div className="relative z-10 flex flex-col items-center text-center px-8">
-        <motion.p {...f(0.3)} className="text-[10px] font-semibold tracking-[0.35em] uppercase text-evo-accent mb-7">
+        <motion.p {...f(0.35)} className="label-overline mb-8">
           AI-Powered Event Production
         </motion.p>
 
         <motion.h1
-          className="text-[52px] sm:text-6xl font-light text-white leading-[1.1] tracking-tight"
-          {...f(0.45, 30)}
+          {...f(0.5, 28)}
+          className="font-display text-[56px] leading-[1.05] tracking-tight text-white"
+          style={{ fontWeight: 300 }}
         >
           Your event.
           <br />
-          <span className="text-evo-accent italic">Produced.</span>
+          <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Produced.</span>
         </motion.h1>
 
         <motion.p
-          className="mt-5 text-evo-muted text-[15px] tracking-wide font-light leading-relaxed max-w-xs"
-          {...f(0.65)}
+          {...f(0.7)}
+          className="mt-5 text-sm font-light leading-relaxed max-w-[260px]"
+          style={{ color: 'var(--text-muted)' }}
         >
           Tell us nothing. Show us everything.
           <br />EVO builds the rest.
         </motion.p>
 
         {/* Stats */}
-        <motion.div
-          {...f(0.8)}
-          className="mt-10 flex items-center gap-6"
-        >
+        <motion.div {...f(0.85)} className="mt-12 flex items-center gap-8">
           {stats.map((s, i) => (
             <div key={i} className="text-center">
-              <p className="text-white text-base font-medium leading-none">{s.value}</p>
-              <p className="text-evo-dim text-[10px] mt-1 tracking-wide">{s.label}</p>
+              <p className="text-white text-[15px] font-medium leading-none">{s.value}</p>
+              <p className="text-[10px] mt-1.5 tracking-wide" style={{ color: 'var(--text-dim)' }}>{s.label}</p>
             </div>
           ))}
         </motion.div>
       </div>
 
       {/* CTA */}
-      <div className="relative z-10 pb-16 flex flex-col items-center gap-4 w-full px-8">
+      <div className="relative z-10 pb-14 flex flex-col items-center gap-4 w-full px-8">
         <motion.button
-          {...f(1.0)}
+          {...f(1.05)}
           onClick={() => navigate('brief')}
           whileTap={{ scale: 0.97 }}
-          className="w-full max-w-xs py-4 rounded-full bg-evo-accent text-black text-sm font-semibold tracking-[0.15em] uppercase shadow-evo-accent hover:bg-[#B8946A] transition-all duration-200"
+          className="w-full max-w-xs py-4 text-sm font-semibold tracking-[0.15em] uppercase transition-all duration-200"
+          style={{
+            background: 'var(--primary)',
+            color: '#000',
+            borderRadius: 'var(--radius-pill)',
+            boxShadow: 'var(--shadow-accent)',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'var(--primary-hover)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--primary)'}
         >
           Start Building
         </motion.button>
 
-        <motion.p
-          className="text-evo-dim text-xs tracking-widest"
-          {...f(1.15)}
-        >
+        <motion.p {...f(1.2)} className="text-[11px] tracking-widest" style={{ color: 'var(--text-dim)' }}>
           No forms. No search. Just vision.
         </motion.p>
       </div>

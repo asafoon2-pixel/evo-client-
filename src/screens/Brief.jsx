@@ -1,4 +1,3 @@
-// Enhanced by EVO Agent
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
@@ -26,24 +25,31 @@ function CalendarPicker({ selected, onSelect }) {
     if (year === now.getFullYear() && month === now.getMonth() + 1) return
     if (month === 1) { setMonth(12); setYear(y => y - 1) } else setMonth(m => m - 1)
   }
-  const isPast = (d) => {
-    const sel = new Date(year, month - 1, d)
-    return sel <= today
-  }
+  const isPast = (d) => new Date(year, month - 1, d) <= today
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-5">
-        <button onClick={prevMonth} className="w-8 h-8 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-white transition-colors">
+        <button onClick={prevMonth}
+          className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+          style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+        >
           <ArrowLeft size={14} />
         </button>
-        <span className="text-white text-sm font-medium tracking-wide">{label}</span>
-        <button onClick={nextMonth} className="w-8 h-8 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-white transition-colors rotate-180">
+        <span className="text-sm font-medium tracking-wide" style={{ color: 'var(--text-primary)' }}>{label}</span>
+        <button onClick={nextMonth}
+          className="w-8 h-8 rounded-full flex items-center justify-center rotate-180 transition-colors"
+          style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}
+        >
           <ArrowLeft size={14} />
         </button>
       </div>
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {DAYS.map(d => <div key={d} className="text-center text-evo-dim text-xs py-1">{d}</div>)}
+        {DAYS.map(d => <div key={d} className="text-center text-xs py-1" style={{ color: 'var(--text-dim)' }}>{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-1">
         {cells.map((day, i) => {
@@ -56,11 +62,13 @@ function CalendarPicker({ selected, onSelect }) {
               key={i}
               onClick={() => !past && onSelect(dateStr)}
               disabled={past}
-              className={`aspect-square rounded-lg text-sm transition-all flex items-center justify-center ${
-                active   ? 'bg-evo-accent text-black font-semibold' :
-                past     ? 'text-evo-border cursor-not-allowed' :
-                'text-evo-muted hover:text-white hover:bg-evo-elevated'
-              }`}
+              className="aspect-square rounded-xl text-sm transition-all flex items-center justify-center"
+              style={{
+                background:  active ? 'var(--primary)' : 'transparent',
+                color:       active ? '#000' : past ? 'var(--text-dim)' : 'var(--text-muted)',
+                fontWeight:  active ? 600 : 400,
+                cursor:      past ? 'not-allowed' : 'pointer',
+              }}
             >
               {day}
             </button>
@@ -72,6 +80,12 @@ function CalendarPicker({ selected, onSelect }) {
 }
 
 const steps = ['type', 'scale', 'date', 'budget']
+
+const slideVariants = {
+  enter: { opacity: 0, x: 32 },
+  center: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -32 },
+}
 
 export default function Brief() {
   const { navigate, briefAnswers, updateBrief } = useApp()
@@ -95,123 +109,171 @@ export default function Brief() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-evo-black flex flex-col">
+    <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+
       {/* Header */}
       <div className="px-6 pt-12 pb-6 flex items-center justify-between">
-        <button onClick={back} className="text-evo-muted hover:text-white transition-colors">
+        <button onClick={back} className="transition-colors" style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+        >
           <ArrowLeft size={20} />
         </button>
-        <div className="flex gap-1.5">
+
+        {/* Progress dots */}
+        <div className="flex gap-1.5 items-center">
           {steps.map((_, i) => (
-            <div key={i} className={`rounded-full transition-all duration-300 ${i <= step ? 'w-5 h-1.5 bg-evo-accent' : 'w-1.5 h-1.5 bg-evo-border'}`} />
+            <motion.div
+              key={i}
+              animate={{ width: i <= step ? 20 : 6, opacity: i <= step ? 1 : 0.25 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="h-1.5 rounded-full"
+              style={{ background: 'var(--primary)' }}
+            />
           ))}
         </div>
+
         <div className="w-5" />
       </div>
 
+      {/* Step content */}
       <AnimatePresence mode="wait">
-        {/* STEP 0 — Event type */}
         {step === 0 && (
-          <motion.div key="type" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.28 }}
+          <motion.div key="type" variants={slideVariants} initial="enter" animate="center" exit="exit"
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 flex flex-col px-6">
-            <p className="text-xs tracking-[0.3em] uppercase text-evo-accent mb-3">Step 1 of 4</p>
-            <h2 className="text-3xl font-light text-white mb-8 leading-snug">What are we<br />celebrating?</h2>
+            <p className="label-overline mb-3">Step 1 of 4</p>
+            <h2 className="font-display text-[34px] font-light leading-snug mb-8" style={{ color: 'var(--text-primary)' }}>
+              What are we<br />celebrating?
+            </h2>
             <div className="grid grid-cols-2 gap-3 flex-1">
-              {briefEventTypes.map(t => (
-                <button key={t.id} onClick={() => updateBrief('eventType', t.id)}
-                  className={`relative rounded-2xl overflow-hidden border transition-all duration-200 active:scale-[0.98] ${briefAnswers.eventType === t.id ? 'border-evo-accent' : 'border-evo-border'}`}
-                  style={{ height: 130 }}>
-                  <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className={`absolute inset-0 transition-all ${briefAnswers.eventType === t.id ? 'bg-evo-black/40' : 'bg-evo-black/60'}`} />
-                  <div className="absolute inset-0 flex items-end p-4">
-                    <span className="text-white text-sm font-medium tracking-wide">{t.label}</span>
-                  </div>
-                  {briefAnswers.eventType === t.id && (
-                    <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-evo-accent flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-black" />
+              {briefEventTypes.map(t => {
+                const active = briefAnswers.eventType === t.id
+                return (
+                  <button key={t.id} onClick={() => updateBrief('eventType', t.id)}
+                    className="relative rounded-[20px] overflow-hidden transition-all duration-200 active:scale-[0.98]"
+                    style={{
+                      height: 130,
+                      border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                      boxShadow: active ? 'var(--shadow-ring)' : 'none',
+                    }}>
+                    <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: active ? 'rgba(8,10,15,0.35)' : 'rgba(8,10,15,0.62)' }} />
+                    <div className="absolute inset-0 flex items-end p-4">
+                      <span className="text-white text-sm font-medium tracking-wide">{t.label}</span>
                     </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* STEP 1 — Scale */}
-        {step === 1 && (
-          <motion.div key="scale" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.28 }}
-            className="flex-1 flex flex-col px-6">
-            <p className="text-xs tracking-[0.3em] uppercase text-evo-accent mb-3">Step 2 of 4</p>
-            <h2 className="text-3xl font-light text-white mb-8 leading-snug">How many<br />people?</h2>
-            <div className="flex flex-col gap-3">
-              {briefScales.map(s => (
-                <button key={s.id} onClick={() => updateBrief('scale', s.id)}
-                  className={`relative rounded-2xl overflow-hidden border transition-all duration-200 active:scale-[0.99] ${briefAnswers.scale === s.id ? 'border-evo-accent' : 'border-evo-border'}`}
-                  style={{ height: 100 }}>
-                  <img src={s.image} alt={s.label} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className={`absolute inset-0 ${briefAnswers.scale === s.id ? 'bg-evo-black/40' : 'bg-evo-black/65'}`} />
-                  <div className="absolute inset-0 flex items-center justify-between px-6">
-                    <div className="text-left">
-                      <p className="text-white text-base font-medium">{s.label}</p>
-                      <p className="text-evo-muted text-xs mt-0.5">{s.sublabel} guests</p>
-                    </div>
-                    {briefAnswers.scale === s.id && (
-                      <div className="w-6 h-6 rounded-full bg-evo-accent flex items-center justify-center">
-                        <div className="w-2.5 h-2.5 rounded-full bg-black" />
+                    {active && (
+                      <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
+                        <div className="w-2 h-2 rounded-full bg-black" />
                       </div>
                     )}
-                  </div>
-                </button>
-              ))}
+                  </button>
+                )
+              })}
             </div>
           </motion.div>
         )}
 
-        {/* STEP 2 — Date */}
-        {step === 2 && (
-          <motion.div key="date" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.28 }}
+        {step === 1 && (
+          <motion.div key="scale" variants={slideVariants} initial="enter" animate="center" exit="exit"
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 flex flex-col px-6">
-            <p className="text-xs tracking-[0.3em] uppercase text-evo-accent mb-3">Step 3 of 4</p>
-            <h2 className="text-3xl font-light text-white mb-6 leading-snug">When?</h2>
+            <p className="label-overline mb-3">Step 2 of 4</p>
+            <h2 className="font-display text-[34px] font-light leading-snug mb-8" style={{ color: 'var(--text-primary)' }}>
+              How many<br />people?
+            </h2>
+            <div className="flex flex-col gap-3">
+              {briefScales.map(s => {
+                const active = briefAnswers.scale === s.id
+                return (
+                  <button key={s.id} onClick={() => updateBrief('scale', s.id)}
+                    className="relative rounded-[20px] overflow-hidden transition-all duration-200 active:scale-[0.99]"
+                    style={{
+                      height: 100,
+                      border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                      boxShadow: active ? 'var(--shadow-ring)' : 'none',
+                    }}>
+                    <img src={s.image} alt={s.label} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: active ? 'rgba(8,10,15,0.38)' : 'rgba(8,10,15,0.65)' }} />
+                    <div className="absolute inset-0 flex items-center justify-between px-6">
+                      <div className="text-left">
+                        <p className="text-white text-base font-medium">{s.label}</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{s.sublabel} guests</p>
+                      </div>
+                      {active && (
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
+                          <div className="w-2.5 h-2.5 rounded-full bg-black" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {step === 2 && (
+          <motion.div key="date" variants={slideVariants} initial="enter" animate="center" exit="exit"
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="flex-1 flex flex-col px-6">
+            <p className="label-overline mb-3">Step 3 of 4</p>
+            <h2 className="font-display text-[34px] font-light leading-snug mb-6" style={{ color: 'var(--text-primary)' }}>
+              When?
+            </h2>
             {briefAnswers.date && (
-              <div className="mb-4 px-4 py-2 bg-evo-accent/10 border border-evo-accent/30 rounded-full inline-flex self-start">
-                <span className="text-evo-accent text-sm font-medium">{briefAnswers.date}</span>
+              <div className="mb-4 px-4 py-2 rounded-full inline-flex self-start"
+                style={{ background: 'rgba(200,169,110,0.1)', border: '1px solid rgba(200,169,110,0.3)' }}>
+                <span className="text-sm font-medium" style={{ color: 'var(--primary)' }}>{briefAnswers.date}</span>
               </div>
             )}
             <CalendarPicker selected={briefAnswers.date} onSelect={d => updateBrief('date', d)} />
             <button onClick={() => { updateBrief('date', 'flexible'); advance() }}
-              className="mt-6 text-evo-muted text-sm tracking-wide hover:text-white transition-colors text-center">
+              className="mt-6 text-sm tracking-wide text-center transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+            >
               I'm flexible with the date
             </button>
           </motion.div>
         )}
 
-        {/* STEP 3 — Budget */}
         {step === 3 && (
-          <motion.div key="budget" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.28 }}
+          <motion.div key="budget" variants={slideVariants} initial="enter" animate="center" exit="exit"
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 flex flex-col px-6">
-            <p className="text-xs tracking-[0.3em] uppercase text-evo-accent mb-3">Step 4 of 4</p>
-            <h2 className="text-3xl font-light text-white mb-8 leading-snug">Budget range?</h2>
+            <p className="label-overline mb-3">Step 4 of 4</p>
+            <h2 className="font-display text-[34px] font-light leading-snug mb-8" style={{ color: 'var(--text-primary)' }}>
+              Budget range?
+            </h2>
             <div className="flex flex-col gap-3">
-              {briefBudgetTiers.map(t => (
-                <button key={t.id} onClick={() => updateBrief('budgetTier', t.id)}
-                  className={`relative rounded-2xl overflow-hidden border transition-all duration-200 active:scale-[0.99] ${briefAnswers.budgetTier === t.id ? 'border-evo-accent' : 'border-evo-border'}`}
-                  style={{ height: 110 }}>
-                  <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className={`absolute inset-0 ${briefAnswers.budgetTier === t.id ? 'bg-evo-black/40' : 'bg-evo-black/65'}`} />
-                  <div className="absolute inset-0 flex items-center justify-between px-6">
-                    <div className="text-left">
-                      <p className="text-white text-base font-medium">{t.label}</p>
-                      <p className="text-evo-accent text-sm mt-0.5">{t.range}</p>
-                    </div>
-                    {briefAnswers.budgetTier === t.id && (
-                      <div className="w-6 h-6 rounded-full bg-evo-accent flex items-center justify-center">
-                        <div className="w-2.5 h-2.5 rounded-full bg-black" />
+              {briefBudgetTiers.map(t => {
+                const active = briefAnswers.budgetTier === t.id
+                return (
+                  <button key={t.id} onClick={() => updateBrief('budgetTier', t.id)}
+                    className="relative rounded-[20px] overflow-hidden transition-all duration-200 active:scale-[0.99]"
+                    style={{
+                      height: 110,
+                      border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                      boxShadow: active ? 'var(--shadow-ring)' : 'none',
+                    }}>
+                    <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: active ? 'rgba(8,10,15,0.38)' : 'rgba(8,10,15,0.65)' }} />
+                    <div className="absolute inset-0 flex items-center justify-between px-6">
+                      <div className="text-left">
+                        <p className="text-white text-base font-medium">{t.label}</p>
+                        <p className="text-sm mt-0.5" style={{ color: 'var(--primary)' }}>{t.range}</p>
                       </div>
-                    )}
-                  </div>
-                </button>
-              ))}
+                      {active && (
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
+                          <div className="w-2.5 h-2.5 rounded-full bg-black" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </motion.div>
         )}
@@ -223,11 +285,16 @@ export default function Brief() {
           onClick={advance}
           disabled={!canAdvance()}
           whileTap={canAdvance() ? { scale: 0.97 } : {}}
-          className={`w-full py-4 rounded-full text-sm font-semibold tracking-[0.12em] uppercase transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-            canAdvance()
-              ? 'bg-evo-accent text-black shadow-[0_4px_24px_rgba(201,169,110,0.25)] hover:bg-[#B8946A]'
-              : 'border border-evo-accent text-evo-accent'
-          }`}
+          className="w-full py-4 text-sm font-semibold tracking-[0.12em] uppercase transition-all duration-300 flex items-center justify-center gap-2"
+          style={{
+            borderRadius: 'var(--radius-pill)',
+            background:  canAdvance() ? 'var(--primary)' : 'transparent',
+            color:       canAdvance() ? '#000' : 'var(--primary)',
+            border:      canAdvance() ? 'none' : '1px solid var(--primary)',
+            boxShadow:   canAdvance() ? 'var(--shadow-accent)' : 'none',
+            opacity:     canAdvance() ? 1 : 0.4,
+            cursor:      canAdvance() ? 'pointer' : 'not-allowed',
+          }}
         >
           {step < 3 ? 'Continue' : 'Build My Event'}
           <ChevronRight size={16} />
