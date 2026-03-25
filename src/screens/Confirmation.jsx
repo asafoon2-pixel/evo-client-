@@ -17,7 +17,7 @@ export default function Confirmation() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 60%, rgba(201,169,110,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 50% at 50% 60%, rgba(45,27,105,0.06) 0%, transparent 70%)',
         }}
       />
 
@@ -109,7 +109,7 @@ export default function Confirmation() {
           <motion.button
             onClick={() => navigate('management')}
             whileTap={{ scale: 0.97 }}
-            className="w-full py-4 rounded-full bg-evo-accent text-black text-sm font-semibold tracking-[0.12em] uppercase shadow-[0_4px_24px_rgba(201,169,110,0.25)] hover:bg-[#B8946A] transition-all duration-200"
+            className="w-full py-4 rounded-full bg-evo-accent text-white text-sm font-semibold tracking-[0.12em] uppercase shadow-[0_4px_24px_rgba(45,27,105,0.25)] hover:bg-[#1E1060] transition-all duration-200"
           >
             Go to My Event
           </motion.button>

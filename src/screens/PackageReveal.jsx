@@ -219,7 +219,7 @@ export default function PackageReveal() {
         style={{ background: 'rgba(8,10,15,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button onClick={() => navigate('secure')} whileTap={{ scale: 0.98 }}
           className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all mb-3"
-          style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#000', boxShadow: 'var(--shadow-accent)' }}>
+          style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
           Secure This Event — {formatPrice(depositAmount)}
         </motion.button>
         <button onClick={() => setTuneOpen(true)}

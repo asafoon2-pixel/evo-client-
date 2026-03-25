@@ -65,7 +65,7 @@ function CalendarPicker({ selected, onSelect }) {
               className="aspect-square rounded-xl text-sm transition-all flex items-center justify-center"
               style={{
                 background:  active ? 'var(--primary)' : 'transparent',
-                color:       active ? '#000' : past ? 'var(--text-dim)' : 'var(--text-muted)',
+                color:       active ? '#FFFFFF' : past ? 'var(--text-dim)' : 'var(--text-muted)',
                 fontWeight:  active ? 600 : 400,
                 cursor:      past ? 'not-allowed' : 'pointer',
               }}
@@ -223,7 +223,7 @@ export default function Brief() {
             </h2>
             {briefAnswers.date && (
               <div className="mb-4 px-4 py-2 rounded-full inline-flex self-start"
-                style={{ background: 'rgba(200,169,110,0.1)', border: '1px solid rgba(200,169,110,0.3)' }}>
+                style={{ background: 'rgba(45,27,105,0.08)', border: '1px solid rgba(45,27,105,0.2)' }}>
                 <span className="text-sm font-medium" style={{ color: 'var(--primary)' }}>{briefAnswers.date}</span>
               </div>
             )}
@@ -289,7 +289,7 @@ export default function Brief() {
           style={{
             borderRadius: 'var(--radius-pill)',
             background:  canAdvance() ? 'var(--primary)' : 'transparent',
-            color:       canAdvance() ? '#000' : 'var(--primary)',
+            color:       canAdvance() ? '#FFFFFF' : 'var(--primary)',
             border:      canAdvance() ? 'none' : '1px solid var(--primary)',
             boxShadow:   canAdvance() ? 'var(--shadow-accent)' : 'none',
             opacity:     canAdvance() ? 1 : 0.4,

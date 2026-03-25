@@ -2,9 +2,9 @@
 import { motion } from 'framer-motion'
 
 const variants = {
-  primary:   'bg-evo-accent text-black hover:bg-[#B8946A] shadow-evo-accent',
-  secondary: 'border border-evo-accent text-evo-accent hover:bg-evo-accent hover:text-black',
-  ghost:     'border border-evo-border text-evo-muted hover:border-white/30 hover:text-white',
+  primary:   'bg-evo-accent text-white hover:bg-[#1E1060] shadow-evo-accent',
+  secondary: 'border border-evo-accent text-evo-accent hover:bg-evo-accent hover:text-white',
+  ghost:     'border border-evo-border text-evo-muted hover:border-evo-accent/40 hover:text-evo-text',
   danger:    'border border-evo-error/50 text-evo-error hover:bg-evo-error/10',
 }
 

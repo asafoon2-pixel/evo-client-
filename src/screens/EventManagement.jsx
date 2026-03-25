@@ -286,12 +286,12 @@ export default function EventManagement() {
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                       className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                         msg.from === 'user'
-                          ? 'bg-evo-accent text-black'
-                          : 'bg-evo-card border border-evo-border text-white'
+                          ? 'bg-evo-accent text-white'
+                          : 'bg-evo-card border border-evo-border text-evo-text'
                       }`}
                     >
                       <p className="text-sm leading-relaxed font-light">{msg.text}</p>
-                      <p className={`text-xs mt-1.5 ${msg.from === 'user' ? 'text-black/50' : 'text-evo-dim'}`}>{msg.time}</p>
+                      <p className={`text-xs mt-1.5 ${msg.from === 'user' ? 'text-white/50' : 'text-evo-dim'}`}>{msg.time}</p>
                     </motion.div>
                   </div>
                 ))}
@@ -306,8 +306,8 @@ export default function EventManagement() {
                     className="flex-1 bg-evo-card border border-evo-border rounded-xl px-4 py-3 text-white text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent/50 transition-colors"
                   />
                   <motion.button onClick={sendMessage} whileTap={{ scale: 0.92 }}
-                    className="w-10 h-10 rounded-xl bg-evo-accent flex items-center justify-center hover:bg-[#B8946A] transition-all">
-                    <Send size={15} className="text-black" />
+                    className="w-10 h-10 rounded-xl bg-evo-accent flex items-center justify-center hover:bg-[#1E1060] transition-all">
+                    <Send size={15} className="text-white" />
                   </motion.button>
                 </div>
               </div>
