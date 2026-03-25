@@ -39,7 +39,7 @@ export default function SupplierProfile() {
       />
     ))
 
-  const pkg = selectedPackage || currentSupplier.packages[1]
+  const pkg = selectedPackage || currentSupplier.packages?.[1] || currentSupplier.packages?.[0] || { price: 0, name: 'Standard', features: [] }
   const displayPrice = `₪${pkg.price.toLocaleString()}`
 
   return (
@@ -85,14 +85,18 @@ export default function SupplierProfile() {
             <span className="text-sm text-white font-medium">{currentSupplier.rating}</span>
             <span className="text-sm text-evo-muted">({currentSupplier.reviewCount})</span>
           </div>
-          <div className="flex items-center gap-1.5 text-evo-muted text-xs">
-            <Camera size={12} />
-            <span>{currentSupplier.eventsCount} events</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-evo-muted text-xs">
-            <Clock size={12} />
-            <span>Responds {currentSupplier.responseTime}</span>
-          </div>
+          {currentSupplier.eventsCount && (
+            <div className="flex items-center gap-1.5 text-evo-muted text-xs">
+              <Camera size={12} />
+              <span>{currentSupplier.eventsCount} events</span>
+            </div>
+          )}
+          {currentSupplier.responseTime && (
+            <div className="flex items-center gap-1.5 text-evo-muted text-xs">
+              <Clock size={12} />
+              <span>Responds {currentSupplier.responseTime}</span>
+            </div>
+          )}
         </div>
 
         {/* Price range */}
@@ -104,7 +108,7 @@ export default function SupplierProfile() {
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase text-evo-muted mb-3">Gallery</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-            {currentSupplier.gallery.map((img, i) => (
+            {(currentSupplier.gallery || [currentSupplier.image, currentSupplier.image, currentSupplier.image]).map((img, i) => (
               <div
                 key={i}
                 className="w-24 h-24 rounded-xl overflow-hidden bg-evo-card shrink-0"
@@ -119,7 +123,7 @@ export default function SupplierProfile() {
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase text-evo-muted mb-3">About</h2>
           <p className="text-evo-muted text-sm leading-relaxed font-light">
-            {currentSupplier.fullDescription}
+            {currentSupplier.fullDescription || currentSupplier.shortDescription}
           </p>
         </div>
 
@@ -127,8 +131,8 @@ export default function SupplierProfile() {
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase text-evo-muted mb-4">Packages</h2>
           <div className="space-y-3">
-            {currentSupplier.packages.map((p, i) => {
-              const isActive = selectedPackage?.name === p.name || (!selectedPackage && i === 1)
+            {(currentSupplier.packages || []).map((p, i) => {
+              const isActive = selectedPackage?.id === p.id || selectedPackage?.name === p.name || (!selectedPackage && i === 1)
               return (
                 <motion.button
                   key={p.name}
@@ -142,7 +146,7 @@ export default function SupplierProfile() {
                 >
                   <div className="flex justify-between items-center mb-3">
                     <div>
-                      <span className="text-white text-sm font-semibold">{p.name}</span>
+                      <span className="text-white text-sm font-semibold">{p.name || p.label}</span>
                       {i === 1 && (
                         <span className="ml-2 text-[10px] tracking-widest uppercase text-evo-accent border border-evo-accent/40 rounded-full px-2 py-0.5">
                           Popular
@@ -153,14 +157,16 @@ export default function SupplierProfile() {
                       ₪{p.price.toLocaleString()}
                     </span>
                   </div>
-                  <ul className="space-y-1.5">
-                    {p.features.map((f, j) => (
-                      <li key={j} className="flex items-start gap-2 text-xs text-evo-muted">
-                        <Check size={11} className={`mt-0.5 shrink-0 ${isActive ? 'text-evo-accent' : 'text-evo-dim'}`} />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
+                  {p.features && p.features.length > 0 && (
+                    <ul className="space-y-1.5">
+                      {p.features.map((f, j) => (
+                        <li key={j} className="flex items-start gap-2 text-xs text-evo-muted">
+                          <Check size={11} className={`mt-0.5 shrink-0 ${isActive ? 'text-evo-accent' : 'text-evo-dim'}`} />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </motion.button>
               )
             })}
@@ -168,6 +174,7 @@ export default function SupplierProfile() {
         </div>
 
         {/* Reviews */}
+        {currentSupplier.reviews && currentSupplier.reviews.length > 0 && (
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase text-evo-muted mb-4">Reviews</h2>
           <div className="space-y-4">
@@ -188,6 +195,7 @@ export default function SupplierProfile() {
             ))}
           </div>
         </div>
+        )}
       </div>
 
       {/* Sticky bottom bar */}

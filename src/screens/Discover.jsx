@@ -178,6 +178,13 @@ export default function Discover() {
         <p className="mt-5 text-evo-dim text-xs tracking-widest uppercase">
           Swipe or tap
         </p>
+
+        <button
+          onClick={() => navigate('categories')}
+          className="mt-4 text-evo-muted text-xs tracking-widest uppercase underline underline-offset-4 opacity-50 hover:opacity-80 transition-opacity"
+        >
+          Skip
+        </button>
       </div>
     </div>
   )

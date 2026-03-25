@@ -31,17 +31,29 @@ import Secure          from './screens/Secure'
 import Confirmation    from './screens/Confirmation'
 import EventManagement from './screens/EventManagement'
 import EventPreview    from './screens/EventPreview'
+import Categories      from './screens/Categories'
+import SupplierList    from './screens/SupplierList'
+import SupplierProfile from './screens/SupplierProfile'
+import EventSummary    from './screens/EventSummary'
+import Checkout        from './screens/Checkout'
+import AIResult        from './screens/AIResult'
 
 const screenMap = {
-  entry:      Entry,
-  discover:   Discover,
-  brief:      Brief,
-  building:   Building,
-  package:    PackageReveal,
-  secure:     Secure,
-  confirmation: Confirmation,
-  management: EventManagement,
-  preview:    EventPreview,
+  entry:           Entry,
+  discover:        Discover,
+  brief:           Brief,
+  building:        Building,
+  package:         PackageReveal,
+  secure:          Secure,
+  confirmation:    Confirmation,
+  management:      EventManagement,
+  preview:         EventPreview,
+  categories:      Categories,
+  supplierList:    SupplierList,
+  supplierProfile: SupplierProfile,
+  summary:         EventSummary,
+  checkout:        Checkout,
+  result:          AIResult,
 }
 
 function AppContent() {
