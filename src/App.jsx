@@ -37,6 +37,7 @@ import SupplierProfile from './screens/SupplierProfile'
 import EventSummary    from './screens/EventSummary'
 import Checkout        from './screens/Checkout'
 import AIResult        from './screens/AIResult'
+import PreAISummary    from './screens/PreAISummary'
 
 const screenMap = {
   entry:           Entry,
@@ -54,6 +55,7 @@ const screenMap = {
   summary:         EventSummary,
   checkout:        Checkout,
   result:          AIResult,
+  presummary:      PreAISummary,
 }
 
 function AppContent() {

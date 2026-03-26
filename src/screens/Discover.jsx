@@ -139,16 +139,30 @@ export default function Discover() {
           )}
 
           {!showInsight && isDone && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="flex flex-col items-center text-center"
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full rounded-3xl p-8 text-center"
+                style={{ background: 'var(--surface)', boxShadow: 'var(--shadow-feat)', border: '1.5px solid var(--border)' }}
               >
-                <div className="w-3 h-3 rounded-full mb-6 animate-pulse" style={{ background: 'var(--primary)' }} />
-                <p className="text-lg font-light tracking-wide" style={{ color: 'var(--text-primary)' }}>
-                  Building your profile...
+                <motion.div
+                  animate={{ scale: [1, 1.15, 1] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-12 h-12 rounded-full mx-auto mb-5 flex items-center justify-center"
+                  style={{ background: 'rgba(45,27,105,0.08)', border: '1.5px solid rgba(45,27,105,0.2)' }}
+                >
+                  <div className="w-3 h-3 rounded-full" style={{ background: 'var(--primary)' }} />
+                </motion.div>
+                <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--primary)' }}>
+                  EVO got it
+                </p>
+                <p className="text-xl font-light" style={{ color: 'var(--text-primary)' }}>
+                  Building your event profile...
+                </p>
+                <p className="text-sm mt-2 font-light" style={{ color: 'var(--text-muted)' }}>
+                  Matching vendors to your vibe
                 </p>
               </motion.div>
             </div>
@@ -192,9 +206,10 @@ export default function Discover() {
 
         <button
           onClick={() => navigate('categories')}
-          className="mt-4 text-evo-muted text-xs tracking-widest uppercase underline underline-offset-4 opacity-50 hover:opacity-80 transition-opacity"
+          className="mt-4 px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all"
+          style={{ border: '1.5px solid rgba(45,27,105,0.22)', color: 'var(--primary)', background: 'rgba(45,27,105,0.05)' }}
         >
-          Skip
+          Skip — choose vendors manually →
         </button>
       </div>
     </div>
