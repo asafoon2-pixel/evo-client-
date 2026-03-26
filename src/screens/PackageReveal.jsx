@@ -26,10 +26,10 @@ function TuneSheet({ onClose }) {
       <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-10 pt-6"
-        style={{ background: 'var(--elevated)', borderRadius: '24px 24px 0 0', border: '1px solid var(--border)' }}>
+        style={{ background: 'var(--surface)', borderRadius: '24px 24px 0 0', border: '1px solid var(--border)', boxShadow: '0 -4px 24px rgba(45,27,105,0.10)' }}>
         <div className="w-10 h-1 rounded-full mx-auto mb-6" style={{ background: 'var(--border)' }} />
         <p className="label-overline mb-2">Tune the Vibe</p>
-        <p className="text-white font-light mb-6">What's not quite right?</p>
+        <p className="font-light mb-6" style={{ color: 'var(--text-primary)' }}>What's not quite right?</p>
         <div className="grid grid-cols-2 gap-2 mb-6">
           {TUNE_OPTIONS.map(o => (
             <motion.button key={o.id} onClick={() => setSelected(o.id)} whileTap={{ scale: 0.97 }}
@@ -190,17 +190,17 @@ export default function PackageReveal() {
 
       {/* Budget summary */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-        className="mx-6 mt-10 p-5 glass-card" style={{ borderRadius: 'var(--radius)' }}>
+        className="mx-6 mt-10 p-5" style={{ borderRadius: 'var(--radius)', background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
         <p className="text-xs tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--text-muted)' }}>Package Summary</p>
         {eventPackage.sections.map(s => (
-          <div key={s.id} className="flex justify-between py-2.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <div key={s.id} className="flex justify-between py-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.label}</span>
-            <span className="text-xs font-medium text-white">{formatPrice(s.vendor.price)}</span>
+            <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{formatPrice(s.vendor.price)}</span>
           </div>
         ))}
         <div className="flex justify-between mt-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-          <span className="text-sm font-medium text-white">Total Event Value</span>
-          <span className="text-lg font-light text-white">{formatPrice(totalPrice)}</span>
+          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Total Event Value</span>
+          <span className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>{formatPrice(totalPrice)}</span>
         </div>
         <div className="flex justify-between mt-2">
           <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Deposit to secure (20%)</span>
@@ -208,15 +208,15 @@ export default function PackageReveal() {
         </div>
         <div className="mt-4 pt-4 flex items-start gap-2" style={{ borderTop: '1px solid var(--border)' }}>
           <Zap size={12} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
-          <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+          <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             EVO handles all vendor payments. You pay once — we coordinate everything.
           </p>
         </div>
       </motion.div>
 
       {/* Sticky CTA */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 py-4 z-30"
-        style={{ background: 'rgba(8,10,15,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
+        style={{ background: 'rgba(245,245,247,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button onClick={() => navigate('secure')} whileTap={{ scale: 0.98 }}
           className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all mb-3"
           style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
@@ -224,7 +224,7 @@ export default function PackageReveal() {
         </motion.button>
         <button onClick={() => setTuneOpen(true)}
           className="w-full py-2 text-sm tracking-wide text-center transition-colors"
-          style={{ color: 'var(--text-muted)' }}>
+          style={{ color: 'var(--primary)' }}>
           Tune the vibe
         </button>
       </div>

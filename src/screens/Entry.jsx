@@ -54,7 +54,7 @@ export default function Entry() {
 
         <motion.h1
           {...f(0.5, 28)}
-          className="font-display text-[56px] leading-[1.05] tracking-tight"
+          className="font-display text-[44px] sm:text-[56px] leading-[1.05] tracking-tight"
           style={{ color: '#1A1A2E' }}
         >
           Your event.

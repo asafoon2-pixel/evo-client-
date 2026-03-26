@@ -9,10 +9,10 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.error) {
       return (
-        <div className="w-full min-h-screen bg-evo-black flex flex-col items-center justify-center px-8 text-center">
-          <p className="text-evo-accent text-xs tracking-widest uppercase mb-4">Something went wrong</p>
-          <p className="text-white text-sm font-light mb-2">{this.state.error.message}</p>
-          <button onClick={() => this.setState({ error: null })} className="mt-6 text-evo-muted text-xs border border-evo-border rounded-full px-4 py-2">
+        <div className="w-full min-h-screen flex flex-col items-center justify-center px-8 text-center" style={{ background: '#F5F5F7' }}>
+          <p style={{ color: '#2D1B69', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>Something went wrong</p>
+          <p style={{ color: '#1A1A2E', fontSize: 13, marginBottom: 8 }}>{this.state.error.message}</p>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 24, color: '#2D1B69', fontSize: 12, border: '1px solid rgba(45,27,105,0.3)', borderRadius: 9999, padding: '8px 16px' }}>
             Try again
           </button>
         </div>
@@ -60,12 +60,14 @@ function AppContent() {
   const { currentScreen } = useApp()
   const Screen = screenMap[currentScreen] || Entry
   return (
-    <div className="w-full min-h-screen bg-evo-black text-white overflow-x-hidden">
-      <AnimatePresence>
-        <PageTransition key={currentScreen}>
-          <Screen />
-        </PageTransition>
-      </AnimatePresence>
+    <div className="w-full min-h-screen flex justify-center" style={{ background: 'var(--background)' }}>
+      <div className="w-full max-w-md min-h-screen overflow-x-hidden relative" style={{ background: 'var(--background)' }}>
+        <AnimatePresence mode="wait">
+          <PageTransition key={currentScreen}>
+            <Screen />
+          </PageTransition>
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
