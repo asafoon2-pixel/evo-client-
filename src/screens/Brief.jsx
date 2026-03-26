@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { briefEventTypes, briefScales, briefBudgetTiers } from '../data/index'
 
@@ -65,7 +65,7 @@ function CalendarPicker({ selected, onSelect }) {
               className="aspect-square rounded-xl text-sm transition-all flex items-center justify-center"
               style={{
                 background:  active ? 'var(--primary)' : 'transparent',
-                color:       active ? '#000' : past ? 'var(--text-dim)' : 'var(--text-muted)',
+                color:       active ? '#FFFFFF' : past ? 'var(--text-dim)' : 'var(--text-muted)',
                 fontWeight:  active ? 600 : 400,
                 cursor:      past ? 'not-allowed' : 'pointer',
               }}
@@ -143,19 +143,35 @@ export default function Brief() {
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 flex flex-col px-6">
             <p className="label-overline mb-3">Step 1 of 4</p>
-            <h2 className="font-display text-[34px] font-light leading-snug mb-8" style={{ color: 'var(--text-primary)' }}>
+            <h2 className="font-display text-[34px] font-light leading-snug mb-6" style={{ color: 'var(--text-primary)' }}>
               What are we<br />celebrating?
             </h2>
+            <button
+              onClick={() => navigate('categories')}
+              className="w-full transition-all active:scale-[0.98]"
+              style={{
+                borderRadius: 'var(--radius-pill)',
+                background: '#EEF0FF',
+                border: '1.5px solid rgba(45,27,105,0.20)',
+                color: 'var(--primary)',
+                fontWeight: 700,
+                fontSize: 14,
+                padding: '14px',
+                marginBottom: 20,
+              }}
+            >
+              I already have an event — add suppliers →
+            </button>
             <div className="grid grid-cols-2 gap-3 flex-1">
               {briefEventTypes.map(t => {
                 const active = briefAnswers.eventType === t.id
                 return (
-                  <button key={t.id} onClick={() => updateBrief('eventType', t.id)}
+                  <button key={t.id} onClick={() => { updateBrief('eventType', t.id); setStep(s => s + 1) }}
                     className="relative rounded-[20px] overflow-hidden transition-all duration-200 active:scale-[0.98]"
                     style={{
                       height: 130,
-                      border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                      boxShadow: active ? 'var(--shadow-ring)' : 'none',
+                      border: active ? '2px solid var(--primary)' : '1px solid var(--border)',
+                      boxShadow: active ? '0 0 0 4px rgba(45,27,105,0.12)' : 'none',
                     }}>
                     <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
                     <div className="absolute inset-0" style={{ background: active ? 'rgba(8,10,15,0.35)' : 'rgba(8,10,15,0.62)' }} />
@@ -186,7 +202,7 @@ export default function Brief() {
               {briefScales.map(s => {
                 const active = briefAnswers.scale === s.id
                 return (
-                  <button key={s.id} onClick={() => updateBrief('scale', s.id)}
+                  <button key={s.id} onClick={() => { updateBrief('scale', s.id); setStep(s => s + 1) }}
                     className="relative rounded-[20px] overflow-hidden transition-all duration-200 active:scale-[0.99]"
                     style={{
                       height: 100,
@@ -223,11 +239,11 @@ export default function Brief() {
             </h2>
             {briefAnswers.date && (
               <div className="mb-4 px-4 py-2 rounded-full inline-flex self-start"
-                style={{ background: 'rgba(200,169,110,0.1)', border: '1px solid rgba(200,169,110,0.3)' }}>
+                style={{ background: 'rgba(45,27,105,0.08)', border: '1px solid rgba(45,27,105,0.2)' }}>
                 <span className="text-sm font-medium" style={{ color: 'var(--primary)' }}>{briefAnswers.date}</span>
               </div>
             )}
-            <CalendarPicker selected={briefAnswers.date} onSelect={d => updateBrief('date', d)} />
+            <CalendarPicker selected={briefAnswers.date} onSelect={d => { updateBrief('date', d); advance() }} />
             <button onClick={() => { updateBrief('date', 'flexible'); advance() }}
               className="mt-6 text-sm tracking-wide text-center transition-colors"
               style={{ color: 'var(--text-muted)' }}
@@ -251,25 +267,24 @@ export default function Brief() {
               {briefBudgetTiers.map(t => {
                 const active = briefAnswers.budgetTier === t.id
                 return (
-                  <button key={t.id} onClick={() => updateBrief('budgetTier', t.id)}
-                    className="relative rounded-[20px] overflow-hidden transition-all duration-200 active:scale-[0.99]"
+                  <button key={t.id} onClick={() => { updateBrief('budgetTier', t.id); advance() }}
+                    className="relative rounded-[20px] transition-all duration-200 active:scale-[0.99] flex items-center justify-between px-6"
                     style={{
-                      height: 110,
-                      border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                      boxShadow: active ? 'var(--shadow-ring)' : 'none',
+                      height: 90,
+                      background: active ? '#EEF0FF' : '#FFFFFF',
+                      border: active ? '2px solid var(--primary)' : '1.5px solid rgba(45,27,105,0.12)',
+                      boxShadow: active ? '0 0 0 4px rgba(45,27,105,0.12)' : '0 1px 4px rgba(45,27,105,0.06)',
                     }}>
-                    <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: active ? 'rgba(8,10,15,0.38)' : 'rgba(8,10,15,0.65)' }} />
-                    <div className="absolute inset-0 flex items-center justify-between px-6">
-                      <div className="text-left">
-                        <p className="text-white text-base font-medium">{t.label}</p>
-                        <p className="text-sm mt-0.5" style={{ color: 'var(--primary)' }}>{t.range}</p>
-                      </div>
-                      {active && (
-                        <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
-                          <div className="w-2.5 h-2.5 rounded-full bg-black" />
-                        </div>
-                      )}
+                    <div className="text-left">
+                      <p className="text-base" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{t.label}</p>
+                      <p style={{ color: 'var(--primary)', fontWeight: 800, fontSize: 18, marginTop: 2 }}>{t.range}</p>
+                    </div>
+                    <div className="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
+                      style={{
+                        borderColor: active ? 'var(--primary)' : 'rgba(45,27,105,0.25)',
+                        background: active ? 'var(--primary)' : 'transparent',
+                      }}>
+                      {active && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
                     </div>
                   </button>
                 )
@@ -279,27 +294,6 @@ export default function Brief() {
         )}
       </AnimatePresence>
 
-      {/* CTA */}
-      <div className="px-6 py-8">
-        <motion.button
-          onClick={advance}
-          disabled={!canAdvance()}
-          whileTap={canAdvance() ? { scale: 0.97 } : {}}
-          className="w-full py-4 text-sm font-semibold tracking-[0.12em] uppercase transition-all duration-300 flex items-center justify-center gap-2"
-          style={{
-            borderRadius: 'var(--radius-pill)',
-            background:  canAdvance() ? 'var(--primary)' : 'transparent',
-            color:       canAdvance() ? '#000' : 'var(--primary)',
-            border:      canAdvance() ? 'none' : '1px solid var(--primary)',
-            boxShadow:   canAdvance() ? 'var(--shadow-accent)' : 'none',
-            opacity:     canAdvance() ? 1 : 0.4,
-            cursor:      canAdvance() ? 'pointer' : 'not-allowed',
-          }}
-        >
-          {step < 3 ? 'Continue' : 'Build My Event'}
-          <ChevronRight size={16} />
-        </motion.button>
-      </div>
     </div>
   )
 }

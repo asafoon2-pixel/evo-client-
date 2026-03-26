@@ -25,7 +25,7 @@ export default function Secure() {
     width: '100%',
     background: 'var(--elevated)',
     border: `1px solid ${focused === field ? 'var(--primary)' : 'var(--border)'}`,
-    boxShadow: focused === field ? '0 0 0 3px rgba(200,169,110,0.1)' : 'none',
+    boxShadow: focused === field ? '0 0 0 3px rgba(45,27,105,0.1)' : 'none',
     borderRadius: 'var(--radius-sm)',
     padding: '14px 16px',
     color: 'var(--text-primary)',
@@ -167,7 +167,7 @@ export default function Secure() {
         style={{ background: 'rgba(8,10,15,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button onClick={() => navigate('confirmation')} whileTap={{ scale: 0.98 }}
           className="w-full flex items-center justify-center gap-3 py-4 text-sm font-semibold tracking-wider uppercase transition-all"
-          style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#000', boxShadow: 'var(--shadow-accent)' }}>
+          style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
           <Lock size={14} />
           Complete Deposit — {formatPrice(depositAmount)}
         </motion.button>

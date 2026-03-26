@@ -18,7 +18,7 @@ const BG_IMAGES = [
 ]
 
 export default function Building() {
-  const { navigate, swipeResults, briefAnswers, buildPackage } = useApp()
+  const { navigate, eventPackage } = useApp()
   const [stepIndex, setStepIndex] = useState(0)
   const [budgetPct, setBudgetPct] = useState(0)
   const [bgIndex, setBgIndex]     = useState(0)
@@ -30,8 +30,7 @@ export default function Building() {
     if (builtRef.current) return
     builtRef.current = true
 
-    const pkg = buildPackage(swipeResults, briefAnswers)
-    setEventName(pkg.name)
+    setEventName(eventPackage?.name || 'Your Curated Event')
 
     const stepInterval = setInterval(() => {
       setStepIndex(i => {
@@ -84,7 +83,7 @@ export default function Building() {
           transition={{ duration: 1.5 }}
         />
       </AnimatePresence>
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,10,15,0.8) 0%, transparent 50%, rgba(8,10,15,0.8) 100%)' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,245,247,0.7) 0%, transparent 40%, rgba(245,245,247,0.7) 100%)' }} />
 
       {/* Progress bar */}
       <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--border)' }}>

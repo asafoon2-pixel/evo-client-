@@ -146,7 +146,7 @@ export default function EventPreview() {
           <p className="text-sm font-light mb-6 leading-relaxed" style={{ color: 'var(--text-muted)' }}>Your event is taking shape.</p>
           <motion.button onClick={() => navigate('management')} whileTap={{ scale: 0.97 }}
             className="w-full py-4 text-sm font-semibold tracking-[0.12em] uppercase transition-all"
-            style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#000', boxShadow: 'var(--shadow-accent)' }}>
+            style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
             Back to My Event
           </motion.button>
         </motion.div>

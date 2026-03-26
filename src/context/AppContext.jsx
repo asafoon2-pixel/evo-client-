@@ -29,14 +29,30 @@ function applyBudgetMultiplier(pkg, multiplier) {
 }
 
 export function AppProvider({ children }) {
-  const [currentScreen, setCurrentScreen] = useState('entry')
-  const [swipeResults, setSwipeResults]   = useState([])
-  const [briefAnswers, setBriefAnswers]   = useState({ eventType: null, scale: null, date: null, budgetTier: null })
-  const [eventPackage, setEventPackage]   = useState(null)
-  const [swapSheet, setSwapSheet]         = useState({ open: false, sectionId: null })
-  const [tuneVibeOpen, setTuneVibeOpen]   = useState(false)
+  const [currentScreen, setCurrentScreen]     = useState('entry')
+  const [swipeResults, setSwipeResults]       = useState([])
+  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null })
+  const [eventPackage, setEventPackage]       = useState(null)
+  const [swapSheet, setSwapSheet]             = useState({ open: false, sectionId: null })
+  const [tuneVibeOpen, setTuneVibeOpen]       = useState(false)
+  const [currentCategory, setCurrentCategory] = useState(null)
+  const [currentSupplier, setCurrentSupplier] = useState(null)
+  const [selectedSuppliers, setSelectedSuppliers] = useState({})
+  const [generatedEvent, setGeneratedEvent]   = useState({ name: 'Your Curated Evening' })
 
   const navigate = useCallback((screen) => setCurrentScreen(screen), [])
+
+  const selectSupplier = useCallback((catId, supplier) => {
+    setSelectedSuppliers(prev => ({ ...prev, [catId]: supplier }))
+  }, [])
+
+  const removeSupplier = useCallback((catId) => {
+    setSelectedSuppliers(prev => {
+      const next = { ...prev }
+      delete next[catId]
+      return next
+    })
+  }, [])
 
   const addSwipe = useCallback((card, direction) => {
     setSwipeResults(prev => [...prev, { cardId: card.id, direction, tags: card.tags }])
@@ -98,6 +114,11 @@ export function AppProvider({ children }) {
     : 0
   const depositAmount = Math.round(totalPrice * 0.2)
 
+  const totalBudget = Object.values(selectedSuppliers).reduce(
+    (sum, s) => sum + (s.selectedPackage?.price || s.basePrice || 0),
+    0
+  )
+
   const value = {
     currentScreen, navigate,
     swipeResults, addSwipe,
@@ -106,6 +127,11 @@ export function AppProvider({ children }) {
     swapSheet, openSwapSheet, closeSwapSheet, swapVendor,
     tuneVibeOpen, setTuneVibeOpen,
     totalPrice, depositAmount,
+    currentCategory, setCurrentCategory,
+    currentSupplier, setCurrentSupplier,
+    selectedSuppliers, selectSupplier, removeSupplier,
+    generatedEvent, setGeneratedEvent,
+    totalBudget,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

@@ -7,7 +7,7 @@ import { swipeCards } from '../data/index'
 import SwipeCard from '../components/SwipeCard'
 
 export default function Discover() {
-  const { navigate, addSwipe } = useApp()
+  const { navigate, addSwipe, buildPackage, swipeResults, briefAnswers } = useApp()
   const [swipedCount, setSwipedCount] = useState(0)
   const [showInsight, setShowInsight] = useState(false)
   const insightShownRef = useRef(false)
@@ -21,8 +21,9 @@ export default function Discover() {
     if (!isDone) return
     if (navigatingRef.current) return
     navigatingRef.current = true
+    buildPackage(swipeResults, briefAnswers)
     navigate('building')
-  }, [isDone, navigate])
+  }, [isDone, navigate, buildPackage, swipeResults, briefAnswers])
 
   // ── Show mid-point insight ───────────────────────────────────────────────
   useEffect(() => {
@@ -80,6 +81,16 @@ export default function Discover() {
         </span>
       </div>
 
+      {/* Explainer heading */}
+      <div className="relative z-10 px-6 mb-4">
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1A1A2E', lineHeight: 1.2 }}>
+          Choose your event style
+        </h2>
+        <p style={{ fontSize: 14, color: 'rgba(26,26,46,0.55)', lineHeight: 1.6, marginTop: 6 }}>
+          Swipe right on vibes that match your vision. We'll use this to recommend the right suppliers and setup for your event.
+        </p>
+      </div>
+
       {/* Card stack area */}
       <div className="relative z-10 flex-1 flex items-center justify-center px-6">
         <div className="relative w-full max-w-sm" style={{ height: 480 }}>
@@ -135,8 +146,8 @@ export default function Discover() {
                 transition={{ duration: 0.4 }}
                 className="flex flex-col items-center text-center"
               >
-                <div className="w-3 h-3 rounded-full bg-evo-accent mb-6 animate-pulse" />
-                <p className="text-white text-lg font-light tracking-wide">
+                <div className="w-3 h-3 rounded-full mb-6 animate-pulse" style={{ background: 'var(--primary)' }} />
+                <p className="text-lg font-light tracking-wide" style={{ color: 'var(--text-primary)' }}>
                   Building your profile...
                 </p>
               </motion.div>
@@ -178,6 +189,13 @@ export default function Discover() {
         <p className="mt-5 text-evo-dim text-xs tracking-widest uppercase">
           Swipe or tap
         </p>
+
+        <button
+          onClick={() => navigate('categories')}
+          className="mt-4 text-evo-muted text-xs tracking-widest uppercase underline underline-offset-4 opacity-50 hover:opacity-80 transition-opacity"
+        >
+          Skip
+        </button>
       </div>
     </div>
   )

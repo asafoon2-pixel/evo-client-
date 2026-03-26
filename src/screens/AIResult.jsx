@@ -10,11 +10,12 @@ const stagger = (i) => ({
 export default function AIResult() {
   const { navigate, generatedEvent } = useApp()
 
-  const event = generatedEvent || {
+  const event = {
     name: 'Your Curated Evening',
     description: 'A thoughtfully composed event shaped entirely by your instincts.',
     tags: ['Curated', 'Personal', 'Distinctive'],
     backgroundImage: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
+    ...(generatedEvent || {}),
   }
 
   return (

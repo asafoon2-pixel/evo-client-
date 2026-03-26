@@ -17,7 +17,7 @@ export default function Entry() {
   const { navigate } = useApp()
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: '#080A0F' }}>
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: '#F5F5F7' }}>
 
       {/* Ambient dot grid */}
       <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
@@ -30,15 +30,14 @@ export default function Entry() {
           className="w-full h-full object-cover scale-105 blur-[2px] opacity-15"
           draggable={false}
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,10,15,0.6) 0%, rgba(8,10,15,0.2) 40%, rgba(8,10,15,0.95) 100%)' }} />
-        {/* Gold radial glow */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 45% at 50% 38%, rgba(200,169,110,0.07) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(245,245,247,0.55) 0%, rgba(245,245,247,0.15) 40%, rgba(245,245,247,0.97) 100%)' }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(60% 45% at 50% 38%, rgba(45,27,105,0.06) 0%, transparent 70%)' }} />
       </div>
 
       {/* Wordmark */}
       <div className="relative z-10 pt-16 flex flex-col items-center">
         <motion.div {...f(0.1)}>
-          <span className="text-[42px] font-light tracking-[0.5em] text-white select-none leading-none" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+          <span className="text-[42px] font-light tracking-[0.5em] select-none leading-none" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, color: '#1E1060' }}>
             EVO
           </span>
         </motion.div>
@@ -55,12 +54,12 @@ export default function Entry() {
 
         <motion.h1
           {...f(0.5, 28)}
-          className="font-display text-[56px] leading-[1.05] tracking-tight text-white"
-          style={{ fontWeight: 300 }}
+          className="font-display text-[44px] sm:text-[56px] leading-[1.05] tracking-tight"
+          style={{ color: '#1A1A2E' }}
         >
           Your event.
           <br />
-          <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Produced.</span>
+          <span style={{ color: '#FF2D8A', fontStyle: 'italic' }}>Produced.</span>
         </motion.h1>
 
         <motion.p
@@ -76,7 +75,7 @@ export default function Entry() {
         <motion.div {...f(0.85)} className="mt-12 flex items-center gap-8">
           {stats.map((s, i) => (
             <div key={i} className="text-center">
-              <p className="text-white text-[15px] font-medium leading-none">{s.value}</p>
+              <p className="text-[15px] font-medium leading-none" style={{ color: '#1A1A2E' }}>{s.value}</p>
               <p className="text-[10px] mt-1.5 tracking-wide" style={{ color: 'var(--text-dim)' }}>{s.label}</p>
             </div>
           ))}
@@ -92,7 +91,7 @@ export default function Entry() {
           className="w-full max-w-xs py-4 text-sm font-semibold tracking-[0.15em] uppercase transition-all duration-200"
           style={{
             background: 'var(--primary)',
-            color: '#000',
+            color: '#FFFFFF',
             borderRadius: 'var(--radius-pill)',
             boxShadow: 'var(--shadow-accent)',
           }}
