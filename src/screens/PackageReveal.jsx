@@ -72,10 +72,6 @@ export default function PackageReveal() {
   const { navigate, eventPackage, openSwapSheet, totalPrice, depositAmount } = useApp()
   const [tuneOpen, setTuneOpen] = useState(false)
 
-  useEffect(() => {
-    if (!eventPackage) navigate('building')
-  }, [eventPackage, navigate])
-
   if (!eventPackage) return (
     <div className="w-full min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
       <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />

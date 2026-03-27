@@ -31,7 +31,7 @@ function applyBudgetMultiplier(pkg, multiplier) {
 export function AppProvider({ children }) {
   const [currentScreen, setCurrentScreen]     = useState('entry')
   const [swipeResults, setSwipeResults]       = useState([])
-  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null })
+  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00' })
   const [eventPackage, setEventPackage]       = useState(null)
   const [swapSheet, setSwapSheet]             = useState({ open: false, sectionId: null })
   const [tuneVibeOpen, setTuneVibeOpen]       = useState(false)

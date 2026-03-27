@@ -1,8 +1,88 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Check } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { briefEventTypes, briefScales, briefBudgetTiers } from '../data/index'
+
+const HOURS = [
+  '07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00',
+  '15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00',
+  '23:00','00:00','01:00','02:00',
+]
+
+function TimeWheel({ value, onChange, label }) {
+  const ref = useRef(null)
+  const ITEM_H = 52
+
+  useEffect(() => {
+    const idx = HOURS.indexOf(value)
+    if (ref.current && idx >= 0) {
+      ref.current.scrollTop = idx * ITEM_H
+    }
+  }, []) // eslint-disable-line
+
+  const handleScroll = () => {
+    if (!ref.current) return
+    const idx = Math.round(ref.current.scrollTop / ITEM_H)
+    const clamped = Math.max(0, Math.min(HOURS.length - 1, idx))
+    if (HOURS[clamped] !== value) onChange(HOURS[clamped])
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <style>{`.tw-no-scrollbar::-webkit-scrollbar{display:none}`}</style>
+      {label && (
+        <p className="text-xs tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>{label}</p>
+      )}
+      <div className="relative" style={{ width: 88 }}>
+        {/* Selection highlight band */}
+        <div
+          className="absolute left-0 right-0 pointer-events-none z-10 rounded-xl"
+          style={{
+            top: ITEM_H,
+            height: ITEM_H,
+            background: 'rgba(45,27,105,0.08)',
+            border: '1px solid rgba(45,27,105,0.22)',
+          }}
+        />
+        <div
+          ref={ref}
+          onScroll={handleScroll}
+          className="tw-no-scrollbar"
+          style={{
+            height: ITEM_H * 3,
+            overflowY: 'scroll',
+            scrollSnapType: 'y mandatory',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          <div style={{ height: ITEM_H }} />
+          {HOURS.map((h) => (
+            <div
+              key={h}
+              style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
+              className="flex items-center justify-center"
+            >
+              <span
+                style={{
+                  fontSize: h === value ? 20 : 15,
+                  fontWeight: h === value ? 600 : 300,
+                  color: h === value ? 'var(--primary)' : 'var(--text-dim)',
+                  transition: 'all 0.15s',
+                  letterSpacing: h === value ? '0.02em' : 0,
+                }}
+              >
+                {h}
+              </span>
+            </div>
+          ))}
+          <div style={{ height: ITEM_H }} />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa']
@@ -148,6 +228,8 @@ export default function Brief() {
   const { navigate, briefAnswers, updateBrief } = useApp()
   const [step, setStep]                 = useState(0)
   const [justSelected, setJustSelected] = useState(null)
+  const [startTime, setStartTime]       = useState(briefAnswers.startTime || '19:00')
+  const [endTime, setEndTime]           = useState(briefAnswers.endTime   || '23:00')
 
   const selectAndAdvance = (key, value) => {
     updateBrief(key, value)
@@ -290,12 +372,12 @@ export default function Brief() {
             </motion.div>
           )}
 
-          {/* STEP 2 — Date */}
+          {/* STEP 2 — Date + Time */}
           {step === 2 && (
             <motion.div key="date" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="flex-1 flex flex-col px-6 pt-6 pb-6">
-              <p className="label-overline mb-2">Event date</p>
+              className="flex-1 flex flex-col px-6 pt-6 pb-6 overflow-y-auto">
+              <p className="label-overline mb-2">Event date & time</p>
               <h2 className="font-display text-[32px] font-light leading-snug mb-5" style={{ color: 'var(--text-primary)' }}>
                 When is it?
               </h2>
@@ -309,13 +391,48 @@ export default function Brief() {
               )}
               <CalendarPicker
                 selected={briefAnswers.date}
-                onSelect={d => { updateBrief('date', d); setTimeout(() => setStep(s => s + 1), 200) }}
+                onSelect={d => updateBrief('date', d)}
               />
-              <button onClick={() => { updateBrief('date', 'flexible'); setStep(s => s + 1) }}
-                className="mt-6 text-sm font-medium text-center py-3 rounded-full transition-all"
-                style={{ color: 'var(--primary)', border: '1.5px dashed rgba(45,27,105,0.25)' }}>
-                I'm flexible with the date →
+              <button onClick={() => updateBrief('date', 'flexible')}
+                className="mt-4 text-sm font-medium text-center py-2.5 rounded-full transition-all"
+                style={{
+                  color: briefAnswers.date === 'flexible' ? 'var(--primary)' : 'var(--text-muted)',
+                  border: briefAnswers.date === 'flexible' ? '1.5px solid rgba(45,27,105,0.4)' : '1.5px dashed rgba(45,27,105,0.2)',
+                  background: briefAnswers.date === 'flexible' ? 'rgba(45,27,105,0.06)' : 'transparent',
+                }}>
+                {briefAnswers.date === 'flexible' ? '✓ Flexible date' : "I'm flexible with the date"}
               </button>
+
+              {/* Time pickers */}
+              <div className="mt-6 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
+                <p className="text-xs tracking-widest uppercase text-center mb-4" style={{ color: 'var(--text-muted)' }}>
+                  Event Hours
+                </p>
+                <div className="flex items-center justify-center gap-6">
+                  <TimeWheel label="Start" value={startTime} onChange={setStartTime} />
+                  <div className="text-2xl font-light" style={{ color: 'var(--text-dim)', marginTop: 20 }}>→</div>
+                  <TimeWheel label="End" value={endTime} onChange={setEndTime} />
+                </div>
+              </div>
+
+              {/* Continue */}
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  updateBrief('startTime', startTime)
+                  updateBrief('endTime', endTime)
+                  setStep(s => s + 1)
+                }}
+                className="mt-6 w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all"
+                style={{
+                  borderRadius: 'var(--radius-pill)',
+                  background: 'var(--primary)',
+                  color: '#fff',
+                  boxShadow: 'var(--shadow-accent)',
+                  opacity: briefAnswers.date ? 1 : 0.45,
+                }}>
+                Continue →
+              </motion.button>
             </motion.div>
           )}
 

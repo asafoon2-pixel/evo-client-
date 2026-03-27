@@ -7,7 +7,7 @@ import { swipeCards } from '../data/index'
 import SwipeCard from '../components/SwipeCard'
 
 export default function Discover() {
-  const { navigate, addSwipe } = useApp()
+  const { navigate, addSwipe, buildPackage, swipeResults, briefAnswers } = useApp()
   const [swipedCount, setSwipedCount] = useState(0)
   const [showInsight, setShowInsight] = useState(false)
   const insightShownRef = useRef(false)
@@ -21,8 +21,9 @@ export default function Discover() {
     if (!isDone) return
     if (navigatingRef.current) return
     navigatingRef.current = true
+    buildPackage(swipeResults, briefAnswers)
     navigate('building')
-  }, [isDone, navigate])
+  }, [isDone, navigate, buildPackage, swipeResults, briefAnswers])
 
   // ── Show mid-point insight ───────────────────────────────────────────────
   useEffect(() => {
