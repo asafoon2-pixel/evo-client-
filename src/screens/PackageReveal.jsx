@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight, Zap, AlertCircle, Star, RefreshCw } from 'lucide-react'
 import { useApp } from '../context/AppContext'
@@ -72,7 +72,11 @@ export default function PackageReveal() {
   const { navigate, eventPackage, openSwapSheet, totalPrice, depositAmount } = useApp()
   const [tuneOpen, setTuneOpen] = useState(false)
 
-  if (!eventPackage) { navigate('building'); return null }
+  useEffect(() => {
+    if (!eventPackage) navigate('building')
+  }, [eventPackage, navigate])
+
+  if (!eventPackage) return null
 
   const formatPrice = n => `₪${n.toLocaleString()}`
 

@@ -66,7 +66,7 @@ export default function SupplierProfile() {
         {/* Name + category */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>
-            <h1 className="text-2xl font-semibold text-white leading-tight">{currentSupplier.name}</h1>
+            <h1 className="text-2xl font-semibold text-evo-text leading-tight">{currentSupplier.name}</h1>
             <span className="text-xs font-medium tracking-widest uppercase text-evo-muted border border-evo-border rounded-full px-3 py-1 inline-block mt-2">
               {cat?.name}
             </span>
@@ -82,7 +82,7 @@ export default function SupplierProfile() {
         <div className="flex items-center gap-4 mb-5 flex-wrap">
           <div className="flex items-center gap-1.5">
             <div className="flex gap-0.5">{renderStars(currentSupplier.rating)}</div>
-            <span className="text-sm text-white font-medium">{currentSupplier.rating}</span>
+            <span className="text-sm text-evo-text font-medium">{currentSupplier.rating}</span>
             <span className="text-sm text-evo-muted">({currentSupplier.reviewCount})</span>
           </div>
           {currentSupplier.eventsCount && (
@@ -146,14 +146,14 @@ export default function SupplierProfile() {
                 >
                   <div className="flex justify-between items-center mb-3">
                     <div>
-                      <span className="text-white text-sm font-semibold">{p.name || p.label}</span>
+                      <span className="text-evo-text text-sm font-semibold">{p.name || p.label}</span>
                       {i === 1 && (
                         <span className="ml-2 text-[10px] tracking-widest uppercase text-evo-accent border border-evo-accent/40 rounded-full px-2 py-0.5">
                           Popular
                         </span>
                       )}
                     </div>
-                    <span className={`text-lg font-light ${isActive ? 'text-evo-accent' : 'text-white'}`}>
+                    <span className={`text-lg font-light ${isActive ? 'text-evo-accent' : 'text-evo-text'}`}>
                       ₪{p.price.toLocaleString()}
                     </span>
                   </div>
@@ -185,7 +185,7 @@ export default function SupplierProfile() {
                     <div className="w-7 h-7 rounded-full bg-evo-elevated border border-evo-border flex items-center justify-center">
                       <span className="text-xs text-evo-muted font-medium">{r.author[0]}</span>
                     </div>
-                    <span className="text-white text-sm font-medium">{r.author}</span>
+                    <span className="text-evo-text text-sm font-medium">{r.author}</span>
                   </div>
                   <div className="flex gap-0.5">{renderStars(r.rating, 11)}</div>
                 </div>
@@ -209,7 +209,7 @@ export default function SupplierProfile() {
           </div>
           <button
             onClick={handleAddToEvent}
-            className="flex-1 max-w-xs py-3.5 rounded-full bg-evo-accent text-black text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-[0.98]"
+            className="flex-1 max-w-xs py-3.5 rounded-full bg-evo-accent text-white text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-[0.98]"
           >
             {isSelected ? 'Update Selection' : 'Add to My Event'}
           </button>

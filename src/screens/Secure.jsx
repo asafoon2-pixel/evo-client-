@@ -46,7 +46,7 @@ export default function Secure() {
             onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-light tracking-wide text-white">Secure Your Event</h1>
+          <h1 className="text-lg font-light tracking-wide text-evo-text">Secure Your Event</h1>
           <div className="ml-auto flex items-center gap-1.5" style={{ color: '#4ADE80' }}>
             <Shield size={13} />
             <span className="text-xs font-medium">Secure</span>
@@ -60,7 +60,7 @@ export default function Secure() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           className="text-center py-5" style={{ borderBottom: '1px solid var(--border)' }}>
           <p className="label-overline mb-3">Your Event</p>
-          <h2 className="font-display text-[26px] font-light text-white leading-tight">
+          <h2 className="font-display text-[26px] font-light text-evo-text leading-tight">
             {eventPackage?.name || 'Your Curated Evening'}
           </h2>
           <p className="text-sm mt-2 font-light" style={{ color: 'var(--text-muted)' }}>
@@ -73,12 +73,12 @@ export default function Secure() {
           <div className="glass-card overflow-hidden" style={{ borderRadius: 'var(--radius)' }}>
             <div className="flex justify-between items-center px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Total Event Value</span>
-              <span className="text-sm font-medium text-white">{formatPrice(totalPrice)}</span>
+              <span className="text-sm font-medium text-evo-text">{formatPrice(totalPrice)}</span>
             </div>
             <div className="px-5 py-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-white font-medium">Deposit Today</p>
+                  <p className="text-evo-text font-medium">Deposit Today</p>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>20% · secures all vendors instantly</p>
                 </div>
                 <span className="text-3xl font-light" style={{ color: 'var(--primary)' }}>{formatPrice(depositAmount)}</span>

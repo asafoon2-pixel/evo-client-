@@ -83,12 +83,12 @@ export default function EventManagement() {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[10px] tracking-[0.3em] uppercase text-evo-accent font-medium">EVO</span>
-            <h1 className="text-lg font-light text-white mt-0.5 leading-tight">
+            <h1 className="text-lg font-light text-evo-text mt-0.5 leading-tight">
               {eventPackage?.name || 'Your Event'}
             </h1>
           </div>
           <div className="flex items-end gap-3">
-            <button className="w-9 h-9 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-white transition-colors">
+            <button className="w-9 h-9 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-evo-text transition-colors">
               <Bell size={15} />
             </button>
             <div className="text-right">
@@ -150,7 +150,7 @@ export default function EventManagement() {
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`relative py-3 px-4 text-xs font-medium tracking-widest uppercase transition-all capitalize ${
-                  activeTab === tab ? 'text-white' : 'text-evo-muted hover:text-white/60'
+                  activeTab === tab ? 'text-evo-text' : 'text-evo-muted hover:text-evo-text'
                 }`}
               >
                 {tab}
@@ -183,7 +183,7 @@ export default function EventManagement() {
                   <Clock size={16} className="text-evo-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium">Action Required</p>
+                  <p className="text-evo-text text-sm font-medium">Action Required</p>
                   <p className="text-evo-muted text-xs mt-0.5">Final headcount due in 8 days</p>
                 </div>
                 <ChevronRight size={16} className="text-evo-dim shrink-0" />
@@ -202,7 +202,7 @@ export default function EventManagement() {
                     >
                       <StatusDot status={item.status} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm leading-relaxed font-light">{item.message}</p>
+                        <p className="text-evo-text text-sm leading-relaxed font-light">{item.message}</p>
                         <p className="text-evo-dim text-xs mt-1">{item.time}</p>
                       </div>
                     </motion.div>
@@ -213,7 +213,7 @@ export default function EventManagement() {
               <motion.button
                 onClick={() => navigate('preview')}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-full border border-evo-border text-evo-muted text-xs font-medium tracking-widest uppercase hover:border-evo-accent/30 hover:text-white transition-all"
+                className="w-full py-3.5 rounded-full border border-evo-border text-evo-muted text-xs font-medium tracking-widest uppercase hover:border-evo-accent/30 hover:text-evo-text transition-all"
               >
                 View Event Preview
               </motion.button>
@@ -250,7 +250,7 @@ export default function EventManagement() {
                         <div className="flex items-center justify-between mb-2">
                           <p className={`text-sm font-medium ${
                             m.status === 'completed'   ? 'text-green-400' :
-                            m.status === 'in-progress' ? 'text-white' : 'text-evo-muted'
+                            m.status === 'in-progress' ? 'text-evo-accent' : 'text-evo-muted'
                           }`}>{m.title}</p>
                           <span className="text-evo-dim text-xs">{m.date}</span>
                         </div>
@@ -303,7 +303,7 @@ export default function EventManagement() {
                     onChange={e => setMessage(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && sendMessage()}
                     placeholder="Ask EVO anything..."
-                    className="flex-1 bg-evo-card border border-evo-border rounded-xl px-4 py-3 text-white text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent/50 transition-colors"
+                    className="flex-1 bg-evo-card border border-evo-border rounded-xl px-4 py-3 text-evo-text text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent/50 transition-colors"
                   />
                   <motion.button onClick={sendMessage} whileTap={{ scale: 0.92 }}
                     className="w-10 h-10 rounded-xl bg-evo-accent flex items-center justify-center hover:bg-[#1E1060] transition-all">

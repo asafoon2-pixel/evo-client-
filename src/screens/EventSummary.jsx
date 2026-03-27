@@ -23,11 +23,11 @@ export default function EventSummary() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-12 pb-4">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('categories')} className="text-evo-muted hover:text-white transition-colors">
+          <button onClick={() => navigate('categories')} className="text-evo-muted hover:text-evo-text transition-colors">
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-light tracking-wide text-white flex-1">Your Event</h1>
-          <button className="text-evo-muted hover:text-white transition-colors">
+          <button className="text-evo-muted hover:text-evo-text transition-colors">
             <Edit2 size={16} />
           </button>
         </div>
@@ -37,7 +37,7 @@ export default function EventSummary() {
         {/* Event name */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <p className="text-xs tracking-[0.25em] uppercase text-evo-accent mb-2">Your Event</p>
-          <h2 className="text-2xl font-light text-white leading-tight">
+          <h2 className="text-2xl font-light text-evo-text leading-tight">
             {generatedEvent?.name || 'Your Curated Evening'}
           </h2>
         </motion.div>
@@ -90,7 +90,7 @@ export default function EventSummary() {
                         <img src={supplier.image} alt={supplier.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-medium">{supplier.name}</p>
+                        <p className="text-evo-text text-sm font-medium">{supplier.name}</p>
                         <p className="text-evo-muted text-xs mt-0.5">{cat?.name}</p>
                         <p className="text-evo-accent text-xs mt-1 font-medium">
                           {formatPrice(price)} — {supplier.selectedPackage?.name || 'Premium'}
@@ -98,7 +98,7 @@ export default function EventSummary() {
                       </div>
                       <button
                         onClick={() => removeSupplier(catId)}
-                        className="w-8 h-8 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-white hover:border-white/30 transition-all shrink-0"
+                        className="w-8 h-8 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-evo-error hover:border-evo-error/30 transition-all shrink-0"
                       >
                         <X size={14} />
                       </button>
@@ -158,7 +158,7 @@ export default function EventSummary() {
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-evo-muted">Subtotal</span>
-                <span className="text-white">{formatPrice(totalBudget)}</span>
+                <span className="text-evo-text">{formatPrice(totalBudget)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-evo-muted">Deposit today (20%)</span>
@@ -166,8 +166,8 @@ export default function EventSummary() {
               </div>
               <div className="h-px bg-evo-border" />
               <div className="flex justify-between">
-                <span className="text-white font-medium">Total Event Value</span>
-                <span className="text-white text-xl font-light">{formatPrice(totalBudget)}</span>
+                <span className="text-evo-text font-medium">Total Event Value</span>
+                <span className="text-evo-text text-xl font-light">{formatPrice(totalBudget)}</span>
               </div>
             </div>
           </div>
@@ -181,7 +181,7 @@ export default function EventSummary() {
         <div className="fixed bottom-0 left-0 right-0 bg-evo-black/95 backdrop-blur-md border-t border-evo-border px-6 py-4 z-30">
           <button
             onClick={() => navigate('checkout')}
-            className="w-full max-w-lg mx-auto block py-4 rounded-full bg-evo-accent text-black text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-[0.98]"
+            className="w-full max-w-lg mx-auto block py-4 rounded-full bg-evo-accent text-white text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-[0.98]"
           >
             Secure My Event
           </button>

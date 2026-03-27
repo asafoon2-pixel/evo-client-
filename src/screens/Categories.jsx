@@ -18,11 +18,11 @@ export default function Categories() {
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => navigate('result')}
-            className="text-evo-muted hover:text-white transition-colors"
+            className="text-evo-muted hover:text-evo-text transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-light tracking-wide text-white">Build Your Event</h1>
+          <h1 className="text-lg font-light tracking-wide text-evo-text">Build Your Event</h1>
         </div>
 
         {/* Budget bar */}
@@ -57,7 +57,7 @@ export default function Categories() {
           </div>
           <div>
             <p className="text-xs tracking-widest uppercase text-evo-accent mb-1.5">EVO Recommends</p>
-            <p className="text-white text-sm font-light leading-relaxed">
+            <p className="text-evo-text text-sm font-light leading-relaxed">
               Based on your taste, start with a{' '}
               <span className="text-evo-accent">venue</span> and{' '}
               <span className="text-evo-accent">atmosphere</span> — they define everything else.
@@ -97,7 +97,7 @@ export default function Categories() {
                 {selected && (
                   <div className="absolute top-3 right-3 z-10">
                     <div className="w-6 h-6 bg-evo-accent rounded-full flex items-center justify-center">
-                      <CheckCircle2 size={14} className="text-black" />
+                      <CheckCircle2 size={14} className="text-white" />
                     </div>
                   </div>
                 )}
@@ -126,7 +126,7 @@ export default function Categories() {
           >
             <button
               onClick={() => navigate('summary')}
-              className="w-full py-4 rounded-full bg-evo-accent text-black text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-98"
+              className="w-full py-4 rounded-full bg-evo-accent text-white text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-98"
             >
               Review My Event ({Object.keys(selectedSuppliers).length} selected)
             </button>

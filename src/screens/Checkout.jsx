@@ -31,10 +31,10 @@ export default function Checkout() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-12 pb-4">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('summary')} className="text-evo-muted hover:text-white transition-colors">
+          <button onClick={() => navigate('summary')} className="text-evo-muted hover:text-evo-text transition-colors">
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-light tracking-wide text-white">Secure Your Event</h1>
+          <h1 className="text-lg font-light tracking-wide text-evo-text">Secure Your Event</h1>
         </div>
       </div>
 
@@ -46,7 +46,7 @@ export default function Checkout() {
           className="bg-evo-card rounded-2xl border border-evo-border p-5"
         >
           <p className="text-xs tracking-[0.2em] uppercase text-evo-accent mb-3">Your Event</p>
-          <p className="text-white font-light text-lg leading-tight">
+          <p className="text-evo-text font-light text-lg leading-tight">
             {generatedEvent?.name || 'Your Curated Evening'}
           </p>
           <div className="flex gap-4 mt-4">
@@ -77,12 +77,12 @@ export default function Checkout() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-evo-muted text-sm">Total Event Value</span>
-              <span className="text-white text-sm font-medium">{formatPrice(totalBudget)}</span>
+              <span className="text-evo-text text-sm font-medium">{formatPrice(totalBudget)}</span>
             </div>
             <div className="h-px bg-evo-border" />
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-white font-medium">Deposit Today</p>
+                <p className="text-evo-text font-medium">Deposit Today</p>
                 <p className="text-evo-muted text-xs mt-0.5">20% to secure all vendors</p>
               </div>
               <span className="text-evo-accent text-2xl font-light">{formatPrice(deposit)}</span>
@@ -131,7 +131,7 @@ export default function Checkout() {
                 placeholder="Card number"
                 value={cardNumber}
                 onChange={e => setCardNumber(formatCardNumber(e.target.value))}
-                className="w-full bg-evo-card border border-evo-border rounded-xl pl-11 pr-4 py-3.5 text-white text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent transition-colors"
+                className="w-full bg-evo-card border border-evo-border rounded-xl pl-11 pr-4 py-3.5 text-evo-text text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent transition-colors"
                 inputMode="numeric"
               />
             </div>
@@ -141,7 +141,7 @@ export default function Checkout() {
                 placeholder="MM / YY"
                 value={expiry}
                 onChange={e => setExpiry(formatExpiry(e.target.value))}
-                className="w-full bg-evo-card border border-evo-border rounded-xl px-4 py-3.5 text-white text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent transition-colors"
+                className="w-full bg-evo-card border border-evo-border rounded-xl px-4 py-3.5 text-evo-text text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent transition-colors"
                 inputMode="numeric"
               />
               <input
@@ -149,7 +149,7 @@ export default function Checkout() {
                 placeholder="CVV"
                 value={cvv}
                 onChange={e => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                className="w-full bg-evo-card border border-evo-border rounded-xl px-4 py-3.5 text-white text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent transition-colors"
+                className="w-full bg-evo-card border border-evo-border rounded-xl px-4 py-3.5 text-evo-text text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent transition-colors"
                 inputMode="numeric"
               />
             </div>
@@ -170,7 +170,7 @@ export default function Checkout() {
       <div className="fixed bottom-0 left-0 right-0 bg-evo-black/95 backdrop-blur-md border-t border-evo-border px-6 py-4 z-30">
         <button
           onClick={() => navigate('confirmation')}
-          className="w-full max-w-lg mx-auto flex items-center justify-center gap-3 py-4 rounded-full bg-evo-accent text-black text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-[0.98]"
+          className="w-full max-w-lg mx-auto flex items-center justify-center gap-3 py-4 rounded-full bg-evo-accent text-white text-sm font-medium tracking-wider uppercase hover:bg-evo-accent/90 transition-all active:scale-[0.98]"
         >
           <Lock size={14} />
           Complete Deposit — {formatPrice(deposit)}

@@ -43,12 +43,12 @@ export default function SupplierList() {
         <div className="flex items-center gap-4 mb-1">
           <button
             onClick={() => navigate('categories')}
-            className="text-evo-muted hover:text-white transition-colors"
+            className="text-evo-muted hover:text-evo-text transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-lg font-light tracking-wide text-white">
+            <h1 className="text-lg font-light tracking-wide text-evo-text">
               {cat?.name || 'Suppliers'}
             </h1>
             <p className="text-xs text-evo-muted mt-0.5">
@@ -72,7 +72,7 @@ export default function SupplierList() {
             </div>
             <p className="text-xs text-evo-muted">
               <span className="text-evo-accent font-medium">EVO recommends</span> for your taste →{' '}
-              <span className="text-white">{recommended.name}</span>
+              <span className="text-evo-text font-medium">{recommended.name}</span>
             </p>
           </motion.div>
         )}
@@ -85,8 +85,8 @@ export default function SupplierList() {
               onClick={() => setActiveFilter(f.key)}
               className={`px-4 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all ${
                 activeFilter === f.key
-                  ? 'bg-white text-black'
-                  : 'border border-evo-border text-evo-muted hover:border-white/30 hover:text-white'
+                  ? 'bg-evo-accent text-white'
+                  : 'border border-evo-border text-evo-muted hover:border-evo-accent/50 hover:text-evo-text'
               }`}
             >
               {f.label}
@@ -128,7 +128,7 @@ export default function SupplierList() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-white text-sm font-medium">{supplier.name}</p>
+                        <p className="text-evo-text text-sm font-medium">{supplier.name}</p>
                         {isEVOPick && (
                           <span className="text-evo-accent text-[10px] tracking-widest uppercase font-medium">
                             EVO Pick

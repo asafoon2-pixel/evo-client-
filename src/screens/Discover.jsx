@@ -54,7 +54,7 @@ export default function Discover() {
       <div className="relative z-20 flex items-center justify-between px-6 pt-12 pb-4">
         <button
           onClick={() => navigate('brief')}
-          className="flex items-center gap-2 text-evo-muted hover:text-white transition-colors"
+          className="flex items-center gap-2 text-evo-muted hover:text-evo-text transition-colors"
         >
           <ArrowLeft size={18} />
           <span className="text-sm tracking-wide">Back</span>
@@ -69,7 +69,7 @@ export default function Discover() {
                 i < swipedCount
                   ? 'w-2 h-2 bg-evo-accent'
                   : i === swipedCount
-                  ? 'w-2.5 h-2.5 bg-white'
+                  ? 'w-2.5 h-2.5 bg-evo-text'
                   : 'w-1.5 h-1.5 bg-evo-dim'
               }`}
             />
@@ -110,7 +110,7 @@ export default function Discover() {
                 <p className="text-xs tracking-[0.25em] uppercase text-evo-accent mb-4">
                   EVO is learning
                 </p>
-                <p className="text-white text-xl font-light leading-relaxed">
+                <p className="text-evo-text text-xl font-light leading-relaxed">
                   Your taste is taking shape.
                 </p>
                 <p className="text-evo-muted text-sm mt-3 leading-relaxed">
@@ -179,7 +179,7 @@ export default function Discover() {
             disabled={showInsight || isDone}
             className="w-16 h-16 rounded-full border border-evo-border bg-evo-card flex items-center justify-center hover:border-white/30 transition-all disabled:opacity-30"
           >
-            <X size={22} className="text-white" />
+            <X size={22} className="text-evo-text" />
           </motion.button>
 
           <motion.button

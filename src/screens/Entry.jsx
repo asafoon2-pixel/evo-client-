@@ -1,4 +1,6 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X, Mail } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 const f = (delay = 0, y = 20) => ({
@@ -15,6 +17,8 @@ const stats = [
 
 export default function Entry() {
   const { navigate } = useApp()
+  const [showLogin, setShowLogin] = useState(false)
+  const [email, setEmail] = useState('')
 
   return (
     <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: '#F5F5F7' }}>
@@ -104,7 +108,125 @@ export default function Entry() {
         <motion.p {...f(1.2)} className="text-[11px] tracking-widest" style={{ color: 'var(--text-dim)' }}>
           No forms. No search. Just vision.
         </motion.p>
+
+        <motion.button
+          {...f(1.35)}
+          onClick={() => setShowLogin(true)}
+          className="mt-2 text-sm font-medium transition-colors"
+          style={{ color: 'var(--text-muted)', textDecoration: 'underline', textUnderlineOffset: 3 }}
+        >
+          Enter existing event →
+        </motion.button>
       </div>
+
+      {/* Login modal */}
+      <AnimatePresence>
+        {showLogin && (
+          <>
+            <motion.div
+              key="scrim"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLogin(false)}
+              className="fixed inset-0 z-40"
+              style={{ background: 'rgba(26,26,46,0.45)', backdropFilter: 'blur(6px)' }}
+            />
+            <motion.div
+              key="modal"
+              initial={{ opacity: 0, y: 40, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 px-6 pb-10 pt-6"
+              style={{ background: 'var(--surface)', borderRadius: '28px 28px 0 0', boxShadow: '0 -8px 40px rgba(45,27,105,0.15)' }}
+            >
+              <div className="w-10 h-1 rounded-full mx-auto mb-6" style={{ background: 'var(--border)' }} />
+
+              <button
+                onClick={() => setShowLogin(false)}
+                className="absolute top-5 right-6 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                style={{ background: 'var(--elevated)', color: 'var(--text-muted)' }}
+              >
+                <X size={14} />
+              </button>
+
+              <p className="text-xs font-semibold tracking-[0.2em] uppercase mb-2" style={{ color: 'var(--primary)' }}>
+                Welcome back
+              </p>
+              <h2 className="text-xl font-light mb-1" style={{ color: 'var(--text-primary)' }}>
+                Sign in to your event
+              </h2>
+              <p className="text-sm mb-7 font-light" style={{ color: 'var(--text-muted)' }}>
+                Access your event plan, suppliers, and timeline.
+              </p>
+
+              {/* Google */}
+              <button
+                className="w-full flex items-center justify-center gap-3 py-3.5 mb-3 text-sm font-medium transition-all active:scale-[0.98]"
+                style={{
+                  borderRadius: 'var(--radius-pill)',
+                  border: '1.5px solid var(--border)',
+                  background: 'var(--surface)',
+                  color: 'var(--text-primary)',
+                  boxShadow: '0 1px 4px rgba(45,27,105,0.06)',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
+                  <path d="M9 18c2.43 0 4.467-.806 5.956-2.18L12.048 13.56C11.243 14.1 10.211 14.42 9 14.42c-2.392 0-4.417-1.615-5.141-3.786H.957v2.332A8.997 8.997 0 0 0 9 18Z" fill="#34A853"/>
+                  <path d="M3.859 10.634A5.4 5.4 0 0 1 3.577 9c0-.562.097-1.11.282-1.634V5.034H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.034l2.902-2.4Z" fill="#FBBC05"/>
+                  <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 5.034l2.902 2.332C4.583 5.195 6.608 3.58 9 3.58Z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+              </button>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+                <span className="text-xs" style={{ color: 'var(--text-dim)' }}>or</span>
+                <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+              </div>
+
+              {/* Email */}
+              <div className="relative mb-3">
+                <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-dim)' }} />
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3.5 text-sm outline-none transition-all"
+                  style={{
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1.5px solid var(--border)',
+                    background: 'var(--elevated)',
+                    color: 'var(--text-primary)',
+                    fontFamily: 'inherit',
+                  }}
+                  onFocus={e => e.target.style.borderColor = 'var(--primary)'}
+                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                />
+              </div>
+
+              <button
+                onClick={() => navigate('management')}
+                className="w-full py-3.5 text-sm font-semibold tracking-wide uppercase transition-all active:scale-[0.98]"
+                style={{
+                  borderRadius: 'var(--radius-pill)',
+                  background: 'var(--primary)',
+                  color: '#fff',
+                  boxShadow: 'var(--shadow-accent)',
+                  opacity: email.includes('@') ? 1 : 0.45,
+                  pointerEvents: email.includes('@') ? 'auto' : 'none',
+                }}
+              >
+                Continue with email
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

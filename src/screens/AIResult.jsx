@@ -19,17 +19,17 @@ export default function AIResult() {
   }
 
   return (
-    <div className="relative w-full h-full min-h-screen flex flex-col items-center justify-center bg-evo-black overflow-hidden">
+    <div className="relative w-full h-full min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: '#0F0C1E' }}>
       {/* Background image */}
       {event.backgroundImage && (
         <div className="absolute inset-0 overflow-hidden">
           <img
             src={event.backgroundImage}
             alt=""
-            className="w-full h-full object-cover blur-lg opacity-10"
+            className="w-full h-full object-cover blur-lg opacity-15"
             draggable={false}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-evo-black via-evo-black/70 to-evo-black" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(15,12,30,0.85) 0%, rgba(15,12,30,0.6) 50%, rgba(15,12,30,0.95) 100%)' }} />
         </div>
       )}
 
@@ -45,7 +45,7 @@ export default function AIResult() {
         {/* Event name */}
         <motion.h1
           {...stagger(1)}
-          className="text-4xl sm:text-5xl font-light text-white leading-tight tracking-tight"
+          className="text-4xl sm:text-5xl font-light leading-tight tracking-tight" style={{ color: '#F5F0FF' }}
         >
           {event.name}
         </motion.h1>
@@ -63,7 +63,7 @@ export default function AIResult() {
           {event.tags.map(tag => (
             <span
               key={tag}
-              className="text-xs font-medium tracking-widest uppercase text-evo-muted border border-evo-border rounded-full px-4 py-1.5"
+              className="text-xs font-medium tracking-widest uppercase rounded-full px-4 py-1.5" style={{ color: 'rgba(245,240,255,0.5)', border: '1px solid rgba(245,240,255,0.15)' }}
             >
               {tag}
             </span>
@@ -73,7 +73,7 @@ export default function AIResult() {
         {/* Description */}
         <motion.p
           {...stagger(4)}
-          className="text-evo-muted text-sm leading-relaxed font-light max-w-sm"
+          className="text-sm leading-relaxed font-light max-w-sm" style={{ color: 'rgba(245,240,255,0.6)' }}
         >
           {event.description}
         </motion.p>
@@ -85,13 +85,13 @@ export default function AIResult() {
         >
           <button
             onClick={() => navigate('categories')}
-            className="w-full max-w-xs py-4 rounded-full border border-evo-accent text-evo-accent text-sm font-medium tracking-[0.12em] uppercase hover:bg-evo-accent hover:text-black transition-all duration-300 active:scale-95"
+            className="w-full max-w-xs py-4 rounded-full text-sm font-medium tracking-[0.12em] uppercase transition-all duration-300 active:scale-95" style={{ background: 'var(--primary)', color: '#fff', boxShadow: '0 4px 24px rgba(45,27,105,0.5)' }}
           >
             Build This Event
           </button>
           <button
             onClick={() => navigate('discover')}
-            className="text-evo-muted text-sm tracking-wide hover:text-white transition-colors py-2"
+            className="text-sm tracking-wide transition-colors py-2" style={{ color: 'rgba(245,240,255,0.5)' }}
           >
             Refine my taste
           </button>
