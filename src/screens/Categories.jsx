@@ -17,7 +17,7 @@ export default function Categories() {
       <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-12 pb-4">
         <div className="flex items-center gap-4 mb-4">
           <button
-            onClick={() => navigate('result')}
+            onClick={() => navigate('presummary')}
             className="text-evo-muted hover:text-evo-text transition-colors"
           >
             <ArrowLeft size={20} />

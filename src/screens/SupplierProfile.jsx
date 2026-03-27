@@ -51,7 +51,7 @@ export default function SupplierProfile() {
           alt={currentSupplier.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-evo-black" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 50%, var(--background) 100%)' }} />
 
         {/* Back button */}
         <button

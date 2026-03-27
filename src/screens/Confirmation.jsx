@@ -12,7 +12,7 @@ export default function Confirmation() {
   const formatPrice = (n) => `₪${n.toLocaleString()}`
 
   return (
-    <div className="relative w-full min-h-screen bg-evo-black flex flex-col items-center justify-center overflow-hidden px-8">
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden px-8" style={{ background: '#0F0C1E' }}>
       {/* Radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -71,7 +71,7 @@ export default function Confirmation() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.3 }}
-          className="text-evo-muted text-sm leading-relaxed font-light mt-6"
+          className="text-sm leading-relaxed font-light mt-6" style={{ color: 'rgba(245,240,255,0.55)' }}
         >
           EVO has notified all vendors and begun coordination. You'll receive a full brief within 24 hours.
         </motion.p>
@@ -84,17 +84,17 @@ export default function Confirmation() {
           className="flex gap-6 mt-8 pt-8 border-t border-evo-border w-full justify-center"
         >
           <div className="text-center">
-            <p className="text-evo-dim text-xs mb-1">Event Date</p>
+            <p className="text-xs mb-1" style={{ color: 'rgba(245,240,255,0.35)' }}>Event Date</p>
             <p className="text-white text-sm font-medium">TBD</p>
           </div>
           <div className="w-px bg-evo-border" />
           <div className="text-center">
-            <p className="text-evo-dim text-xs mb-1">Suppliers</p>
+            <p className="text-xs mb-1" style={{ color: 'rgba(245,240,255,0.35)' }}>Suppliers</p>
             <p className="text-evo-accent text-sm font-medium">{supplierCount}</p>
           </div>
           <div className="w-px bg-evo-border" />
           <div className="text-center">
-            <p className="text-evo-dim text-xs mb-1">Deposit Paid</p>
+            <p className="text-xs mb-1" style={{ color: 'rgba(245,240,255,0.35)' }}>Deposit Paid</p>
             <p className="text-white text-sm font-medium">{formatPrice(deposit)}</p>
           </div>
         </motion.div>
@@ -113,7 +113,7 @@ export default function Confirmation() {
           >
             Go to My Event
           </motion.button>
-          <button className="flex items-center justify-center gap-2 text-evo-muted text-sm tracking-wide hover:text-white transition-colors py-2">
+          <button className="flex items-center justify-center gap-2 text-sm tracking-wide transition-colors py-2" style={{ color: 'rgba(245,240,255,0.4)' }}>
             <Share2 size={14} />
             Share Event
           </button>

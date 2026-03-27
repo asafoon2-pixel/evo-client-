@@ -88,7 +88,7 @@ export default function EventPreview() {
             <Play size={16} style={{ color: 'var(--primary)', marginLeft: 2 }} />
           </motion.div>
           <div className="text-left">
-            <p className="text-white text-sm font-medium">Watch Your Event Preview</p>
+            <p className="text-evo-text text-sm font-medium">Watch Your Event Preview</p>
             <p className="text-xs mt-0.5 font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               A curated preview assembled from your taste profile
             </p>
@@ -106,7 +106,7 @@ export default function EventPreview() {
               </div>
             ))}
           </div>
-          <p className="text-lg font-light tracking-wide text-white">{previewSections[0].descriptor}</p>
+          <p className="text-lg font-light tracking-wide text-evo-text">{previewSections[0].descriptor}</p>
         </motion.div>
 
         {/* Venue / Dining / Entertainment */}
@@ -117,7 +117,7 @@ export default function EventPreview() {
               <img src={section.image} alt={section.label} className="w-full h-full object-cover" />
             </div>
             <div className="mt-4">
-              <p className="text-lg font-light text-white">{section.descriptor}</p>
+              <p className="text-lg font-light text-evo-text">{section.descriptor}</p>
               <p className="text-sm mt-2 font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{section.detail}</p>
             </div>
           </motion.div>
@@ -161,8 +161,8 @@ export default function EventPreview() {
             style={{ background: 'var(--background)' }}>
             <button onClick={() => setShowFilmModal(false)}
               className="absolute top-12 right-6 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{ border: '1px solid rgba(255,255,255,0.2)' }}>
-              <X size={18} className="text-white" />
+              style={{ border: '1px solid var(--border)' }}>
+              <X size={18} className="text-evo-muted" />
             </button>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -185,7 +185,7 @@ export default function EventPreview() {
               </div>
 
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}>
-                <p className="font-display text-2xl font-light mb-3 text-white">{event.name}</p>
+                <p className="font-display text-2xl font-light mb-3 text-evo-text">{event.name}</p>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   Full cinematic preview available when your event is fully booked.
                 </p>
