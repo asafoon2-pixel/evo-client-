@@ -18,7 +18,7 @@ const BG_IMAGES = [
 ]
 
 export default function Building() {
-  const { navigate, eventPackage } = useApp()
+  const { navigate, eventPackage, buildPackage } = useApp()
   const [stepIndex, setStepIndex] = useState(0)
   const [budgetPct, setBudgetPct] = useState(0)
   const [bgIndex, setBgIndex]     = useState(0)
@@ -30,7 +30,8 @@ export default function Building() {
     if (builtRef.current) return
     builtRef.current = true
 
-    setEventName(eventPackage?.name || 'Your Curated Event')
+    const pkg = eventPackage || buildPackage()
+    setEventName(pkg?.name || 'Your Curated Event')
 
     const stepInterval = setInterval(() => {
       setStepIndex(i => {
