@@ -1,87 +1,43 @@
 export const swipeCards = [
   {
     id: 1,
-    category: 'VENUE',
+    category: 'LUXURY',
     label: 'Luxury Ballroom',
+    subtitle: 'Elegant, grand, and timeless',
     image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80',
     tags: ['luxury', 'elegant', 'grand'],
   },
   {
     id: 2,
-    category: 'ATMOSPHERE',
+    category: 'OUTDOOR',
     label: 'Garden Party',
+    subtitle: 'Relaxed, natural, and open-air',
     image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80',
     tags: ['outdoor', 'organic', 'relaxed'],
   },
   {
     id: 3,
-    category: 'DINING',
-    label: 'Fine Dining',
-    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
-    tags: ['intimate', 'elegant', 'warm'],
+    category: 'INTIMATE',
+    label: 'Candlelit Dinner',
+    subtitle: 'Warm, romantic, and personal',
+    image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=800&q=80',
+    tags: ['intimate', 'romantic', 'warm'],
   },
   {
     id: 4,
     category: 'CORPORATE',
     label: 'Business Event',
+    subtitle: 'Professional, clean, and polished',
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
     tags: ['formal', 'modern', 'professional'],
   },
   {
     id: 5,
-    category: 'CELEBRATION',
-    label: 'Party',
-    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80',
-    tags: ['energetic', 'colorful', 'fun'],
-  },
-  {
-    id: 6,
-    category: 'EVENING',
-    label: 'Candlelit Dinner',
-    image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=800&q=80',
-    tags: ['intimate', 'romantic', 'warm'],
-  },
-  {
-    id: 7,
-    category: 'FESTIVAL',
-    label: 'Open Air',
+    category: 'PARTY',
+    label: 'High-Energy Celebration',
+    subtitle: 'Vibrant, fun, and unforgettable',
     image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80',
-    tags: ['outdoor', 'energetic', 'casual'],
-  },
-  {
-    id: 8,
-    category: 'TABLESCAPE',
-    label: 'Luxury Setting',
-    image: 'https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=800&q=80',
-    tags: ['luxury', 'detail', 'elegant'],
-  },
-  {
-    id: 9,
-    category: 'MUSIC',
-    label: 'Live Performance',
-    image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=800&q=80',
-    tags: ['energetic', 'music', 'social'],
-  },
-  {
-    id: 10,
-    category: 'ROOFTOP',
-    label: 'City Views',
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80',
-    tags: ['modern', 'urban', 'premium'],
-  },
-  {
-    id: 11,
-    category: 'DECOR',
-    label: 'Floral Design',
-    image: 'https://images.unsplash.com/photo-1516997121675-4c2d1696aa90?auto=format&fit=crop&w=800&q=80',
-    tags: ['organic', 'romantic', 'elegant'],
-  },
-  {
-    id: 12,
-    category: 'NIGHT',
-    label: 'Night Event',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
-    tags: ['dramatic', 'premium', 'dark'],
+    tags: ['energetic', 'colorful', 'fun'],
   },
 ]
 
@@ -106,6 +62,8 @@ export const eventPackages = {
           description: 'A 19th-century warehouse with arched stone windows and warm amber walls. Holds up to 120 guests without losing intimacy.',
           price: 14000,
           rating: 4.9,
+          reviewCount: 142,
+          whyChosen: 'Your taste for intimate elegance pointed us here. The warm stone walls and amber light are exactly what your swipes told us you love.',
         },
         alternatives: [
           {
@@ -137,6 +95,8 @@ export const eventPackages = {
           description: 'Mediterranean sharing plates. Warm, generous, and designed for a table that never wants to end.',
           price: 18000,
           rating: 4.8,
+          reviewCount: 98,
+          whyChosen: 'Every right swipe showed a preference for warmth and refinement. Their sharing plates turn dinner into an experience worth lingering over.',
         },
         alternatives: [
           {
@@ -168,6 +128,8 @@ export const eventPackages = {
           description: 'Live acoustic sets that set the tone without competing with conversation. Transitions to curated late-night music.',
           price: 7500,
           rating: 4.9,
+          reviewCount: 87,
+          whyChosen: 'You leaned toward warmth over energy. Live acoustic sets shape the atmosphere without competing with conversation.',
         },
         alternatives: [
           {
@@ -199,6 +161,8 @@ export const eventPackages = {
           description: 'Warm amber wash with strategic candlelight zones. Makes the room feel smaller and more alive.',
           price: 6000,
           rating: 4.8,
+          reviewCount: 73,
+          whyChosen: 'Atmosphere is mostly lighting — and your taste profile called for warmth over drama. Their amber wash is the invisible magic behind this evening.',
         },
         alternatives: [
           {
@@ -230,6 +194,8 @@ export const eventPackages = {
           description: 'Trailing greenery, terracotta vessels, raw linen. Organic and abundant without being fussy.',
           price: 8000,
           rating: 4.9,
+          reviewCount: 115,
+          whyChosen: 'You loved the organic, textured images. Studio Bloom brings trailing greenery and raw linen — abundant without being fussy.',
         },
         alternatives: [
           {
@@ -270,6 +236,8 @@ export const eventPackages = {
           description: 'Three acres of terraced gardens with olive trees, a lawn stage area, and a stone terrace for dining.',
           price: 12000,
           rating: 4.8,
+          reviewCount: 134,
+          whyChosen: 'Your swipes showed a clear pull toward open, natural settings. Three acres of terraced gardens is exactly the canvas your event deserves.',
         },
         alternatives: [
           {
@@ -304,6 +272,8 @@ export const eventPackages = {
           description: 'Long-table farm-to-fork dining. Seasonal ingredients, communal format, warm service.',
           price: 16000,
           rating: 4.7,
+          reviewCount: 89,
+          whyChosen: 'Long-table farm-to-fork dining is how outdoor events should feel — communal, seasonal, and unhurried.',
         },
         alternatives: [
           {
@@ -335,6 +305,8 @@ export const eventPackages = {
           description: 'Outdoor acoustic set with natural amplification. Folk and soul. Works with the landscape.',
           price: 6000,
           rating: 4.8,
+          reviewCount: 76,
+          whyChosen: 'Outdoor events need music that belongs there. Folk and soul with natural amplification — completing the landscape, not competing with it.',
         },
         alternatives: [
           {
@@ -366,6 +338,8 @@ export const eventPackages = {
           description: 'Warm Edison string lights draped across the garden. Simple, transformative, timeless.',
           price: 4500,
           rating: 4.7,
+          reviewCount: 108,
+          whyChosen: 'Simple Edison string lights above a garden are one of the most reliably beautiful things in events. Timeless for a reason.',
         },
         alternatives: [
           {
@@ -397,6 +371,8 @@ export const eventPackages = {
           description: 'Wildflower centerpieces, herb bundles, and scattered botanicals. Looks like the garden grew this way.',
           price: 9000,
           rating: 4.9,
+          reviewCount: 92,
+          whyChosen: 'Wildflowers and botanicals that look like they grew that way. Perfect for an outdoor event that should feel effortless.',
         },
         alternatives: [
           {
@@ -437,6 +413,8 @@ export const eventPackages = {
           description: 'Contemporary event floor with floor-to-ceiling glass, modular layout, and integrated AV infrastructure.',
           price: 16000,
           rating: 4.8,
+          reviewCount: 117,
+          whyChosen: 'Your profile pointed to modern and professional. Floor-to-ceiling glass with integrated AV — no compromises on impact or function.',
         },
         alternatives: [
           {
@@ -468,6 +446,8 @@ export const eventPackages = {
           description: 'Modern Israeli cuisine in a standing-cocktail and seated-dinner hybrid. Designed for networking flow.',
           price: 20000,
           rating: 4.9,
+          reviewCount: 103,
+          whyChosen: 'A cocktail-and-dinner hybrid designed for networking. Food that impresses without slowing the room down.',
         },
         alternatives: [
           {
@@ -499,6 +479,8 @@ export const eventPackages = {
           description: 'Background-to-main-floor progression. Sets that build without demanding attention until it\'s time.',
           price: 8000,
           rating: 4.7,
+          reviewCount: 64,
+          whyChosen: 'Background-to-floor progression means the music serves the event — building naturally without demanding attention before it\'s time.',
         },
         alternatives: [
           {
@@ -530,6 +512,8 @@ export const eventPackages = {
           description: 'Clean architectural lighting that elevates the space without distraction. Stage lighting for presentations.',
           price: 7500,
           rating: 4.8,
+          reviewCount: 88,
+          whyChosen: 'Clean architectural lighting that makes the room look intentional. Essential for professional events where every detail is noticed.',
         },
         alternatives: [
           {
@@ -561,6 +545,8 @@ export const eventPackages = {
           description: 'Geometric installations, monochrome floral, and branded table elements. Minimal but present.',
           price: 6000,
           rating: 4.7,
+          reviewCount: 71,
+          whyChosen: 'Minimal but present. Geometric installations and monochrome florals that add visual interest without visual noise.',
         },
         alternatives: [
           {
@@ -601,6 +587,8 @@ export const eventPackages = {
           description: 'Open-air rooftop with city panorama, dedicated dance floor, and full bar infrastructure. Up to 200 guests.',
           price: 11000,
           rating: 4.7,
+          reviewCount: 156,
+          whyChosen: 'Your swipes showed you want energy and atmosphere. An open-air rooftop with a city panorama is the only stage for this kind of night.',
         },
         alternatives: [
           {
@@ -632,6 +620,8 @@ export const eventPackages = {
           description: 'Live street food stations, late-night bites, and a cocktail-first format built for a crowd that moves.',
           price: 14000,
           rating: 4.6,
+          reviewCount: 82,
+          whyChosen: "Live food stations and a cocktail-first format — built for a crowd that doesn't want to sit still.",
         },
         alternatives: [
           {
@@ -663,6 +653,8 @@ export const eventPackages = {
           description: 'Crowd-reading sets that escalate naturally. Warm-up at dinner pace, full-floor by midnight.',
           price: 9000,
           rating: 4.9,
+          reviewCount: 201,
+          whyChosen: "The best crowd-reader in our network. Sets that escalate naturally — the room won't want the night to end.",
         },
         alternatives: [
           {
@@ -694,6 +686,8 @@ export const eventPackages = {
           description: 'Dynamic light rigs synced to music. LED walls, haze machines, follow spots. Full event arc.',
           price: 5500,
           rating: 4.7,
+          reviewCount: 69,
+          whyChosen: 'Dynamic rigs synced to the music. The lighting becomes part of the performance — not just the backdrop.',
         },
         alternatives: [
           {
@@ -725,6 +719,8 @@ export const eventPackages = {
           description: 'Bold installations, vibrant balloon arches, and statement photo moments. Every corner is a backdrop.',
           price: 7000,
           rating: 4.6,
+          reviewCount: 84,
+          whyChosen: 'Bold installations and statement photo moments. Every corner of this event will be worth photographing.',
         },
         alternatives: [
           {
@@ -765,6 +761,8 @@ export const eventPackages = {
           description: 'A flexible heritage building with original features and adaptable layout. Works for intimate or larger gatherings.',
           price: 13000,
           rating: 4.8,
+          reviewCount: 127,
+          whyChosen: 'A heritage building that adapts to your vision. Original features, flexible layout — it brings character without dictating the feel.',
         },
         alternatives: [
           {
@@ -796,6 +794,8 @@ export const eventPackages = {
           description: 'Modern Israeli cuisine with a farm focus. Sharing plates, seasonal menu, warm and knowledgeable team.',
           price: 17000,
           rating: 4.8,
+          reviewCount: 94,
+          whyChosen: 'Modern Israeli cuisine with a farm focus. Sharing plates and seasonal menus that feel personal — because they are.',
         },
         alternatives: [
           {
@@ -827,6 +827,8 @@ export const eventPackages = {
           description: 'Guitar and vocals. Versatile, intimate, and able to read the room. Sets that move from dinner pace to celebration.',
           price: 7000,
           rating: 4.8,
+          reviewCount: 78,
+          whyChosen: 'Guitar and vocals that can read the room. From dinner pace to celebration without a playlist change.',
         },
         alternatives: [
           {
@@ -858,6 +860,8 @@ export const eventPackages = {
           description: 'Candle-forward warm lighting design with a few key architectural spots. Feels natural and considered.',
           price: 5500,
           rating: 4.7,
+          reviewCount: 61,
+          whyChosen: 'Candle-forward and considered. Warm light that feels like it belongs — not like it was installed.',
         },
         alternatives: [
           {
@@ -889,6 +893,8 @@ export const eventPackages = {
           description: 'Thoughtful botanicals and table styling. Each arrangement chosen for the space, not from a template.',
           price: 7500,
           rating: 4.8,
+          reviewCount: 86,
+          whyChosen: 'Each arrangement chosen for this specific space, not from a template. The details that hold the whole evening together.',
         },
         alternatives: [
           {

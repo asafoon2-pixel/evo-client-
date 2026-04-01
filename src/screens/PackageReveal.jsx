@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ChevronRight, Zap, AlertCircle, Star, RefreshCw } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Zap, AlertCircle, Star, RefreshCw, MapPin, UtensilsCrossed, Music, Lightbulb, Flower2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import SwapSheet from '../components/SwapSheet'
 import Badge from '../components/ui/Badge'
@@ -68,11 +68,23 @@ function TuneSheet({ onClose }) {
   )
 }
 
+const CATEGORY_META = {
+  venue:         { label: 'Venue / Location',   Icon: MapPin },
+  catering:      { label: 'Catering & Food',    Icon: UtensilsCrossed },
+  entertainment: { label: 'Entertainment',      Icon: Music },
+  lighting:      { label: 'Lighting & Ambience',Icon: Lightbulb },
+  decor:         { label: 'Décor & Florals',    Icon: Flower2 },
+}
+
 export default function PackageReveal() {
   const { navigate, eventPackage, openSwapSheet, totalPrice, depositAmount } = useApp()
   const [tuneOpen, setTuneOpen] = useState(false)
 
-  if (!eventPackage) { navigate('building'); return null }
+  if (!eventPackage) return (
+    <div className="w-full min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+      <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />
+    </div>
+  )
 
   const formatPrice = n => `₪${n.toLocaleString()}`
 
@@ -125,34 +137,57 @@ export default function PackageReveal() {
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}>
 
+            {/* Category header */}
+            {(() => {
+              const meta = CATEGORY_META[section.id] || { label: section.label, Icon: MapPin }
+              const Icon = meta.Icon
+              return (
+                <div className="flex items-center gap-3 px-6 mb-4 mt-2">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: 'var(--primary-dim)', border: '1px solid var(--primary-glow)' }}>
+                    <Icon size={15} style={{ color: 'var(--primary)' }} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-[0.18em] uppercase" style={{ color: 'var(--primary)' }}>
+                      {meta.label}
+                    </p>
+                    <p className="text-xs font-light" style={{ color: 'var(--text-dim)' }}>{section.tagline}</p>
+                  </div>
+                </div>
+              )
+            })()}
+
             {/* Section image */}
-            <div className="relative overflow-hidden mx-6 mb-5" style={{ height: 220, borderRadius: 'var(--radius)' }}>
+            <div className="relative overflow-hidden mx-6 mb-5" style={{ height: 200, borderRadius: 'var(--radius)' }}>
               <img src={section.image} alt={section.label} className="w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,10,15,0.85) 0%, transparent 50%)' }} />
-              <div className="absolute top-4 left-4">
-                <span className="text-[10px] font-semibold tracking-[0.2em] uppercase px-3 py-1.5 rounded-full"
-                  style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', color: 'var(--primary)', border: '1px solid rgba(200,169,110,0.3)' }}>
-                  {section.label}
-                </span>
-              </div>
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,10,15,0.75) 0%, transparent 55%)' }} />
             </div>
 
             {/* Vendor info */}
             <div className="px-6 mb-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-light italic mb-1" style={{ color: 'var(--text-muted)' }}>{section.tagline}</p>
                   <h3 className="font-display text-[22px] font-light" style={{ color: 'var(--text-primary)' }}>{section.vendor.name}</h3>
-                  <p className="text-sm mt-2 leading-relaxed font-light" style={{ color: 'var(--text-muted)' }}>{section.vendor.description}</p>
-                  <div className="flex items-center gap-3 mt-3">
-                    <span className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{formatPrice(section.vendor.price)}</span>
+                  <div className="flex items-center gap-3 mt-2">
                     {section.vendor.rating && (
                       <div className="flex items-center gap-1">
-                        <Star size={11} style={{ color: 'var(--primary)', fill: 'var(--primary)' }} />
-                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{section.vendor.rating}</span>
+                        {[1,2,3,4,5].map(s => (
+                          <Star key={s} size={12}
+                            style={{
+                              color: 'var(--primary)',
+                              fill: s <= Math.round(section.vendor.rating) ? 'var(--primary)' : 'none',
+                            }}
+                          />
+                        ))}
+                        <span className="text-xs ml-1" style={{ color: 'var(--text-muted)' }}>{section.vendor.rating}</span>
+                        {section.vendor.reviewCount && (
+                          <span className="text-xs" style={{ color: 'var(--text-dim)' }}>({section.vendor.reviewCount} reviews)</span>
+                        )}
                       </div>
                     )}
                   </div>
+                  <p className="text-sm mt-2 leading-relaxed font-light" style={{ color: 'var(--text-muted)' }}>{section.vendor.description}</p>
+                  <span className="text-sm font-semibold mt-2 inline-block" style={{ color: 'var(--primary)' }}>{formatPrice(section.vendor.price)}</span>
                 </div>
 
                 <motion.button onClick={() => openSwapSheet(section.id)} whileTap={{ scale: 0.95 }}
@@ -165,6 +200,22 @@ export default function PackageReveal() {
                   Swap
                 </motion.button>
               </div>
+
+              {/* Why EVO chose this vendor */}
+              {section.vendor.whyChosen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1 + 0.1 }}
+                  className="mt-4 p-4 rounded-2xl flex gap-3 items-start"
+                  style={{ background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.18)' }}
+                >
+                  <Zap size={13} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
+                  <div>
+                    <p className="text-[10px] tracking-[0.18em] uppercase mb-1 font-semibold" style={{ color: 'var(--primary)' }}>Why EVO chose this</p>
+                    <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{section.vendor.whyChosen}</p>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             {/* Constraint card */}
@@ -217,10 +268,10 @@ export default function PackageReveal() {
       {/* Sticky CTA */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
         style={{ background: 'rgba(245,245,247,0.95)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
-        <motion.button onClick={() => navigate('secure')} whileTap={{ scale: 0.98 }}
+        <motion.button onClick={() => navigate('summary')} whileTap={{ scale: 0.98 }}
           className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all mb-3"
           style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
-          Secure This Event — {formatPrice(depositAmount)}
+          Continue — Review Event Summary
         </motion.button>
         <button onClick={() => setTuneOpen(true)}
           className="w-full py-2 text-sm tracking-wide text-center transition-colors"

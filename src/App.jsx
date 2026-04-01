@@ -23,7 +23,7 @@ class ErrorBoundary extends Component {
 }
 
 import Entry           from './screens/Entry'
-import Discover        from './screens/Discover'
+import AIPrompt        from './screens/AIPrompt'
 import Brief           from './screens/Brief'
 import Building        from './screens/Building'
 import PackageReveal   from './screens/PackageReveal'
@@ -37,10 +37,13 @@ import SupplierProfile from './screens/SupplierProfile'
 import EventSummary    from './screens/EventSummary'
 import Checkout        from './screens/Checkout'
 import AIResult        from './screens/AIResult'
+import PreAISummary    from './screens/PreAISummary'
+import EventDetails    from './screens/EventDetails'
+import UserProfile     from './screens/UserProfile'
 
 const screenMap = {
   entry:           Entry,
-  discover:        Discover,
+  aiprompt:        AIPrompt,
   brief:           Brief,
   building:        Building,
   package:         PackageReveal,
@@ -54,6 +57,9 @@ const screenMap = {
   summary:         EventSummary,
   checkout:        Checkout,
   result:          AIResult,
+  presummary:      PreAISummary,
+  eventdetails:    EventDetails,
+  userprofile:     UserProfile,
 }
 
 function AppContent() {

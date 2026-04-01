@@ -17,6 +17,19 @@ function detectVibe(swipeResults) {
   return top[1] > 0 ? top[0] : 'curated'
 }
 
+function detectVibeFromText(text) {
+  const t = text.toLowerCase()
+  const score = (patterns) => patterns.reduce((n, p) => n + (t.match(p) || []).length, 0)
+  const scores = {
+    luxury:    score([/class/g, /luxur/g, /elegan/g, /black.?tie/g, /gala/g, /champagne/g, /refined/g, /candl/g, /gold/g, /formal/g, /intimate/g, /upscale/g, /premium/g, /fine.?din/g]),
+    outdoor:   score([/outdoor/g, /garden/g, /nature/g, /open.?air/g, /rooftop/g, /terrace/g, /fresh/g, /botanical/g, /picnic/g, /beach/g, /vineyard/g, /forest/g]),
+    corporate: score([/corporate/g, /business/g, /professional/g, /conference/g, /meeting/g, /summit/g, /networking/g, /launch/g, /office/g, /brand/g, /startup/g, /company/g]),
+    energetic: score([/party/g, /danc/g, /energe/g, /fun/g, /celebrat/g, /electric/g, /vibrant/g, /festival/g, /club/g, /dj/g, /rave/g, /lively/g, /loud/g, /birthday/g]),
+  }
+  const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0]
+  return top[1] > 0 ? top[0] : 'curated'
+}
+
 function applyBudgetMultiplier(pkg, multiplier) {
   if (multiplier === 1) return pkg
   return {
@@ -31,7 +44,7 @@ function applyBudgetMultiplier(pkg, multiplier) {
 export function AppProvider({ children }) {
   const [currentScreen, setCurrentScreen]     = useState('entry')
   const [swipeResults, setSwipeResults]       = useState([])
-  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null })
+  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null })
   const [eventPackage, setEventPackage]       = useState(null)
   const [swapSheet, setSwapSheet]             = useState({ open: false, sectionId: null })
   const [tuneVibeOpen, setTuneVibeOpen]       = useState(false)
@@ -39,6 +52,8 @@ export function AppProvider({ children }) {
   const [currentSupplier, setCurrentSupplier] = useState(null)
   const [selectedSuppliers, setSelectedSuppliers] = useState({})
   const [generatedEvent, setGeneratedEvent]   = useState({ name: 'Your Curated Evening' })
+  const [userProfile, setUserProfile]         = useState({ fullName: '', phone: '', preferredContact: 'whatsapp', email: '', instagramHandle: '', preferredLanguage: 'en' })
+  const [eventDetails, setEventDetails]       = useState({ title: '', city: '', venueName: '', fullAddress: '', floor: '', entranceNotes: '', parkingAvailable: null, parkingNotes: '', specialRequests: '', isPrivate: false })
 
   const navigate = useCallback((screen) => setCurrentScreen(screen), [])
 
@@ -62,6 +77,14 @@ export function AppProvider({ children }) {
     setBriefAnswers(prev => ({ ...prev, [key]: value }))
   }, [])
 
+  const updateProfile = useCallback((key, value) => {
+    setUserProfile(prev => ({ ...prev, [key]: value }))
+  }, [])
+
+  const updateEventDetails = useCallback((key, value) => {
+    setEventDetails(prev => ({ ...prev, [key]: value }))
+  }, [])
+
   const buildPackage = useCallback((results, answers) => {
     const vibe = detectVibe(results || swipeResults)
     const base = eventPackages[vibe] || eventPackages.curated
@@ -75,6 +98,20 @@ export function AppProvider({ children }) {
     setEventPackage(withTracking)
     return withTracking
   }, [swipeResults, briefAnswers])
+
+  const buildPackageFromText = useCallback((text, answers) => {
+    const vibe = detectVibeFromText(text || '')
+    const base = eventPackages[vibe] || eventPackages.curated
+    const tier = (answers || briefAnswers)?.budgetTier
+    const multiplier = tier === 'essential' ? 0.65 : tier === 'signature' ? 1.5 : 1.0
+    const pkg = applyBudgetMultiplier(base, multiplier)
+    const withTracking = {
+      ...pkg,
+      sections: pkg.sections.map(s => ({ ...s, currentVendorId: s.vendor.id })),
+    }
+    setEventPackage(withTracking)
+    return withTracking
+  }, [briefAnswers])
 
   const swapVendor = useCallback((sectionId, alternative) => {
     setEventPackage(prev => {
@@ -123,7 +160,9 @@ export function AppProvider({ children }) {
     currentScreen, navigate,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,
-    eventPackage, buildPackage,
+    eventPackage, buildPackage, buildPackageFromText,
+    userProfile, updateProfile,
+    eventDetails, updateEventDetails,
     swapSheet, openSwapSheet, closeSwapSheet, swapVendor,
     tuneVibeOpen, setTuneVibeOpen,
     totalPrice, depositAmount,
