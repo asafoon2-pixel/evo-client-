@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Mail } from 'lucide-react'
+import { X, Mail, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { loginWithGoogle, loginWithEmail, registerWithEmail } from '../lib/authService'
 
 const f = (delay = 0, y = 20) => ({
   initial: { opacity: 0, y },
@@ -19,6 +20,34 @@ export default function Entry() {
   const { navigate } = useApp()
   const [showLogin,  setShowLogin]  = useState(false)
   const [loginEmail, setLoginEmail] = useState('')
+  const [loginPass,  setLoginPass]  = useState('')
+  const [isLoading,  setIsLoading]  = useState(false)
+  const [authError,  setAuthError]  = useState('')
+  const [isRegister, setIsRegister] = useState(false)
+
+  async function handleGoogle() {
+    setIsLoading(true); setAuthError('')
+    try {
+      await loginWithGoogle()
+      navigate('home')
+    } catch (e) { setAuthError('Google login failed. Try again.') }
+    finally { setIsLoading(false) }
+  }
+
+  async function handleEmail() {
+    setIsLoading(true); setAuthError('')
+    try {
+      if (isRegister) await registerWithEmail(loginEmail, loginPass)
+      else            await loginWithEmail(loginEmail, loginPass)
+      navigate('home')
+    } catch (e) {
+      setAuthError(e.code === 'auth/wrong-password' ? 'Wrong password' :
+                   e.code === 'auth/user-not-found'  ? 'No account found — register?' :
+                   e.code === 'auth/email-already-in-use' ? 'Email already registered' :
+                   'Something went wrong')
+    }
+    finally { setIsLoading(false) }
+  }
 
   return (
     <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: '#F5F5F7' }}>
@@ -103,10 +132,11 @@ export default function Entry() {
                 style={{ background: 'var(--elevated)', color: 'var(--text-muted)' }}>
                 <X size={14} />
               </button>
-              <p className="text-xs font-semibold tracking-[0.2em] uppercase mb-2" style={{ color: 'var(--primary)' }}>Welcome back</p>
-              <h2 className="text-xl font-light mb-1" style={{ color: 'var(--text-primary)' }}>Sign in to your event</h2>
+              <p className="text-xs font-semibold tracking-[0.2em] uppercase mb-2" style={{ color: 'var(--primary)' }}>{isRegister ? 'Create account' : 'Welcome back'}</p>
+              <h2 className="text-xl font-light mb-1" style={{ color: 'var(--text-primary)' }}>{isRegister ? 'Join EVO' : 'Sign in to your event'}</h2>
               <p className="text-sm mb-7 font-light" style={{ color: 'var(--text-muted)' }}>Access your event plan, suppliers, and timeline.</p>
-              <button className="w-full flex items-center justify-center gap-3 py-3.5 mb-3 text-sm font-medium transition-all active:scale-[0.98]"
+              {authError && <p className="text-xs text-red-500 mb-3 text-center">{authError}</p>}
+              <button onClick={handleGoogle} disabled={isLoading} className="w-full flex items-center justify-center gap-3 py-3.5 mb-3 text-sm font-medium transition-all active:scale-[0.98]"
                 style={{ borderRadius: 'var(--radius-pill)', border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', boxShadow: '0 1px 4px rgba(45,27,105,0.06)' }}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                   <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
@@ -129,10 +159,21 @@ export default function Entry() {
                   onFocus={e => e.target.style.borderColor = 'var(--primary)'}
                   onBlur={e => e.target.style.borderColor = 'var(--border)'} />
               </div>
-              <button onClick={() => navigate('management')}
-                className="w-full py-3.5 text-sm font-semibold tracking-wide uppercase transition-all active:scale-[0.98]"
-                style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)', opacity: loginEmail.includes('@') ? 1 : 0.45, pointerEvents: loginEmail.includes('@') ? 'auto' : 'none' }}>
-                Continue with email
+              <div className="relative mb-3">
+                <input type="password" placeholder="Password" value={loginPass} onChange={e => setLoginPass(e.target.value)}
+                  className="w-full px-4 py-3.5 text-sm outline-none transition-all"
+                  style={{ borderRadius: 'var(--radius-sm)', border: '1.5px solid var(--border)', background: 'var(--elevated)', color: 'var(--text-primary)', fontFamily: 'inherit' }}
+                  onFocus={e => e.target.style.borderColor = 'var(--primary)'}
+                  onBlur={e => e.target.style.borderColor = 'var(--border)'} />
+              </div>
+              <button onClick={handleEmail} disabled={isLoading || !loginEmail.includes('@') || loginPass.length < 6}
+                className="w-full py-3.5 text-sm font-semibold tracking-wide uppercase transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)', opacity: loginEmail.includes('@') && loginPass.length >= 6 ? 1 : 0.45 }}>
+                {isLoading ? <Loader2 size={16} className="animate-spin" /> : (isRegister ? 'Create account' : 'Continue with email')}
+              </button>
+              <button onClick={() => { setIsRegister(r => !r); setAuthError('') }}
+                className="w-full mt-3 text-xs text-center" style={{ color: 'var(--text-dim)' }}>
+                {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
               </button>
             </motion.div>
           </>

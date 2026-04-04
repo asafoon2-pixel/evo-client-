@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { eventPackages } from '../data/index'
+import { onAuthChange, logout } from '../lib/authService'
 
 const AppContext = createContext(null)
 
@@ -43,6 +44,16 @@ function applyBudgetMultiplier(pkg, multiplier) {
 
 export function AppProvider({ children }) {
   const [currentScreen, setCurrentScreen]     = useState('home')
+  const [currentUser, setCurrentUser]         = useState(null)
+  const [authLoading, setAuthLoading]         = useState(true)
+
+  useEffect(() => {
+    const unsub = onAuthChange(user => {
+      setCurrentUser(user)
+      setAuthLoading(false)
+    })
+    return unsub
+  }, [])
   const [swipeResults, setSwipeResults]       = useState([])
   const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null })
   const [eventPackage, setEventPackage]       = useState(null)
@@ -156,8 +167,15 @@ export function AppProvider({ children }) {
     0
   )
 
+  const signOut = useCallback(async () => {
+    await logout()
+    setCurrentUser(null)
+    navigate('home')
+  }, [])
+
   const value = {
     currentScreen, navigate,
+    currentUser, authLoading, signOut,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,
     eventPackage, buildPackage, buildPackageFromText,
