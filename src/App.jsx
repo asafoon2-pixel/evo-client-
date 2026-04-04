@@ -22,6 +22,7 @@ class ErrorBoundary extends Component {
   }
 }
 
+import Home            from './screens/Home'
 import Entry           from './screens/Entry'
 import AIPrompt        from './screens/AIPrompt'
 import Brief           from './screens/Brief'
@@ -42,6 +43,7 @@ import EventDetails    from './screens/EventDetails'
 import UserProfile     from './screens/UserProfile'
 
 const screenMap = {
+  home:            Home,
   entry:           Entry,
   aiprompt:        AIPrompt,
   brief:           Brief,
