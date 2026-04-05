@@ -303,10 +303,10 @@ export default function EventSummary() {
       {effectiveTotal > 0 && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
           style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
-          <motion.button onClick={() => navigate(isAIFlow && briefAnswers?.hasVenue ? 'eventdetails' : isAIFlow ? 'userprofile' : 'eventdetails')} whileTap={{ scale: 0.98 }}
+          <motion.button onClick={() => navigate('tour')} whileTap={{ scale: 0.98 }}
             className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all"
             style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
-            Secure My Event — {formatPrice(effectiveDeposit)}
+            Continue to my event →
           </motion.button>
         </div>
       )}
