@@ -41,8 +41,10 @@ import AIResult        from './screens/AIResult'
 import PreAISummary    from './screens/PreAISummary'
 import EventDetails    from './screens/EventDetails'
 import UserProfile     from './screens/UserProfile'
-import AppTour         from './screens/AppTour'
-import EventDashboard  from './screens/EventDashboard'
+import AppTour           from './screens/AppTour'
+import EventDashboard    from './screens/EventDashboard'
+import VenueQuestions    from './screens/VenueQuestions'
+import PersonalQuestions from './screens/PersonalQuestions'
 
 const screenMap = {
   home:            Home,
@@ -66,6 +68,8 @@ const screenMap = {
   userprofile:     UserProfile,
   tour:            AppTour,
   dashboard:       EventDashboard,
+  venuequestions:  VenueQuestions,
+  personalquestions: PersonalQuestions,
 }
 
 function AppContent() {

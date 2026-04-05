@@ -1,8 +1,221 @@
-import { motion } from 'framer-motion'
-import { ArrowLeft, Edit2, X, Plus, Zap, Star, RefreshCw, MapPin } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowLeft, X, Plus, Zap, Star, RefreshCw, MapPin, ShieldCheck, ChevronRight, Image } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 
+// ── Vendor Profile Sheet ─────────────────────────────────────────────────────
+function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
+  const scrollRef = useRef(null)
+
+  // Fake portfolio images — use the vendor image + color placeholders
+  const portfolioImages = [
+    vendor.image,
+    vendor.image,
+    vendor.image,
+    vendor.image,
+  ]
+
+  const fakeReviews = [
+    { name: 'Noa K.',    rating: 5, text: 'Absolutely stunning setup — every detail was perfect.', date: 'Mar 2025' },
+    { name: 'Oren M.',   rating: 5, text: 'Professional, responsive, and the result was beyond expectations.', date: 'Jan 2025' },
+    { name: 'Shira L.',  rating: 4, text: 'Great communication throughout. Highly recommend.', date: 'Dec 2024' },
+  ]
+
+  return (
+    <AnimatePresence>
+      <motion.div key="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+        onClick={onClose} />
+
+      <motion.div key="sheet"
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+        className="fixed bottom-0 left-0 right-0 z-50 flex flex-col"
+        style={{
+          maxHeight: '90vh',
+          background: 'var(--surface)',
+          borderRadius: '24px 24px 0 0',
+          border: '1px solid var(--border)',
+          boxShadow: '0 -8px 40px rgba(0,0,0,0.25)',
+        }}>
+
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1 shrink-0">
+          <div className="w-10 h-1 rounded-full" style={{ background: 'var(--border)' }} />
+        </div>
+
+        {/* Scrollable content */}
+        <div ref={scrollRef} className="overflow-y-auto flex-1 pb-6">
+
+          {/* Hero image */}
+          <div className="relative overflow-hidden mx-4 mt-2 rounded-2xl" style={{ height: 200 }}>
+            <img src={vendor.image} alt={vendor.name} className="w-full h-full object-cover" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,10,15,0.75) 0%, transparent 50%)' }} />
+            <button onClick={onClose}
+              className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}>
+              <X size={14} className="text-white" />
+            </button>
+            <div className="absolute bottom-4 left-5">
+              <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-1"
+                style={{ color: 'rgba(200,169,110,0.9)' }}>{sectionLabel}</p>
+              <h2 className="text-xl font-semibold text-white">{vendor.name}</h2>
+            </div>
+          </div>
+
+          {/* Rating + EVO badge row */}
+          <div className="flex items-center gap-3 px-5 mt-4">
+            {vendor.rating && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map(s => (
+                    <Star key={s} size={10} style={{ color: '#C8A96E', fill: s <= Math.round(vendor.rating) ? '#C8A96E' : 'none' }} />
+                  ))}
+                </div>
+                <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{vendor.rating}</span>
+                {vendor.reviewCount && (
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>· {vendor.reviewCount} reviews</span>
+                )}
+              </div>
+            )}
+
+            {/* EVO Verified badge */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+              style={{ background: 'rgba(45,27,105,0.08)', border: '1px solid rgba(45,27,105,0.2)' }}>
+              <ShieldCheck size={11} style={{ color: 'var(--primary)' }} />
+              <span className="text-[11px] font-semibold" style={{ color: 'var(--primary)' }}>EVO Verified</span>
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="px-5 mt-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-light" style={{ color: 'var(--text-primary)' }}>
+                ₪{vendor.price?.toLocaleString()}
+              </span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>for your event</span>
+            </div>
+          </div>
+
+          {/* About */}
+          <div className="px-5 mt-4">
+            <p className="text-sm font-light leading-relaxed" style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
+              {vendor.description}
+            </p>
+          </div>
+
+          {/* Why EVO chose */}
+          {vendor.whyChosen && (
+            <div className="mx-5 mt-4 p-4 rounded-2xl flex gap-3 items-start"
+              style={{ background: 'rgba(200,169,110,0.07)', border: '1px solid rgba(200,169,110,0.2)' }}>
+              <Zap size={13} className="shrink-0 mt-0.5" style={{ color: '#C8A96E' }} />
+              <div>
+                <p className="text-[10px] tracking-[0.18em] uppercase mb-1 font-semibold" style={{ color: '#C8A96E' }}>
+                  Why EVO chose this
+                </p>
+                <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                  {vendor.whyChosen}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* EVO Trust details */}
+          <div className="mx-5 mt-4 p-4 rounded-2xl"
+            style={{ background: 'rgba(45,27,105,0.05)', border: '1px solid rgba(45,27,105,0.12)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <ShieldCheck size={13} style={{ color: 'var(--primary)' }} />
+              <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>
+                EVO Verification
+              </p>
+            </div>
+            <div className="space-y-2">
+              {[
+                'Personally vetted by EVO curators',
+                'Business license & insurance verified',
+                'Past event references checked',
+                'Quality standards confirmed on-site',
+              ].map(item => (
+                <div key={item} className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: 'rgba(45,27,105,0.1)' }}>
+                    <span className="text-[9px] font-bold" style={{ color: 'var(--primary)' }}>✓</span>
+                  </div>
+                  <p className="text-xs font-light" style={{ color: 'var(--text-muted)' }}>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Portfolio strip */}
+          <div className="mt-5 px-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Image size={13} style={{ color: 'var(--text-muted)' }} />
+              <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--text-muted)' }}>
+                Portfolio
+              </p>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+              {portfolioImages.map((img, i) => (
+                <div key={i} className="w-24 h-24 rounded-xl overflow-hidden shrink-0"
+                  style={{ opacity: 0.85 + i * 0.05 }}>
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Reviews */}
+          <div className="mt-5 px-5">
+            <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
+              Client Reviews
+            </p>
+            <div className="space-y-3">
+              {fakeReviews.map((r, i) => (
+                <div key={i} className="p-4 rounded-2xl" style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                        style={{ background: 'var(--primary-dim)', color: 'var(--primary)' }}>
+                        {r.name[0]}
+                      </div>
+                      <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{r.name}</span>
+                    </div>
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{r.date}</span>
+                  </div>
+                  <div className="flex gap-0.5 mb-2">
+                    {[1,2,3,4,5].map(s => (
+                      <Star key={s} size={9} style={{ color: '#C8A96E', fill: s <= r.rating ? '#C8A96E' : 'none' }} />
+                    ))}
+                  </div>
+                  <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{r.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="px-5 py-4 shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
+          <motion.button onClick={onSwap} whileTap={{ scale: 0.97 }}
+            className="w-full py-3.5 text-sm font-semibold tracking-wide rounded-full mb-2 flex items-center justify-center gap-2"
+            style={{ background: 'var(--elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}>
+            <RefreshCw size={13} /> Swap this vendor
+          </motion.button>
+          <motion.button onClick={onClose} whileTap={{ scale: 0.97 }}
+            className="w-full py-3.5 text-sm font-semibold tracking-wider uppercase rounded-full"
+            style={{ background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }}>
+            Keep this vendor
+          </motion.button>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+// ── Main Screen ──────────────────────────────────────────────────────────────
 export default function EventSummary() {
   const {
     navigate,
@@ -18,6 +231,15 @@ export default function EventSummary() {
     briefAnswers,
   } = useApp()
 
+  const [profileSection, setProfileSection] = useState(null) // section object for vendor sheet
+  const pageRef = useRef(null)
+
+  // Always scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    if (pageRef.current) pageRef.current.scrollTop = 0
+  }, [])
+
   // ── Determine which flow we're in ────────────────────────────────────────
   const isAIFlow = !!eventPackage
 
@@ -26,10 +248,10 @@ export default function EventSummary() {
   const aiDeposit = depositAmount
 
   // ── Manual flow derived data ─────────────────────────────────────────────
-  const selectedEntries    = Object.entries(selectedSuppliers)
+  const selectedEntries     = Object.entries(selectedSuppliers)
   const selectedCategoryIds = Object.keys(selectedSuppliers)
-  const missingCategories  = categories.filter(c => !selectedCategoryIds.includes(c.id))
-  const manualDeposit      = Math.round(totalBudget * 0.2)
+  const missingCategories   = categories.filter(c => !selectedCategoryIds.includes(c.id))
+  const manualDeposit       = Math.round(totalBudget * 0.2)
 
   const effectiveTotal   = isAIFlow ? aiTotal   : totalBudget
   const effectiveDeposit = isAIFlow ? aiDeposit : manualDeposit
@@ -44,23 +266,29 @@ export default function EventSummary() {
     ? { intimate: '20–40', medium: '50–100', large: '100–200', grand: '200+' }[briefAnswers.scale] || briefAnswers.scale
     : null
 
+  // CTA navigation: venue questions if hasVenue, else personal questions
+  const handleContinue = () => {
+    if (briefAnswers?.hasVenue === true) {
+      navigate('venuequestions')
+    } else {
+      navigate('personalquestions')
+    }
+  }
+
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
+    <div ref={pageRef} className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="sticky top-0 z-20 backdrop-blur-md border-b px-6 pt-12 pb-4"
         style={{ background: 'rgba(245,245,247,0.95)', borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(isAIFlow ? 'package' : 'categories')}
-            style={{ color: 'var(--text-muted)' }} className="hover:text-white transition-colors">
+            style={{ color: 'var(--text-muted)' }}>
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-light tracking-wide flex-1" style={{ color: 'var(--text-primary)' }}>
             Event Summary
           </h1>
-          <button style={{ color: 'var(--text-muted)' }} className="hover:text-white transition-colors">
-            <Edit2 size={16} />
-          </button>
         </div>
       </div>
 
@@ -119,7 +347,7 @@ export default function EventSummary() {
           <div>
             <h3 className="text-xs font-semibold tracking-widest uppercase mb-4"
               style={{ color: 'var(--text-muted)' }}>
-              Your Package
+              Your Vendors
             </h3>
             <div className="space-y-3">
               {eventPackage.sections.map((section, i) => (
@@ -130,12 +358,12 @@ export default function EventSummary() {
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
 
                   {/* Section image strip */}
-                  <div className="relative w-full overflow-hidden" style={{ height: 120 }}>
+                  <div className="relative w-full overflow-hidden" style={{ height: 110 }}>
                     <img src={section.image} alt={section.label} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(8,10,15,0.7) 0%, transparent 60%)' }} />
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(8,10,15,0.75) 0%, transparent 60%)' }} />
                     <div className="absolute top-3 left-4">
-                      <span className="text-[10px] font-semibold tracking-[0.2em] uppercase px-2.5 py-1 rounded-full"
-                        style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', color: 'var(--primary)', border: '1px solid rgba(200,169,110,0.3)' }}>
+                      <span className="text-[10px] font-semibold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full"
+                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', color: '#C8A96E', border: '1px solid rgba(200,169,110,0.3)' }}>
                         {section.label}
                         {section.id === 'venue' && <MapPin size={9} className="inline ml-1 mb-0.5" />}
                       </span>
@@ -143,29 +371,48 @@ export default function EventSummary() {
                   </div>
 
                   {/* Vendor row */}
-                  <div className="flex items-center justify-between px-4 py-3 gap-3">
+                  <div className="flex items-center px-4 py-3 gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                        {section.vendor.name}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+                          {section.vendor.name}
+                        </p>
+                        <ShieldCheck size={11} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                      </div>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>
                           {formatPrice(section.vendor.price)}
                         </span>
                         {section.vendor.rating && (
-                          <div className="flex items-center gap-0.5">
-                            <Star size={10} style={{ color: 'var(--primary)', fill: 'var(--primary)' }} />
+                          <div className="flex items-center gap-1">
+                            <Star size={10} style={{ color: '#C8A96E', fill: '#C8A96E' }} />
                             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{section.vendor.rating}</span>
+                            {section.vendor.reviewCount && (
+                              <span className="text-xs" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
+                                · {section.vendor.reviewCount}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
                     </div>
-                    <motion.button onClick={() => openSwapSheet(section.id)} whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-1.5 text-xs tracking-wide px-3 py-1.5 rounded-full shrink-0 transition-all"
-                      style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
-                      <RefreshCw size={11} />
-                      Swap
-                    </motion.button>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* View profile */}
+                      <motion.button
+                        onClick={() => setProfileSection(section)}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full"
+                        style={{ background: 'var(--primary-dim)', color: 'var(--primary)', border: '1px solid rgba(45,27,105,0.2)' }}>
+                        View <ChevronRight size={10} />
+                      </motion.button>
+                      {/* Swap */}
+                      <motion.button onClick={() => openSwapSheet(section.id)} whileTap={{ scale: 0.95 }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
+                        <RefreshCw size={12} />
+                      </motion.button>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -196,12 +443,12 @@ export default function EventSummary() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{supplier.name}</p>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{cat?.name}</p>
-                        <p className="text-xs mt-1 font-medium" style={{ color: 'var(--primary)' }}>
+                        <p className="text-xs mt-1 font-semibold" style={{ color: 'var(--primary)' }}>
                           {formatPrice(price)} — {supplier.selectedPackage?.name || 'Premium'}
                         </p>
                       </div>
                       <button onClick={() => removeSupplier(catId)}
-                        className="w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0"
+                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                         style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
                         <X size={14} />
                       </button>
@@ -245,7 +492,7 @@ export default function EventSummary() {
             <div>
               <p className="text-xs tracking-widest uppercase mb-1" style={{ color: 'var(--primary)' }}>EVO Note</p>
               <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                Every supplier in this package was matched to your style and budget. You can swap any of them on the previous screen.
+                Every vendor here was hand-picked for your event. Tap "View" on any vendor to see their full profile, reviews, and why EVO chose them.
               </p>
             </div>
           </motion.div>
@@ -262,7 +509,7 @@ export default function EventSummary() {
             {isAIFlow && eventPackage.sections.map(s => (
               <div key={s.id} className="flex justify-between py-2.5"
                 style={{ borderBottom: '1px solid var(--border)' }}>
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.label}</span>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.vendor.name}</span>
                 <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
                   {formatPrice(s.vendor.price)}
                 </span>
@@ -303,12 +550,23 @@ export default function EventSummary() {
       {effectiveTotal > 0 && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
           style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
-          <motion.button onClick={() => navigate('tour')} whileTap={{ scale: 0.98 }}
+          <motion.button onClick={handleContinue} whileTap={{ scale: 0.98 }}
             className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all"
             style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
             Continue to my event →
           </motion.button>
         </div>
+      )}
+
+      {/* Vendor Profile Sheet */}
+      {profileSection && (
+        <VendorSheet
+          vendor={profileSection.vendor}
+          sectionLabel={profileSection.label}
+          sectionId={profileSection.id}
+          onClose={() => setProfileSection(null)}
+          onSwap={() => { setProfileSection(null); openSwapSheet(profileSection.id) }}
+        />
       )}
     </div>
   )

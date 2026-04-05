@@ -316,16 +316,23 @@ const TYPE_STYLE = {
   event:   { color: '#ec4899', icon: Sparkles,       label: 'Event' },
 }
 
+// vendorStatus: 'confirmed' | 'awaiting' | 'cancelled'
 const DEFAULT_ITEMS = [
-  { id: 1,  date: 'Today',  label: 'Event confirmed by EVO',                type: 'done',    done: true  },
-  { id: 2,  date: 'Apr 12', label: 'Venue deposit due — ₪2,800',           type: 'payment', done: false },
-  { id: 3,  date: 'Apr 18', label: 'Catering tasting at Atelier Culinaire', type: 'meeting', done: false },
+  { id: 1,  date: 'Today',  label: 'Event confirmed by EVO',                type: 'done',    done: true,  vendorStatus: 'confirmed', vendorName: 'EVO' },
+  { id: 2,  date: 'Apr 12', label: 'Venue deposit due — ₪2,800',           type: 'payment', done: false, vendorStatus: 'confirmed', vendorName: 'The Pearl House' },
+  { id: 3,  date: 'Apr 18', label: 'Catering tasting at Atelier Culinaire', type: 'meeting', done: false, vendorStatus: 'confirmed', vendorName: 'Atelier Culinaire' },
   { id: 4,  date: 'Apr 25', label: 'Send final guest list to venue',        type: 'task',    done: false },
   { id: 5,  date: 'May 3',  label: 'Final vendor confirmations',            type: 'task',    done: false },
-  { id: 6,  date: 'May 10', label: 'Music briefing with Noir Sound',        type: 'meeting', done: false },
-  { id: 7,  date: 'May 20', label: 'Catering balance payment',              type: 'payment', done: false },
+  { id: 6,  date: 'May 10', label: 'Music briefing with Noir Sound',        type: 'meeting', done: false, vendorStatus: 'awaiting',   vendorName: 'Noir Sound' },
+  { id: 7,  date: 'May 20', label: 'Catering balance payment',              type: 'payment', done: false, vendorStatus: 'confirmed',  vendorName: 'Atelier Culinaire' },
   { id: 8,  date: 'Jun 1',  label: '🎉 Your Event Day!',                   type: 'event',   done: false },
 ]
+
+const VENDOR_STATUS_STYLE = {
+  confirmed: { label: '✅ Confirmed', bg: 'rgba(34,197,94,0.1)',   color: '#16a34a' },
+  awaiting:  { label: '⏳ Awaiting',  bg: 'rgba(245,158,11,0.1)',  color: '#d97706' },
+  cancelled: { label: '❌ Cancelled', bg: 'rgba(239,68,68,0.1)',   color: '#dc2626' },
+}
 
 function TimelineTab() {
   const [items, setItems] = useState(DEFAULT_ITEMS)
@@ -410,10 +417,20 @@ function TimelineTab() {
                              textDecoration: item.done ? 'line-through' : 'none' }}>
                     {item.label}
                   </p>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{item.date}</p>
                     <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                       style={{ background: s.color + '18', color: s.color }}>{s.label}</span>
+                    {item.vendorStatus && VENDOR_STATUS_STYLE[item.vendorStatus] && (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{
+                          background: VENDOR_STATUS_STYLE[item.vendorStatus].bg,
+                          color: VENDOR_STATUS_STYLE[item.vendorStatus].color,
+                        }}>
+                        {VENDOR_STATUS_STYLE[item.vendorStatus].label}
+                        {item.vendorName && ` · ${item.vendorName}`}
+                      </span>
+                    )}
                   </div>
                 </div>
               </motion.div>
