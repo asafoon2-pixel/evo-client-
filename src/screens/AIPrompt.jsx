@@ -17,7 +17,7 @@ const SUGGESTIONS = [
 const PLACEHOLDER = 'e.g. Classy rooftop dinner with live jazz and Italian food for 50 guests...'
 
 export default function AIPrompt() {
-  const { navigate, buildPackageFromText, briefAnswers, updateEventDetails, eventDetails } = useApp()
+  const { navigate, buildPackageFromText, briefAnswers, updateBrief, updateEventDetails, eventDetails } = useApp()
   const [text, setText]       = useState('')
   const [loading, setLoading] = useState(false)
   const textareaRef           = useRef(null)
@@ -37,7 +37,7 @@ export default function AIPrompt() {
     }, 600)
   }
 
-  const canSubmit = text.trim().length > 3 && eventDetails.city.trim().length > 1
+  const canSubmit = text.trim().length > 3 && eventDetails.city.trim().length > 1 && briefAnswers.hasVenue !== null
 
   return (
     <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
@@ -201,6 +201,46 @@ export default function AIPrompt() {
             />
           </div>
         </motion.div>
+
+        {/* Venue question */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.52, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-6 mb-6"
+        >
+          <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
+            Do you have a venue?
+          </p>
+          <div className="flex gap-3">
+            {[
+              { value: true,  label: 'Yes, I have a venue',  sub: "I'll fill in the details later" },
+              { value: false, label: 'No, I need a venue',   sub: 'EVO will suggest one for you' },
+            ].map(opt => {
+              const active = briefAnswers.hasVenue === opt.value
+              return (
+                <motion.button
+                  key={String(opt.value)}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => updateBrief('hasVenue', opt.value)}
+                  className="flex-1 flex flex-col items-start px-4 py-3.5 rounded-2xl text-left transition-all"
+                  style={{
+                    border:     active ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                    background: active ? 'rgba(45,27,105,0.06)' : 'var(--surface)',
+                    boxShadow:  active ? '0 0 0 3px rgba(45,27,105,0.08)' : 'none',
+                  }}
+                >
+                  <span className="text-sm font-semibold mb-1" style={{ color: active ? 'var(--primary)' : 'var(--text-primary)' }}>
+                    {opt.label}
+                  </span>
+                  <span className="text-[11px] leading-tight" style={{ color: 'var(--text-dim)' }}>
+                    {opt.sub}
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
       </div>
 
       {/* CTA — fixed bottom */}

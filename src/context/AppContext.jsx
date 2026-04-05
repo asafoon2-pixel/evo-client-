@@ -55,7 +55,7 @@ export function AppProvider({ children }) {
     return unsub
   }, [])
   const [swipeResults, setSwipeResults]       = useState([])
-  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null })
+  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null, hasVenue: null })
   const [eventPackage, setEventPackage]       = useState(null)
   const [swapSheet, setSwapSheet]             = useState({ open: false, sectionId: null })
   const [tuneVibeOpen, setTuneVibeOpen]       = useState(false)
@@ -111,14 +111,18 @@ export function AppProvider({ children }) {
   }, [swipeResults, briefAnswers])
 
   const buildPackageFromText = useCallback((text, answers) => {
+    const resolvedAnswers = answers || briefAnswers
     const vibe = detectVibeFromText(text || '')
     const base = eventPackages[vibe] || eventPackages.curated
-    const tier = (answers || briefAnswers)?.budgetTier
+    const tier = resolvedAnswers?.budgetTier
     const multiplier = tier === 'essential' ? 0.65 : tier === 'signature' ? 1.5 : 1.0
     const pkg = applyBudgetMultiplier(base, multiplier)
+    const sections = resolvedAnswers?.hasVenue === true
+      ? pkg.sections.filter(s => s.id !== 'venue')
+      : pkg.sections
     const withTracking = {
       ...pkg,
-      sections: pkg.sections.map(s => ({ ...s, currentVendorId: s.vendor.id })),
+      sections: sections.map(s => ({ ...s, currentVendorId: s.vendor.id })),
     }
     setEventPackage(withTracking)
     return withTracking
