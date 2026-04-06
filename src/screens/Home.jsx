@@ -103,7 +103,7 @@ export default function Home() {
     >
       {/* ── Sticky Header ─────────────────────────────────────────────────── */}
       <div
-        className="sticky top-0 z-20 px-5 pt-12 pb-3"
+        className="sticky top-0 z-20 px-5 pt-5 pb-3"
         style={{ background: 'rgba(245,240,232,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(44,32,22,0.06)' }}
       >
         <motion.div {...f(0)} className="flex items-center justify-between mb-4">

@@ -38,7 +38,7 @@ export default function Secure() {
     <div className="w-full min-h-screen flex flex-col overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
-      <div className="sticky top-0 z-20 px-6 pt-12 pb-4"
+      <div className="sticky top-0 z-20 px-6 pt-5 pb-4"
         style={{ background: 'rgba(8,10,15,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('package')} style={{ color: 'var(--text-muted)' }}

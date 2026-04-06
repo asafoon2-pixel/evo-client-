@@ -29,7 +29,7 @@ export default function Checkout() {
   return (
     <div className="w-full min-h-screen bg-evo-black flex flex-col overflow-y-auto pb-28">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-12 pb-4">
+      <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-5 pb-4">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('summary')} className="text-evo-muted hover:text-white transition-colors">
             <ArrowLeft size={20} />

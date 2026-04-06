@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Mail, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { loginWithGoogle, loginWithEmail, registerWithEmail } from '../lib/authService'
+import { LanguageToggle } from '../context/LanguageContext'
 
 const f = (delay = 0, y = 20) => ({
   initial: { opacity: 0, y },
@@ -50,7 +51,7 @@ export default function Entry() {
   }
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: '#F5F5F7' }}>
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden" style={{ background: 'var(--background)' }}>
 
       {/* Ambient dot grid */}
       <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
@@ -65,10 +66,15 @@ export default function Entry() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(60% 45% at 50% 38%, rgba(45,27,105,0.06) 0%, transparent 70%)' }} />
       </div>
 
+      {/* Language toggle */}
+      <div className="relative z-10 w-full flex justify-end px-6 pt-5">
+        <LanguageToggle />
+      </div>
+
       {/* Wordmark */}
-      <div className="relative z-10 pt-16 flex flex-col items-center">
+      <div className="relative z-10 pt-6 flex flex-col items-center">
         <motion.div {...f(0.1)}>
-          <span className="text-[42px] font-light tracking-[0.5em] select-none leading-none" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, color: '#1E1060' }}>
+          <span className="text-[42px] font-light tracking-[0.5em] select-none leading-none" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, color: 'var(--text-primary)' }}>
             EVO
           </span>
         </motion.div>
@@ -80,9 +86,9 @@ export default function Entry() {
       {/* Center hero */}
       <div className="relative z-10 flex flex-col items-center text-center px-8">
         <motion.p {...f(0.35)} className="label-overline mb-8">AI-Powered Event Production</motion.p>
-        <motion.h1 {...f(0.5, 28)} className="font-display text-[44px] sm:text-[56px] leading-[1.05] tracking-tight" style={{ color: '#1A1A2E' }}>
+        <motion.h1 {...f(0.5, 28)} className="font-display text-[44px] sm:text-[56px] leading-[1.05] tracking-tight" style={{ color: 'var(--text-primary)' }}>
           Your event.<br />
-          <span style={{ color: '#FF2D8A', fontStyle: 'italic' }}>Produced.</span>
+          <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Produced.</span>
         </motion.h1>
         <motion.p {...f(0.7)} className="mt-5 text-sm font-light leading-relaxed max-w-[260px]" style={{ color: 'var(--text-muted)' }}>
           Tell us nothing. Show us everything.<br />EVO builds the rest.
@@ -90,7 +96,7 @@ export default function Entry() {
         <motion.div {...f(0.85)} className="mt-12 flex items-center gap-8">
           {stats.map((s, i) => (
             <div key={i} className="text-center">
-              <p className="text-[15px] font-medium leading-none" style={{ color: '#1A1A2E' }}>{s.value}</p>
+              <p className="text-[15px] font-medium leading-none" style={{ color: 'var(--text-primary)' }}>{s.value}</p>
               <p className="text-[10px] mt-1.5 tracking-wide" style={{ color: 'var(--text-dim)' }}>{s.label}</p>
             </div>
           ))}

@@ -399,7 +399,7 @@ export default function EventSummary() {
     <div ref={pageRef} className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
-      <div className="sticky top-0 z-20 backdrop-blur-md border-b px-6 pt-12 pb-4"
+      <div className="sticky top-0 z-20 backdrop-blur-md border-b px-6 pt-5 pb-4"
         style={{ background: 'rgba(245,245,247,0.95)', borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(isAIFlow ? 'package' : 'categories')}

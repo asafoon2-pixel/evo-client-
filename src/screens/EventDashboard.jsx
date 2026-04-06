@@ -218,7 +218,7 @@ function ChatTab() {
     return (
       <div className="flex flex-col h-full">
         {/* Chat header */}
-        <div className="flex items-center gap-3 px-6 pt-12 pb-4"
+        <div className="flex items-center gap-3 px-6 pt-5 pb-4"
           style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
           <button onClick={() => setActiveId(null)}
             className="w-9 h-9 rounded-full flex items-center justify-center"
@@ -638,7 +638,7 @@ export default function EventDashboard() {
     <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Top bar — minimal, just notification bell */}
-      <div className="flex items-center justify-between px-6 pt-12 pb-3"
+      <div className="flex items-center justify-between px-6 pt-5 pb-3"
         style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
           {tab === 'home' ? eventName

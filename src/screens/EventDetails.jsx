@@ -80,7 +80,7 @@ export default function EventDetails() {
     <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
-      <div className="sticky top-0 z-20 px-6 pt-12 pb-4" style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
+      <div className="sticky top-0 z-20 px-6 pt-5 pb-4" style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('summary')}
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all"

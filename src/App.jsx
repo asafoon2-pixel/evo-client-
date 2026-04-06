@@ -4,7 +4,6 @@ import { AppProvider, useApp } from './context/AppContext'
 import { LanguageProvider } from './context/LanguageContext'
 import PageTransition from './components/PageTransition'
 import SplashScreen from './components/SplashScreen'
-import IphoneFrame from './components/IphoneFrame'
 
 class ErrorBoundary extends Component {
   state = { error: null }
@@ -83,12 +82,8 @@ function AppContent() {
   return (
     <div
       className="w-full min-h-screen flex justify-center"
-      style={{ background: '#F5F0E8' }}
+      style={{ background: 'var(--background)' }}
     >
-      {/* iPhone frame decoration — desktop only */}
-      <IphoneFrame />
-
-      {/* Content column */}
       <div
         className="w-full max-w-md min-h-screen overflow-x-hidden relative"
         style={{ background: 'var(--background)' }}

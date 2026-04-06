@@ -39,7 +39,7 @@ export default function SupplierList() {
   return (
     <div className="w-full min-h-screen bg-evo-black flex flex-col overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-12 pb-4">
+      <div className="sticky top-0 z-20 bg-evo-black/90 backdrop-blur-md border-b border-evo-border px-6 pt-5 pb-4">
         <div className="flex items-center gap-4 mb-1">
           <button
             onClick={() => navigate('categories')}

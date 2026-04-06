@@ -140,7 +140,7 @@ export default function UserProfile() {
     <div className="w-full min-h-screen overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
-      <div className="sticky top-0 z-20 px-6 pt-12 pb-4 backdrop-blur-md"
+      <div className="sticky top-0 z-20 px-6 pt-5 pb-4 backdrop-blur-md"
         style={{ background: 'rgba(245,245,247,0.95)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(isAIFlow ? 'summary' : 'eventdetails')}

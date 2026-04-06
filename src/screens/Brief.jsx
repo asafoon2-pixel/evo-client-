@@ -267,7 +267,7 @@ export default function Brief() {
     <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 pt-12 pb-2" style={{ background: 'var(--background)' }}>
+      <div className="sticky top-0 z-20 pt-5 pb-2" style={{ background: 'var(--background)' }}>
         <div className="flex items-center justify-between px-6 mb-3">
           <button onClick={back} className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
             style={{ border: '1.5px solid var(--border)', color: 'var(--text-muted)' }}>
