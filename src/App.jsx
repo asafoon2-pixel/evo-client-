@@ -1,7 +1,10 @@
-import { Component } from 'react'
+import { Component, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { AppProvider, useApp } from './context/AppContext'
+import { LanguageProvider } from './context/LanguageContext'
 import PageTransition from './components/PageTransition'
+import SplashScreen from './components/SplashScreen'
+import IphoneFrame from './components/IphoneFrame'
 
 class ErrorBoundary extends Component {
   state = { error: null }
@@ -9,10 +12,10 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.error) {
       return (
-        <div className="w-full min-h-screen flex flex-col items-center justify-center px-8 text-center" style={{ background: '#F5F5F7' }}>
-          <p style={{ color: '#2D1B69', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>Something went wrong</p>
-          <p style={{ color: '#1A1A2E', fontSize: 13, marginBottom: 8 }}>{this.state.error.message}</p>
-          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 24, color: '#2D1B69', fontSize: 12, border: '1px solid rgba(45,27,105,0.3)', borderRadius: 9999, padding: '8px 16px' }}>
+        <div className="w-full min-h-screen flex flex-col items-center justify-center px-8 text-center" style={{ background: '#F5F0E8' }}>
+          <p style={{ color: '#6B5FE4', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>Something went wrong</p>
+          <p style={{ color: '#2C2016', fontSize: 13, marginBottom: 8 }}>{this.state.error.message}</p>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 24, color: '#6B5FE4', fontSize: 12, border: '1px solid rgba(107,95,228,0.3)', borderRadius: 9999, padding: '8px 20px' }}>
             Try again
           </button>
         </div>
@@ -78,8 +81,18 @@ function AppContent() {
   const { currentScreen } = useApp()
   const Screen = screenMap[currentScreen] || Entry
   return (
-    <div className="w-full min-h-screen flex justify-center" style={{ background: 'var(--background)' }}>
-      <div className="w-full max-w-md min-h-screen overflow-x-hidden relative" style={{ background: 'var(--background)' }}>
+    <div
+      className="w-full min-h-screen flex justify-center"
+      style={{ background: '#F5F0E8' }}
+    >
+      {/* iPhone frame decoration — desktop only */}
+      <IphoneFrame />
+
+      {/* Content column */}
+      <div
+        className="w-full max-w-md min-h-screen overflow-x-hidden relative"
+        style={{ background: 'var(--background)' }}
+      >
         <AnimatePresence mode="wait">
           <PageTransition key={currentScreen}>
             <Screen />
@@ -91,11 +104,16 @@ function AppContent() {
 }
 
 export default function App() {
+  const [splashDone, setSplashDone] = useState(false)
+
   return (
-    <AppProvider>
-      <ErrorBoundary>
-        <AppContent />
-      </ErrorBoundary>
-    </AppProvider>
+    <LanguageProvider>
+      <AppProvider>
+        <ErrorBoundary>
+          {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
+          {splashDone && <AppContent />}
+        </ErrorBoundary>
+      </AppProvider>
+    </LanguageProvider>
   )
 }
