@@ -1,8 +1,128 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, X, Plus, Zap, Star, RefreshCw, MapPin, ShieldCheck, ChevronRight, Image } from 'lucide-react'
+import { ArrowLeft, X, Plus, Zap, Star, RefreshCw, MapPin, ShieldCheck, ChevronDown, ChevronRight, Image } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
+
+const CATEGORY_META = {
+  venue:         { label: 'The Space',      tagline: 'Where the evening begins' },
+  catering:      { label: 'The Table',      tagline: 'Food worth lingering over' },
+  entertainment: { label: 'The Sound',      tagline: 'Music that moves the room' },
+  lighting:      { label: 'The Atmosphere', tagline: 'Light that shapes the mood' },
+  decor:         { label: 'The Feeling',    tagline: 'Details that tell your story' },
+}
+
+// ── Expandable vendor card ────────────────────────────────────────────────────
+function VendorCard({ section, index, openSwapSheet, openProfile }) {
+  const [expanded, setExpanded] = useState(false)
+  const meta = CATEGORY_META[section.id] || { label: section.label, tagline: '' }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-2xl overflow-hidden cursor-pointer"
+      style={{ background: 'var(--surface)', border: `1px solid ${expanded ? 'var(--primary)' : 'var(--border)'}`, transition: 'border-color 0.25s' }}
+      onClick={() => setExpanded(e => !e)}>
+
+      {/* Image strip */}
+      <div className="relative overflow-hidden" style={{ height: 130 }}>
+        <img src={section.image} alt={section.label} className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,10,15,0.0) 30%, rgba(8,10,15,0.65) 100%)' }} />
+
+        <div className="absolute top-3 left-4">
+          <span className="text-[10px] font-semibold tracking-[0.2em] uppercase px-2.5 py-1 rounded-full"
+            style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', color: '#C8A96E', border: '1px solid rgba(200,169,110,0.3)' }}>
+            {meta.label}
+          </span>
+        </div>
+
+        <div className="absolute bottom-3 left-4 right-4">
+          <p className="text-white text-sm font-semibold">{section.vendor.name}</p>
+          {section.vendor.rating && (
+            <div className="flex items-center gap-1 mt-0.5">
+              <Star size={10} style={{ color: '#C8A96E', fill: '#C8A96E' }} />
+              <span className="text-xs text-white opacity-70">{section.vendor.rating}</span>
+              {section.vendor.reviewCount && (
+                <span className="text-xs text-white opacity-50">· {section.vendor.reviewCount}</span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Collapsed row: price + tagline + chevron */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          <span className="text-base font-semibold" style={{ color: 'var(--primary)' }}>
+            ₪{section.vendor.price?.toLocaleString()}
+          </span>
+          <span className="text-xs font-light italic" style={{ color: 'var(--text-muted)' }}>
+            {meta.tagline}
+          </span>
+        </div>
+        <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.25 }}>
+          <ChevronDown size={16} style={{ color: 'var(--text-muted)' }} />
+        </motion.div>
+      </div>
+
+      {/* Expanded details */}
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden">
+            <div className="px-4 pb-4" style={{ borderTop: '1px solid var(--border)' }}>
+
+              {section.vendor.description && (
+                <p className="text-sm font-light leading-relaxed mt-3 mb-4"
+                  style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
+                  {section.vendor.description}
+                </p>
+              )}
+
+              {section.vendor.whyChosen && (
+                <div className="flex gap-2.5 items-start mb-4 p-3 rounded-xl"
+                  style={{ background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.18)' }}>
+                  <Zap size={11} className="shrink-0 mt-0.5" style={{ color: '#C8A96E' }} />
+                  <div>
+                    <p className="text-[10px] tracking-[0.18em] uppercase mb-0.5 font-semibold" style={{ color: '#C8A96E' }}>
+                      Why EVO chose this
+                    </p>
+                    <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                      {section.vendor.whyChosen}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => openProfile(section)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                  style={{ border: '1px solid rgba(45,27,105,0.25)', color: 'var(--primary)', background: 'rgba(45,27,105,0.06)' }}>
+                  <ChevronRight size={11} /> View profile
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => openSwapSheet(section.id)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                  style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
+                  <RefreshCw size={11} /> Swap vendor
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
 
 // ── Vendor Profile Sheet ─────────────────────────────────────────────────────
 function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
@@ -342,79 +462,22 @@ export default function EventSummary() {
           </motion.div>
         )}
 
-        {/* ── AI FLOW: Package sections ─────────────────────────────────────── */}
+        {/* ── AI FLOW: Expandable vendor cards ─────────────────────────────── */}
         {isAIFlow && (
           <div>
-            <h3 className="text-xs font-semibold tracking-widest uppercase mb-4"
+            <p className="text-[10px] font-semibold tracking-[0.22em] uppercase mb-4"
               style={{ color: 'var(--text-muted)' }}>
-              Your Vendors
-            </h3>
+              Tap any card to see what's included
+            </p>
             <div className="space-y-3">
               {eventPackage.sections.map((section, i) => (
-                <motion.div key={section.id}
-                  initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="rounded-2xl overflow-hidden"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-
-                  {/* Section image strip */}
-                  <div className="relative w-full overflow-hidden" style={{ height: 110 }}>
-                    <img src={section.image} alt={section.label} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(8,10,15,0.75) 0%, transparent 60%)' }} />
-                    <div className="absolute top-3 left-4">
-                      <span className="text-[10px] font-semibold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full"
-                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', color: '#C8A96E', border: '1px solid rgba(200,169,110,0.3)' }}>
-                        {section.label}
-                        {section.id === 'venue' && <MapPin size={9} className="inline ml-1 mb-0.5" />}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Vendor row */}
-                  <div className="flex items-center px-4 py-3 gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
-                          {section.vendor.name}
-                        </p>
-                        <ShieldCheck size={11} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-                      </div>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>
-                          {formatPrice(section.vendor.price)}
-                        </span>
-                        {section.vendor.rating && (
-                          <div className="flex items-center gap-1">
-                            <Star size={10} style={{ color: '#C8A96E', fill: '#C8A96E' }} />
-                            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{section.vendor.rating}</span>
-                            {section.vendor.reviewCount && (
-                              <span className="text-xs" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
-                                · {section.vendor.reviewCount}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      {/* View profile */}
-                      <motion.button
-                        onClick={() => setProfileSection(section)}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full"
-                        style={{ background: 'var(--primary-dim)', color: 'var(--primary)', border: '1px solid rgba(45,27,105,0.2)' }}>
-                        View <ChevronRight size={10} />
-                      </motion.button>
-                      {/* Swap */}
-                      <motion.button onClick={() => openSwapSheet(section.id)} whileTap={{ scale: 0.95 }}
-                        className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
-                        <RefreshCw size={12} />
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
+                <VendorCard
+                  key={section.id}
+                  section={section}
+                  index={i}
+                  openSwapSheet={openSwapSheet}
+                  openProfile={setProfileSection}
+                />
               ))}
             </div>
           </div>
