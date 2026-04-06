@@ -1,126 +1,335 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-// Note: if hasVenue is false, user skipped VenueQuestions and came from summary
 
-const FEELINGS = [
-  { id: 'intimate',    label: 'Intimate & warm',    emoji: '🕯️' },
-  { id: 'glamorous',   label: 'Glamorous & grand',  emoji: '✨' },
-  { id: 'playful',     label: 'Fun & playful',       emoji: '🎉' },
-  { id: 'minimal',     label: 'Clean & minimal',     emoji: '◻️' },
-  { id: 'romantic',    label: 'Romantic & soft',     emoji: '🌸' },
-  { id: 'bold',        label: 'Bold & dramatic',     emoji: '🔥' },
+const GENDER_OPTIONS = [
+  { id: 'female', label: 'Female' },
+  { id: 'male',   label: 'Male' },
+  { id: 'other',  label: 'Other' },
 ]
 
-const MUST_HAVES = [
-  { id: 'live_music',    label: 'Live music' },
-  { id: 'photobooth',    label: 'Photo booth' },
-  { id: 'open_bar',      label: 'Open bar' },
-  { id: 'gourmet_food',  label: 'Gourmet food' },
-  { id: 'dancing',       label: 'Dance floor' },
-  { id: 'outdoor',       label: 'Outdoor area' },
-  { id: 'dj',            label: 'DJ' },
-  { id: 'lounge',        label: 'Lounge seating' },
+const CONTACT_OPTIONS = [
+  { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
+  { id: 'call',     label: 'Call',     Icon: Phone },
+  { id: 'sms',      label: 'SMS',      Icon: Phone },
+  { id: 'email',    label: 'Email',    Icon: Mail },
 ]
+
+const LANGUAGE_OPTIONS = [
+  { id: 'he', label: 'עברית' },
+  { id: 'en', label: 'English' },
+  { id: 'ar', label: 'عربي' },
+]
+
+const VIBE_TAGS = [
+  'Intimate', 'Glamorous', 'Minimal', 'Bold',
+  'Romantic', 'Outdoor', 'Classic', 'Electric',
+  'Boho', 'Modern', 'Luxurious', 'Playful',
+]
+
+const COLOR_OPTIONS = [
+  { id: 'black_gold',  label: 'Black & Gold',  colors: ['#0A0A0A', '#C8A96E'] },
+  { id: 'white_blush', label: 'White & Blush', colors: ['#FAFAFA', '#E8B4B8'] },
+  { id: 'deep_purple', label: 'Deep Purple',   colors: ['#2D1B69', '#8B5CF6'] },
+  { id: 'forest',      label: 'Forest & Sage', colors: ['#1A3D2B', '#6B8F71'] },
+  { id: 'terracotta',  label: 'Terracotta',    colors: ['#C17A50', '#E8C5A0'] },
+  { id: 'navy_silver', label: 'Navy & Silver', colors: ['#1B2A4A', '#C0C8D0'] },
+]
+
+const STYLE_OPTIONS = [
+  { id: 'modern',        label: 'Modern',       emoji: '◻️' },
+  { id: 'classic',       label: 'Classic',      emoji: '🏛️' },
+  { id: 'boho',          label: 'Boho',         emoji: '🌿' },
+  { id: 'industrial',    label: 'Industrial',   emoji: '⚙️' },
+  { id: 'mediterranean', label: 'Mediterranean',emoji: '🌊' },
+  { id: 'maximalist',    label: 'Maximalist',   emoji: '✨' },
+]
+
+const ENERGY_LABELS = ['Very calm', 'Calm', 'Balanced', 'Energetic', 'Electric']
 
 export default function PersonalQuestions() {
   const { navigate, updateBrief, briefAnswers } = useApp()
+  const fileRef = useRef(null)
 
   const [form, setForm] = useState({
-    purpose:        '',
-    feeling:        null,
-    mustHaves:      [],
-    mustAvoids:     '',
-    considerations: '',
-    contact:        '',
-    freeform:       '',
+    full_name:          '',
+    email:              '',
+    phone:              '',
+    whatsapp_number:    '',
+    alternate_phone:    '',
+    age:                '',
+    gender:             null,
+    city:               '',
+    instagram_handle:   '',
+    preferred_language: null,
+    preferred_contact:  null,
+    vibe_tags:          [],
+    preferred_colors:   null,
+    preferred_styles:   [],
+    energy_level:       3,
+    profile_photo_url:  null,
   })
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
-
-  const toggleMustHave = (id) => setForm(f => ({
+  const toggle = (key, id) => setForm(f => ({
     ...f,
-    mustHaves: f.mustHaves.includes(id)
-      ? f.mustHaves.filter(m => m !== id)
-      : [...f.mustHaves, id],
+    [key]: f[key].includes(id) ? f[key].filter(x => x !== id) : [...f[key], id],
   }))
 
-  const canContinue = form.purpose.trim().length > 1 && form.feeling !== null
+  const handlePhoto = (e) => {
+    const file = e.target.files?.[0]
+    if (file) set('profile_photo_url', URL.createObjectURL(file))
+  }
+
+  const canContinue = form.full_name.trim().length > 1 && form.phone.trim().length > 5
 
   const handleContinue = () => {
-    updateBrief('personalDetails', form)
+    updateBrief('clientDetails', form)
     navigate('tour')
   }
 
+  const field = (key) => ({
+    background: 'var(--surface)',
+    border: `1px solid ${form[key] ? 'var(--primary)' : 'var(--border)'}`,
+    color: 'var(--text-primary)',
+    fontFamily: 'inherit',
+    outline: 'none',
+  })
+
+  const label = (text, optional) => (
+    <p className="text-[10px] font-semibold tracking-[0.22em] uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
+      {text}{optional && <span className="font-light normal-case tracking-normal opacity-60 ml-1">— optional</span>}
+    </p>
+  )
+
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
+    <div className="w-full min-h-screen overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-md border-b px-6 pt-12 pb-4"
-        style={{ background: 'rgba(245,245,247,0.95)', borderColor: 'var(--border)' }}>
+      <div className="sticky top-0 z-20 px-6 pt-12 pb-4 backdrop-blur-md"
+        style={{ background: 'rgba(245,245,247,0.95)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(briefAnswers?.hasVenue === true ? 'venuequestions' : 'summary')} style={{ color: 'var(--text-muted)' }}>
+          <button onClick={() => navigate(briefAnswers?.hasVenue === true ? 'venuequestions' : 'summary')}
+            style={{ color: 'var(--text-muted)' }}>
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1">
-            <p className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--primary)' }}>
-              About You
-            </p>
-            <h1 className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>
-              A few personal touches
-            </h1>
-          </div>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: 'var(--primary-dim)', border: '1px solid var(--primary-glow)' }}>
-            <Sparkles size={15} style={{ color: 'var(--primary)' }} />
+            <p className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--primary)' }}>About You</p>
+            <h1 className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>Your details</h1>
           </div>
         </div>
       </div>
 
-      <div className="px-6 pt-6 space-y-7">
+      <div className="px-6 pt-6 space-y-8">
 
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="text-sm font-light leading-relaxed" style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
-          These answers help EVO understand the soul of your event — not just the logistics.
-        </motion.p>
-
-        {/* Purpose / occasion */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            What's the occasion?
-          </label>
-          <input
-            value={form.purpose}
-            onChange={e => set('purpose', e.target.value)}
-            placeholder="Birthday, anniversary, product launch, proposal…"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none transition-all"
+        {/* Avatar */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center pt-2">
+          <button onClick={() => fileRef.current?.click()}
+            className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden transition-all"
             style={{
-              background: 'var(--surface)',
-              border: `1px solid ${form.purpose ? 'var(--primary)' : 'var(--border)'}`,
-              color: 'var(--text-primary)',
-            }}
-          />
+              background: form.profile_photo_url ? 'transparent' : 'var(--surface)',
+              border: `2px dashed ${form.profile_photo_url ? 'var(--primary)' : 'var(--border)'}`,
+            }}>
+            {form.profile_photo_url
+              ? <img src={form.profile_photo_url} alt="" className="w-full h-full object-cover" />
+              : <Camera size={18} style={{ color: 'var(--text-muted)' }} />
+            }
+          </button>
+          <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>Add a photo</p>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
         </motion.div>
 
-        {/* Desired feeling */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-            How should guests feel?
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {FEELINGS.map(f => {
-              const active = form.feeling === f.id
+        {/* Name */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+          {label('Full name')}
+          <input value={form.full_name} onChange={e => set('full_name', e.target.value)}
+            placeholder="Your name"
+            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+            style={field('full_name')} />
+        </motion.div>
+
+        {/* Gender */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
+          {label('Gender')}
+          <div className="flex gap-2">
+            {GENDER_OPTIONS.map(g => {
+              const active = form.gender === g.id
               return (
-                <motion.button key={f.id} onClick={() => set('feeling', f.id)} whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left transition-all"
+                <motion.button key={g.id} whileTap={{ scale: 0.97 }} onClick={() => set('gender', g.id)}
+                  className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
                   style={{
-                    background: active ? 'var(--primary-dim)' : 'var(--surface)',
-                    border: `1.5px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
+                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                    color: active ? 'var(--primary)' : 'var(--text-muted)',
                   }}>
-                  <span className="text-lg">{f.emoji}</span>
-                  <span className="text-xs font-medium leading-tight" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
-                    {f.label}
+                  {g.label}
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Age + City */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+          className="grid grid-cols-2 gap-3">
+          <div>
+            {label('Age')}
+            <input type="number" value={form.age} onChange={e => set('age', e.target.value)}
+              placeholder="—"
+              className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+              style={field('age')} />
+          </div>
+          <div>
+            {label('City')}
+            <input value={form.city} onChange={e => set('city', e.target.value)}
+              placeholder="Tel Aviv…"
+              className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+              style={field('city')} />
+          </div>
+        </motion.div>
+
+        {/* Divider */}
+        <div className="h-px" style={{ background: 'var(--border)' }} />
+
+        {/* Email */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          {label('Email')}
+          <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
+            placeholder="your@email.com"
+            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+            style={field('email')} />
+        </motion.div>
+
+        {/* Phone */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+          {label('Phone')}
+          <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
+            placeholder="+972 5x xxx xxxx"
+            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+            style={field('phone')} />
+        </motion.div>
+
+        {/* WhatsApp */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }}>
+          {label('WhatsApp', true)}
+          <input type="tel" value={form.whatsapp_number} onChange={e => set('whatsapp_number', e.target.value)}
+            placeholder="+972 5x xxx xxxx"
+            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+            style={field('whatsapp_number')} />
+        </motion.div>
+
+        {/* Alternate phone */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+          {label('Alternate phone', true)}
+          <input type="tel" value={form.alternate_phone} onChange={e => set('alternate_phone', e.target.value)}
+            placeholder="+972 5x xxx xxxx"
+            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+            style={field('alternate_phone')} />
+        </motion.div>
+
+        {/* Preferred contact */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          {label('Best way to reach you')}
+          <div className="grid grid-cols-2 gap-2">
+            {CONTACT_OPTIONS.map(({ id, label: l, Icon }) => {
+              const active = form.preferred_contact === id
+              return (
+                <motion.button key={id} whileTap={{ scale: 0.97 }} onClick={() => set('preferred_contact', id)}
+                  className="flex items-center gap-2.5 px-4 py-3 rounded-xl transition-all"
+                  style={{
+                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
+                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                  }}>
+                  <Icon size={13} style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }} />
+                  <span className="text-sm" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>{l}</span>
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Language */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
+          {label('Preferred language')}
+          <div className="flex gap-2">
+            {LANGUAGE_OPTIONS.map(l => {
+              const active = form.preferred_language === l.id
+              return (
+                <motion.button key={l.id} whileTap={{ scale: 0.97 }} onClick={() => set('preferred_language', l.id)}
+                  className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
+                  style={{
+                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
+                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                    color: active ? 'var(--primary)' : 'var(--text-muted)',
+                  }}>
+                  {l.label}
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Instagram */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
+          {label('Instagram', true)}
+          <div className="relative">
+            <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: form.instagram_handle ? 'var(--primary)' : 'var(--text-muted)' }} />
+            <input value={form.instagram_handle} onChange={e => set('instagram_handle', e.target.value)}
+              placeholder="@handle"
+              className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm font-light transition-all"
+              style={field('instagram_handle')} />
+          </div>
+        </motion.div>
+
+        {/* Divider */}
+        <div className="h-px" style={{ background: 'var(--border)' }} />
+
+        {/* Vibe tags */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+          {label('Vibes that speak to you')}
+          <div className="flex flex-wrap gap-2">
+            {VIBE_TAGS.map(tag => {
+              const active = form.vibe_tags.includes(tag)
+              return (
+                <motion.button key={tag} whileTap={{ scale: 0.95 }}
+                  onClick={() => toggle('vibe_tags', tag)}
+                  className="px-4 py-2 rounded-full text-sm transition-all"
+                  style={{
+                    background: active ? 'var(--primary)' : 'var(--surface)',
+                    color: active ? '#fff' : 'var(--text-muted)',
+                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                  }}>
+                  {tag}
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Colour palette */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }}>
+          {label('Colour palette')}
+          <div className="grid grid-cols-2 gap-2">
+            {COLOR_OPTIONS.map(c => {
+              const active = form.preferred_colors === c.id
+              return (
+                <motion.button key={c.id} whileTap={{ scale: 0.97 }}
+                  onClick={() => set('preferred_colors', c.id)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
+                  style={{
+                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
+                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+                  }}>
+                  <div className="flex gap-1 shrink-0">
+                    {c.colors.map((col, i) => (
+                      <div key={i} className="w-4 h-4 rounded-full border"
+                        style={{ background: col, borderColor: 'var(--border)' }} />
+                    ))}
+                  </div>
+                  <span className="text-xs font-medium" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
+                    {c.label}
                   </span>
                 </motion.button>
               )
@@ -128,119 +337,56 @@ export default function PersonalQuestions() {
           </div>
         </motion.div>
 
-        {/* Must-haves */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--text-muted)' }}>
-            Must-haves
-          </label>
-          <p className="text-xs mb-3 font-light" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
-            Non-negotiables for your event
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {MUST_HAVES.map(m => {
-              const active = form.mustHaves.includes(m.id)
+        {/* Preferred styles */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          {label('Event style')}
+          <div className="grid grid-cols-3 gap-2">
+            {STYLE_OPTIONS.map(s => {
+              const active = form.preferred_styles.includes(s.id)
               return (
-                <motion.button key={m.id} onClick={() => toggleMustHave(m.id)} whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 rounded-full text-xs font-medium transition-all"
+                <motion.button key={s.id} whileTap={{ scale: 0.96 }}
+                  onClick={() => toggle('preferred_styles', s.id)}
+                  className="flex flex-col items-center gap-1.5 py-3.5 rounded-xl transition-all"
                   style={{
-                    background: active ? 'var(--primary)' : 'var(--surface)',
-                    color: active ? '#fff' : 'var(--text-muted)',
+                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
                     border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
                   }}>
-                  {m.label}
+                  <span className="text-lg">{s.emoji}</span>
+                  <span className="text-xs font-medium" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
+                    {s.label}
+                  </span>
                 </motion.button>
               )
             })}
           </div>
         </motion.div>
 
-        {/* Must-avoids */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Anything to avoid?
-          </label>
-          <textarea
-            value={form.mustAvoids}
-            onChange={e => set('mustAvoids', e.target.value)}
-            rows={2}
-            placeholder="Things you absolutely don't want — music genres, food types, style elements…"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none resize-none transition-all"
-            style={{
-              background: 'var(--surface)',
-              border: `1px solid ${form.mustAvoids ? 'var(--primary)' : 'var(--border)'}`,
-              color: 'var(--text-primary)',
-            }}
-          />
-        </motion.div>
-
-        {/* Cultural / dietary / religious */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--text-muted)' }}>
-            Cultural, dietary or religious considerations
-          </label>
-          <p className="text-xs mb-2 font-light" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
-            Kosher, halal, vegan, cultural customs…
-          </p>
-          <textarea
-            value={form.considerations}
-            onChange={e => set('considerations', e.target.value)}
-            rows={2}
-            placeholder="Share anything that matters to you and your guests"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none resize-none transition-all"
-            style={{
-              background: 'var(--surface)',
-              border: `1px solid ${form.considerations ? 'var(--primary)' : 'var(--border)'}`,
-              color: 'var(--text-primary)',
-            }}
-          />
-        </motion.div>
-
-        {/* Day-of contact */}
+        {/* Energy level */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.21 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Day-of contact name & phone
-          </label>
-          <input
-            value={form.contact}
-            onChange={e => set('contact', e.target.value)}
-            placeholder="Who vendors should call on the day"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none transition-all"
-            style={{
-              background: 'var(--surface)',
-              border: `1px solid ${form.contact ? 'var(--primary)' : 'var(--border)'}`,
-              color: 'var(--text-primary)',
-            }}
-          />
+          {label('Event energy')}
+          <div className="flex gap-1.5 mb-2">
+            {[1,2,3,4,5].map(n => (
+              <button key={n} onClick={() => set('energy_level', n)}
+                className="flex-1 h-2 rounded-full transition-all"
+                style={{ background: form.energy_level >= n ? 'var(--primary)' : 'var(--border)' }} />
+            ))}
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Mellow</span>
+            <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
+              {ENERGY_LABELS[form.energy_level - 1]}
+            </span>
+            <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Electric</span>
+          </div>
         </motion.div>
 
-        {/* Free-form final */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Anything else?
-          </label>
-          <textarea
-            value={form.freeform}
-            onChange={e => set('freeform', e.target.value)}
-            rows={3}
-            placeholder="A story, a vision, something that matters — the more EVO knows, the better your event will be."
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none resize-none transition-all"
-            style={{
-              background: 'var(--surface)',
-              border: `1px solid ${form.freeform ? 'var(--primary)' : 'var(--border)'}`,
-              color: 'var(--text-primary)',
-            }}
-          />
-        </motion.div>
-
-        <div className="h-4" />
+        <div className="h-2" />
       </div>
 
-      {/* Sticky CTA */}
+      {/* CTA */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
         style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
-        <motion.button
-          onClick={handleContinue}
-          disabled={!canContinue}
+        <motion.button onClick={handleContinue} disabled={!canContinue}
           whileTap={canContinue ? { scale: 0.98 } : {}}
           className="w-full py-4 text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all"
           style={{
@@ -248,14 +394,11 @@ export default function PersonalQuestions() {
             background: canContinue ? 'var(--primary)' : 'var(--surface)',
             color: canContinue ? '#fff' : 'var(--text-muted)',
             border: canContinue ? 'none' : '1px solid var(--border)',
+            opacity: canContinue ? 1 : 0.55,
             boxShadow: canContinue ? 'var(--shadow-accent)' : 'none',
-            opacity: canContinue ? 1 : 0.6,
           }}>
-          See my event app <ArrowRight size={14} />
+          Continue <ArrowRight size={14} />
         </motion.button>
-        <p className="text-center text-xs mt-2" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
-          Your answers are saved to your event
-        </p>
       </div>
     </div>
   )
