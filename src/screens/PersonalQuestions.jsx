@@ -22,31 +22,6 @@ const LANGUAGE_OPTIONS = [
   { id: 'ar', label: 'عربي' },
 ]
 
-const VIBE_TAGS = [
-  'Intimate', 'Glamorous', 'Minimal', 'Bold',
-  'Romantic', 'Outdoor', 'Classic', 'Electric',
-  'Boho', 'Modern', 'Luxurious', 'Playful',
-]
-
-const COLOR_OPTIONS = [
-  { id: 'black_gold',  label: 'Black & Gold',  colors: ['#0A0A0A', '#C8A96E'] },
-  { id: 'white_blush', label: 'White & Blush', colors: ['#FAFAFA', '#E8B4B8'] },
-  { id: 'deep_purple', label: 'Deep Purple',   colors: ['#2D1B69', '#8B5CF6'] },
-  { id: 'forest',      label: 'Forest & Sage', colors: ['#1A3D2B', '#6B8F71'] },
-  { id: 'terracotta',  label: 'Terracotta',    colors: ['#C17A50', '#E8C5A0'] },
-  { id: 'navy_silver', label: 'Navy & Silver', colors: ['#1B2A4A', '#C0C8D0'] },
-]
-
-const STYLE_OPTIONS = [
-  { id: 'modern',        label: 'Modern',       emoji: '◻️' },
-  { id: 'classic',       label: 'Classic',      emoji: '🏛️' },
-  { id: 'boho',          label: 'Boho',         emoji: '🌿' },
-  { id: 'industrial',    label: 'Industrial',   emoji: '⚙️' },
-  { id: 'mediterranean', label: 'Mediterranean',emoji: '🌊' },
-  { id: 'maximalist',    label: 'Maximalist',   emoji: '✨' },
-]
-
-const ENERGY_LABELS = ['Very calm', 'Calm', 'Balanced', 'Energetic', 'Electric']
 
 export default function PersonalQuestions() {
   const { navigate, updateBrief, briefAnswers } = useApp()
@@ -64,18 +39,10 @@ export default function PersonalQuestions() {
     instagram_handle:   '',
     preferred_language: null,
     preferred_contact:  null,
-    vibe_tags:          [],
-    preferred_colors:   null,
-    preferred_styles:   [],
-    energy_level:       3,
     profile_photo_url:  null,
   })
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
-  const toggle = (key, id) => setForm(f => ({
-    ...f,
-    [key]: f[key].includes(id) ? f[key].filter(x => x !== id) : [...f[key], id],
-  }))
 
   const handlePhoto = (e) => {
     const file = e.target.files?.[0]
@@ -280,103 +247,6 @@ export default function PersonalQuestions() {
               placeholder="@handle"
               className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm font-light transition-all"
               style={field('instagram_handle')} />
-          </div>
-        </motion.div>
-
-        {/* Divider */}
-        <div className="h-px" style={{ background: 'var(--border)' }} />
-
-        {/* Vibe tags */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
-          {label('Vibes that speak to you')}
-          <div className="flex flex-wrap gap-2">
-            {VIBE_TAGS.map(tag => {
-              const active = form.vibe_tags.includes(tag)
-              return (
-                <motion.button key={tag} whileTap={{ scale: 0.95 }}
-                  onClick={() => toggle('vibe_tags', tag)}
-                  className="px-4 py-2 rounded-full text-sm transition-all"
-                  style={{
-                    background: active ? 'var(--primary)' : 'var(--surface)',
-                    color: active ? '#fff' : 'var(--text-muted)',
-                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                  }}>
-                  {tag}
-                </motion.button>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Colour palette */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }}>
-          {label('Colour palette')}
-          <div className="grid grid-cols-2 gap-2">
-            {COLOR_OPTIONS.map(c => {
-              const active = form.preferred_colors === c.id
-              return (
-                <motion.button key={c.id} whileTap={{ scale: 0.97 }}
-                  onClick={() => set('preferred_colors', c.id)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
-                  style={{
-                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
-                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                  }}>
-                  <div className="flex gap-1 shrink-0">
-                    {c.colors.map((col, i) => (
-                      <div key={i} className="w-4 h-4 rounded-full border"
-                        style={{ background: col, borderColor: 'var(--border)' }} />
-                    ))}
-                  </div>
-                  <span className="text-xs font-medium" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
-                    {c.label}
-                  </span>
-                </motion.button>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Preferred styles */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          {label('Event style')}
-          <div className="grid grid-cols-3 gap-2">
-            {STYLE_OPTIONS.map(s => {
-              const active = form.preferred_styles.includes(s.id)
-              return (
-                <motion.button key={s.id} whileTap={{ scale: 0.96 }}
-                  onClick={() => toggle('preferred_styles', s.id)}
-                  className="flex flex-col items-center gap-1.5 py-3.5 rounded-xl transition-all"
-                  style={{
-                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
-                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                  }}>
-                  <span className="text-lg">{s.emoji}</span>
-                  <span className="text-xs font-medium" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
-                    {s.label}
-                  </span>
-                </motion.button>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Energy level */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.21 }}>
-          {label('Event energy')}
-          <div className="flex gap-1.5 mb-2">
-            {[1,2,3,4,5].map(n => (
-              <button key={n} onClick={() => set('energy_level', n)}
-                className="flex-1 h-2 rounded-full transition-all"
-                style={{ background: form.energy_level >= n ? 'var(--primary)' : 'var(--border)' }} />
-            ))}
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Mellow</span>
-            <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
-              {ENERGY_LABELS[form.energy_level - 1]}
-            </span>
-            <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Electric</span>
           </div>
         </motion.div>
 

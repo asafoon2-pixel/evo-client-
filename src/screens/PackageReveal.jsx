@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Star, RefreshCw, Zap } from 'lucide-react'
+import { ArrowLeft, Star, RefreshCw, Zap, ChevronDown } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import SwapSheet from '../components/SwapSheet'
 
@@ -67,6 +67,126 @@ function TuneSheet({ onClose }) {
   )
 }
 
+// ── Vendor card with expand/collapse ─────────────────────────────────────────
+function VendorCard({ section, index, hintExpand, openSwapSheet }) {
+  const [expanded, setExpanded] = useState(false)
+  const meta = CATEGORY_META[section.id] || { label: section.label, tagline: '' }
+
+  // Hint animation: auto-expand then collapse on first card
+  useEffect(() => {
+    if (!hintExpand) return
+    const t1 = setTimeout(() => setExpanded(true), 900)
+    const t2 = setTimeout(() => setExpanded(false), 2800)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [hintExpand])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay: 0.35 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-2xl overflow-hidden cursor-pointer"
+      style={{ background: 'var(--surface)', border: `1px solid ${expanded ? 'var(--primary)' : 'var(--border)'}`, transition: 'border-color 0.25s' }}
+      onClick={() => setExpanded(e => !e)}>
+
+      {/* Image strip */}
+      <div className="relative overflow-hidden" style={{ height: 160 }}>
+        <motion.img src={section.image} alt={section.label}
+          className="w-full h-full object-cover"
+          initial={{ scale: 1.04 }} animate={{ scale: 1 }}
+          transition={{ duration: 1.4, delay: 0.2 + index * 0.08 }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,10,15,0.0) 30%, rgba(8,10,15,0.65) 100%)' }} />
+
+        <div className="absolute top-3 left-4">
+          <span className="text-[10px] font-semibold tracking-[0.2em] uppercase px-2.5 py-1 rounded-full"
+            style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', color: '#C8A96E', border: '1px solid rgba(200,169,110,0.3)' }}>
+            {meta.label}
+          </span>
+        </div>
+
+        <div className="absolute bottom-3 left-4 right-4">
+          <p className="text-white text-base font-semibold">{section.vendor.name}</p>
+          {section.vendor.rating && (
+            <div className="flex items-center gap-1 mt-0.5">
+              <Star size={10} style={{ color: '#C8A96E', fill: '#C8A96E' }} />
+              <span className="text-xs text-white opacity-70">{section.vendor.rating}</span>
+              {section.vendor.reviewCount && (
+                <span className="text-xs text-white opacity-50">· {section.vendor.reviewCount}</span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Collapsed row: price + tap hint */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          <span className="text-base font-semibold" style={{ color: 'var(--primary)' }}>
+            ₪{section.vendor.price?.toLocaleString()}
+          </span>
+          <span className="text-xs font-light italic" style={{ color: 'var(--text-muted)' }}>
+            {meta.tagline}
+          </span>
+        </div>
+        <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.25 }}>
+          <ChevronDown size={16} style={{ color: 'var(--text-muted)' }} />
+        </motion.div>
+      </div>
+
+      {/* Expanded details */}
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden">
+            <div className="px-4 pb-4" style={{ borderTop: '1px solid var(--border)' }}>
+
+              {/* Description */}
+              {section.vendor.description && (
+                <p className="text-sm font-light leading-relaxed mt-3 mb-4"
+                  style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
+                  {section.vendor.description}
+                </p>
+              )}
+
+              {/* Why EVO chose */}
+              {section.vendor.whyChosen && (
+                <div className="flex gap-2.5 items-start mb-4 p-3 rounded-xl"
+                  style={{ background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.18)' }}>
+                  <Zap size={11} className="shrink-0 mt-0.5" style={{ color: '#C8A96E' }} />
+                  <div>
+                    <p className="text-[10px] tracking-[0.18em] uppercase mb-0.5 font-semibold" style={{ color: '#C8A96E' }}>
+                      Why EVO chose this
+                    </p>
+                    <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                      {section.vendor.whyChosen}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions row */}
+              <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => openSwapSheet(section.id)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                  style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
+                  <RefreshCw size={11} /> Swap vendor
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function PackageReveal() {
   const { navigate, eventPackage, openSwapSheet } = useApp()
   const [tuneOpen, setTuneOpen] = useState(false)
@@ -126,78 +246,39 @@ export default function PackageReveal() {
       {/* Description */}
       {eventPackage.description && (
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="text-sm font-light text-center px-8 mt-3 mb-8 leading-relaxed"
+          className="text-sm font-light text-center px-8 mt-3 mb-6 leading-relaxed"
           style={{ color: 'var(--text-muted)', lineHeight: 1.8 }}>
           {eventPackage.description}
         </motion.p>
       )}
 
+      {/* Hint label */}
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+        className="text-center text-xs mb-3 tracking-wide"
+        style={{ color: 'var(--text-muted)' }}>
+        Tap any card to see what's included
+      </motion.p>
+
       {/* Vendor cards */}
-      <div className="px-6 space-y-4">
-        {eventPackage.sections?.map((section, i) => {
-          const meta = CATEGORY_META[section.id] || { label: section.label, tagline: '' }
-          return (
-            <motion.div key={section.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.35 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="rounded-2xl overflow-hidden"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-
-              {/* Image strip */}
-              <div className="relative overflow-hidden" style={{ height: 160 }}>
-                <motion.img src={section.image} alt={section.label}
-                  className="w-full h-full object-cover"
-                  initial={{ scale: 1.04 }} animate={{ scale: 1 }}
-                  transition={{ duration: 1.4, delay: 0.2 + i * 0.08 }} />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(8,10,15,0.0) 30%, rgba(8,10,15,0.65) 100%)' }} />
-
-                {/* Category label on image */}
-                <div className="absolute top-3 left-4">
-                  <span className="text-[10px] font-semibold tracking-[0.2em] uppercase px-2.5 py-1 rounded-full"
-                    style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', color: '#C8A96E', border: '1px solid rgba(200,169,110,0.3)' }}>
-                    {meta.label}
-                  </span>
-                </div>
-
-                {/* Vendor name on image bottom */}
-                <div className="absolute bottom-3 left-4 right-4">
-                  <p className="text-white text-base font-semibold">{section.vendor.name}</p>
-                  {section.vendor.rating && (
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Star size={10} style={{ color: '#C8A96E', fill: '#C8A96E' }} />
-                      <span className="text-xs text-white opacity-70">{section.vendor.rating}</span>
-                      {section.vendor.reviewCount && (
-                        <span className="text-xs text-white opacity-50">· {section.vendor.reviewCount} reviews</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Bottom row */}
-              <div className="flex items-center justify-between px-4 py-3">
-                <div>
-                  <p className="text-xs font-light italic" style={{ color: 'var(--text-muted)' }}>{meta.tagline}</p>
-                </div>
-                <motion.button onClick={() => openSwapSheet(section.id)} whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full"
-                  style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
-                  <RefreshCw size={10} /> Swap
-                </motion.button>
-              </div>
-            </motion.div>
-          )
-        })}
+      <div className="px-6 space-y-3">
+        {eventPackage.sections?.map((section, i) => (
+          <VendorCard
+            key={section.id}
+            section={section}
+            index={i}
+            hintExpand={i === 0}
+            openSwapSheet={openSwapSheet}
+          />
+        ))}
       </div>
 
       {/* Closing note */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-        className="mx-6 mt-6 mb-4 p-5 rounded-2xl flex gap-3 items-start"
+        className="mx-6 mt-5 mb-4 p-4 rounded-2xl flex gap-3 items-start"
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         <Zap size={13} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
         <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
-          Every element here was chosen with intention — not just to fill a checklist, but to create a feeling. This is the version of your event that EVO believes in.
+          Every element here was chosen with intention — not just to fill a checklist, but to create a feeling.
         </p>
       </motion.div>
 
