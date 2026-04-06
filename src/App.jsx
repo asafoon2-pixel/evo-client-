@@ -45,6 +45,7 @@ import AppTour           from './screens/AppTour'
 import EventDashboard    from './screens/EventDashboard'
 import VenueQuestions    from './screens/VenueQuestions'
 import PersonalQuestions from './screens/PersonalQuestions'
+import ClientOnboarding  from './screens/ClientOnboarding'
 
 const screenMap = {
   home:            Home,
@@ -68,8 +69,9 @@ const screenMap = {
   userprofile:     UserProfile,
   tour:            AppTour,
   dashboard:       EventDashboard,
-  venuequestions:  VenueQuestions,
+  venuequestions:   VenueQuestions,
   personalquestions: PersonalQuestions,
+  onboarding:       ClientOnboarding,
 }
 
 function AppContent() {
