@@ -1,9 +1,10 @@
-import { Component, useState } from 'react'
+import { Component, useState, useEffect, useRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { AppProvider, useApp } from './context/AppContext'
 import { LanguageProvider } from './context/LanguageContext'
 import PageTransition from './components/PageTransition'
 import SplashScreen from './components/SplashScreen'
+import DrawIconSplash from './components/DrawIconSplash'
 
 class ErrorBoundary extends Component {
   state = { error: null }
@@ -25,7 +26,6 @@ class ErrorBoundary extends Component {
 }
 
 import Home            from './screens/Home'
-import Entry           from './screens/Entry'
 import AIPrompt        from './screens/AIPrompt'
 import Brief           from './screens/Brief'
 import Building        from './screens/Building'
@@ -51,7 +51,6 @@ import ClientOnboarding  from './screens/ClientOnboarding'
 
 const screenMap = {
   home:            Home,
-  entry:           Entry,
   aiprompt:        AIPrompt,
   brief:           Brief,
   building:        Building,
@@ -76,9 +75,30 @@ const screenMap = {
   onboarding:       ClientOnboarding,
 }
 
+// Screens that skip the icon splash (loading/building screens)
+const SKIP_SPLASH_SCREENS = new Set(['building', 'result'])
+
 function AppContent() {
   const { currentScreen } = useApp()
-  const Screen = screenMap[currentScreen] || Entry
+  const Screen = screenMap[currentScreen] || Home
+
+  const [iconSplash, setIconSplash] = useState(false)
+  const [iconIndex, setIconIndex] = useState(0)
+  const screenCountRef = useRef(0)
+  const prevScreenRef = useRef(currentScreen)
+
+  useEffect(() => {
+    if (prevScreenRef.current === currentScreen) return
+    prevScreenRef.current = currentScreen
+    screenCountRef.current += 1
+
+    // Show animated icon splash every 2 screen changes (skip on loading screens)
+    if (screenCountRef.current % 2 === 0 && !SKIP_SPLASH_SCREENS.has(currentScreen)) {
+      setIconIndex(i => (i + 1) % 6)
+      setIconSplash(true)
+    }
+  }, [currentScreen])
+
   return (
     <div
       className="w-full min-h-screen flex justify-center"
@@ -94,6 +114,16 @@ function AppContent() {
           </PageTransition>
         </AnimatePresence>
       </div>
+
+      {/* Animated icon splash — every 2 screens */}
+      <AnimatePresence>
+        {iconSplash && (
+          <DrawIconSplash
+            iconIndex={iconIndex}
+            onDone={() => setIconSplash(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

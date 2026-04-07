@@ -192,7 +192,27 @@ export default function Home() {
 
         {/* ── Quick Actions ──────────────────────────────────────────────── */}
         <motion.div {...f(0.16)} className="grid grid-cols-2 gap-3">
-          {/* My Events */}
+          {/* Build with AI — left, purple */}
+          <button
+            onClick={() => navigate('brief')}
+            className="flex flex-col p-5 card-hover"
+            style={{
+              background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
+              borderRadius: 24,
+              boxShadow: 'var(--shadow-accent)',
+              alignItems: isRTL ? 'flex-end' : 'flex-start',
+              textAlign: isRTL ? 'right' : 'left',
+            }}
+          >
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3"
+              style={{ background: 'rgba(255,255,255,0.18)' }}>
+              <Zap size={20} className="text-white" />
+            </div>
+            <p className="text-sm font-semibold text-white">{t('home_build_ai')}</p>
+            <p className="text-xs mt-0.5 text-white/60">{t('home_build_ai_sub')}</p>
+          </button>
+
+          {/* My Events — right */}
           <button
             onClick={() => navigate('management')}
             className="flex flex-col p-5 card-hover"
@@ -212,69 +232,10 @@ export default function Home() {
             <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('home_my_events')}</p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('home_my_events_sub')}</p>
           </button>
-
-          {/* Build with AI */}
-          <button
-            onClick={() => navigate('brief')}
-            className="flex flex-col p-5 card-hover"
-            style={{
-              background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
-              borderRadius: 24,
-              boxShadow: 'var(--shadow-accent)',
-              alignItems: isRTL ? 'flex-end' : 'flex-start',
-              textAlign: isRTL ? 'right' : 'left',
-            }}
-          >
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3"
-              style={{ background: 'rgba(255,255,255,0.18)' }}>
-              <Zap size={20} className="text-white" />
-            </div>
-            <p className="text-sm font-semibold text-white">{t('home_build_ai')}</p>
-            <p className="text-xs mt-0.5 text-white/60">{t('home_build_ai_sub')}</p>
-          </button>
-        </motion.div>
-
-        {/* ── AI Promo Card ──────────────────────────────────────────────── */}
-        <motion.div
-          {...f(0.22)}
-          className="rounded-3xl p-7 relative overflow-hidden dot-texture"
-          style={{
-            background: 'linear-gradient(135deg, #2C2016 0%, #3D2E1A 100%)',
-            textAlign: isRTL ? 'right' : 'left',
-          }}
-        >
-          {/* Decorative glow */}
-          <div style={{
-            position: 'absolute', top: -30, right: isRTL ? 'auto' : -30, left: isRTL ? -30 : 'auto',
-            width: 140, height: 140,
-            borderRadius: '50%',
-            background: 'rgba(107,95,228,0.25)',
-            filter: 'blur(40px)',
-          }} />
-
-          <p className="text-[10px] tracking-[0.28em] uppercase mb-3 relative"
-            style={{ color: 'rgba(255,255,255,0.45)' }}>
-            {t('home_ai_label')}
-          </p>
-          <h2 className="text-xl font-bold text-white leading-tight mb-2.5 relative">
-            {t('home_ai_title')}
-          </h2>
-          <p className="text-sm font-light leading-relaxed mb-6 relative"
-            style={{ color: 'rgba(255,255,255,0.60)' }}>
-            {t('home_ai_body')}
-          </p>
-          <button
-            onClick={() => navigate('brief')}
-            className="flex items-center gap-2 text-sm font-semibold px-5 py-3 rounded-full relative"
-            style={{ background: 'rgba(107,95,228,0.9)', color: '#fff', boxShadow: '0 4px 16px rgba(107,95,228,0.4)' }}
-          >
-            {t('home_start_building')}
-            <ChevronNav size={15} />
-          </button>
         </motion.div>
 
         {/* ── How It Works ───────────────────────────────────────────────── */}
-        <motion.div {...f(0.28)}>
+        <motion.div {...f(0.22)}>
           <p className="text-xs font-semibold tracking-[0.22em] uppercase mb-3"
             style={{ color: 'var(--text-muted)' }}>
             {lang === 'he' ? 'איך זה עובד?' : 'How it works'}
@@ -302,7 +263,7 @@ export default function Home() {
         </motion.div>
 
         {/* ── Vendor Categories Grid ─────────────────────────────────────── */}
-        <motion.div {...f(0.34)}>
+        <motion.div {...f(0.28)}>
           <p className="text-xs font-semibold tracking-[0.22em] uppercase mb-3"
             style={{ color: 'var(--text-muted)' }}>
             {lang === 'he' ? 'קטגוריות ספקים' : 'Vendor Categories'}
@@ -335,7 +296,7 @@ export default function Home() {
 
         {/* ── Midburn Promo ──────────────────────────────────────────────── */}
         <motion.div
-          {...f(0.4)}
+          {...f(0.34)}
           className="relative rounded-3xl overflow-hidden card-hover"
           style={{ height: 190 }}
         >
@@ -369,10 +330,16 @@ export default function Home() {
         </motion.div>
 
         {/* ── Why EVO ────────────────────────────────────────────────────── */}
-        <motion.div {...f(0.46)} className="pb-4">
-          <p className="text-sm font-semibold mb-3"
+        <motion.div {...f(0.40)}>
+          <p className="text-sm font-semibold mb-1"
             style={{ color: 'var(--text-primary)', textAlign: isRTL ? 'right' : 'left' }}>
             {t('home_why_evo')}
+          </p>
+          <p className="text-xs mb-3 leading-relaxed"
+            style={{ color: 'var(--text-muted)', textAlign: isRTL ? 'right' : 'left' }}>
+            {lang === 'he'
+              ? 'EVO היא הפלטפורמה היחידה שמנהלת את כל האירוע מקצה לקצה — ספקים, תיאום, תשלומים, ותקשורת — במקום אחד.'
+              : 'EVO is the only platform that manages your entire event end-to-end — vendors, coordination, payments, and communication — all in one place.'}
           </p>
           <div className="grid grid-cols-3 gap-2">
             {[
@@ -388,6 +355,53 @@ export default function Home() {
                 </p>
               </div>
             ))}
+          </div>
+        </motion.div>
+
+        {/* ── Recent Events ──────────────────────────────────────────────── */}
+        <motion.div {...f(0.46)} className="pb-4">
+          <p className="text-xs font-semibold tracking-[0.22em] uppercase mb-3"
+            style={{ color: 'var(--text-muted)', textAlign: isRTL ? 'right' : 'left' }}>
+            {lang === 'he' ? 'אירועים שנסגרו לאחרונה' : 'Recently booked events'}
+          </p>
+          <div className="space-y-2">
+            {[
+              {
+                he: { name: "יום הולדת של יואב", type: "יום הולדת", vendors: 8, price: "₪20,000" },
+                en: { name: "Yoav's Birthday", type: "Birthday", vendors: 8, price: "₪20,000" },
+                emoji: '🎂', color: '#6B5FE4',
+              },
+              {
+                he: { name: "חתונת שירה ואורי", type: "חתונה", vendors: 12, price: "₪85,000" },
+                en: { name: "Shira & Uri's Wedding", type: "Wedding", vendors: 12, price: "₪85,000" },
+                emoji: '💍', color: '#D4607A',
+              },
+              {
+                he: { name: "כנס חברת אלפא", type: "אירוע קורפורייט", vendors: 6, price: "₪34,000" },
+                en: { name: "Alpha Corp Conference", type: "Corporate", vendors: 6, price: "₪34,000" },
+                emoji: '🏢', color: '#4A9E72',
+              },
+            ].map((event, i) => {
+              const d = lang === 'he' ? event.he : event.en
+              return (
+                <div key={i}
+                  className="flex items-center gap-3 px-4 py-3 rounded-2xl"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xl"
+                    style={{ background: `${event.color}15` }}>
+                    {event.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                      {d.type} · {d.vendors} {lang === 'he' ? 'ספקים' : 'vendors'}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold shrink-0" style={{ color: event.color }}>{d.price}</span>
+                </div>
+              )
+            })}
           </div>
         </motion.div>
       </div>

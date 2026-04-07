@@ -259,7 +259,7 @@ export default function Brief() {
   }
 
   const back = () => {
-    if (step === 0) navigate('entry')
+    if (step === 0) navigate('home')
     else setStep(s => s - 1)
   }
 
