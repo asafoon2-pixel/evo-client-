@@ -12,7 +12,7 @@ export default function Confirmation() {
   const formatPrice = (n) => `₪${n.toLocaleString()}`
 
   return (
-    <div className="relative w-full min-h-screen bg-evo-black flex flex-col items-center justify-center overflow-hidden px-8">
+    <div dir="rtl" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden px-8" style={{ background: 'var(--background)' }}>
       {/* Radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -23,18 +23,18 @@ export default function Confirmation() {
 
       {/* Pulse rings */}
       <motion.div
-        className="absolute rounded-full border border-evo-accent/10"
+        className="absolute rounded-full"
+        style={{ border: '1px solid rgba(107,95,228,0.12)', top: '50%', left: '50%', x: '-50%', y: '-50%' }}
         initial={{ width: 80, height: 80, opacity: 0.8 }}
         animate={{ width: 400, height: 400, opacity: 0 }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
-        style={{ top: '50%', left: '50%', x: '-50%', y: '-50%' }}
       />
       <motion.div
-        className="absolute rounded-full border border-evo-accent/8"
+        className="absolute rounded-full"
+        style={{ border: '1px solid rgba(107,95,228,0.08)', top: '50%', left: '50%', x: '-50%', y: '-50%' }}
         initial={{ width: 80, height: 80, opacity: 0.6 }}
         animate={{ width: 600, height: 600, opacity: 0 }}
         transition={{ duration: 3, delay: 0.8, repeat: Infinity, ease: 'easeOut' }}
-        style={{ top: '50%', left: '50%', x: '-50%', y: '-50%' }}
       />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-sm w-full">
@@ -43,7 +43,8 @@ export default function Confirmation() {
           initial={{ width: 0, opacity: 0 }}
           animate={{ width: 80, opacity: 1 }}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-          className="h-px bg-evo-accent mb-10"
+          className="h-px mb-10"
+          style={{ background: 'var(--primary)' }}
         />
 
         {/* Secured label */}
@@ -51,9 +52,10 @@ export default function Confirmation() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-xs tracking-[0.35em] uppercase text-evo-accent mb-6"
+          className="text-xs tracking-[0.35em] uppercase mb-6"
+          style={{ color: 'var(--primary)' }}
         >
-          Your Event Is Secured
+          האירוע שלך מאובטח
         </motion.p>
 
         {/* Event name */}
@@ -61,9 +63,10 @@ export default function Confirmation() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.9 }}
-          className="text-3xl sm:text-4xl font-light text-white leading-tight"
+          className="text-3xl sm:text-4xl font-light leading-tight"
+          style={{ color: 'var(--text-primary)' }}
         >
-          {generatedEvent?.name || 'Your Curated Evening'}
+          {generatedEvent?.name || 'הערב המיוחד שלך'}
         </motion.h1>
 
         {/* Coordinator message */}
@@ -71,9 +74,10 @@ export default function Confirmation() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.3 }}
-          className="text-evo-muted text-sm leading-relaxed font-light mt-6"
+          className="text-sm leading-relaxed font-light mt-6"
+          style={{ color: 'var(--text-muted)' }}
         >
-          EVO has notified all vendors and begun coordination. You'll receive a full brief within 24 hours.
+          EVO הודיע לכל הספקים והחל בתיאום. תקבל בריף מלא תוך 24 שעות.
         </motion.p>
 
         {/* Details */}
@@ -81,21 +85,22 @@ export default function Confirmation() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.6 }}
-          className="flex gap-6 mt-8 pt-8 border-t border-evo-border w-full justify-center"
+          className="flex gap-6 mt-8 pt-8 w-full justify-center"
+          style={{ borderTop: '1px solid var(--border)' }}
         >
           <div className="text-center">
-            <p className="text-evo-dim text-xs mb-1">Event Date</p>
-            <p className="text-white text-sm font-medium">TBD</p>
+            <p className="text-xs mb-1" style={{ color: 'var(--text-dim)' }}>תאריך אירוע</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>TBD</p>
           </div>
-          <div className="w-px bg-evo-border" />
+          <div className="w-px" style={{ background: 'var(--border)' }} />
           <div className="text-center">
-            <p className="text-evo-dim text-xs mb-1">Suppliers</p>
-            <p className="text-evo-accent text-sm font-medium">{supplierCount}</p>
+            <p className="text-xs mb-1" style={{ color: 'var(--text-dim)' }}>ספקים</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--primary)' }}>{supplierCount}</p>
           </div>
-          <div className="w-px bg-evo-border" />
+          <div className="w-px" style={{ background: 'var(--border)' }} />
           <div className="text-center">
-            <p className="text-evo-dim text-xs mb-1">Deposit Paid</p>
-            <p className="text-white text-sm font-medium">{formatPrice(deposit)}</p>
+            <p className="text-xs mb-1" style={{ color: 'var(--text-dim)' }}>מקדמה ששולמה</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{formatPrice(deposit)}</p>
           </div>
         </motion.div>
 
@@ -109,13 +114,14 @@ export default function Confirmation() {
           <motion.button
             onClick={() => navigate('management')}
             whileTap={{ scale: 0.97 }}
-            className="w-full py-4 rounded-full bg-evo-accent text-white text-sm font-semibold tracking-[0.12em] uppercase shadow-[0_4px_24px_rgba(45,27,105,0.25)] hover:bg-[#1E1060] transition-all duration-200"
+            className="w-full py-4 rounded-full text-white text-sm font-semibold tracking-[0.12em] uppercase transition-all duration-200"
+          style={{ background: 'var(--primary)', boxShadow: 'var(--shadow-accent)' }}
           >
-            Go to My Event
+            עבור לאירוע שלי
           </motion.button>
-          <button className="flex items-center justify-center gap-2 text-evo-muted text-sm tracking-wide hover:text-white transition-colors py-2">
+          <button className="flex items-center justify-center gap-2 text-sm tracking-wide py-2" style={{ color: 'var(--text-muted)' }}>
             <Share2 size={14} />
-            Share Event
+            שתף אירוע
           </button>
         </motion.div>
       </div>

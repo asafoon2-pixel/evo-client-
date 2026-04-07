@@ -9,7 +9,7 @@ export default function DrawIconSplash({ iconIndex = 0, onDone }) {
   useEffect(() => {
     const t = setTimeout(() => {
       if (!doneRef.current) { doneRef.current = true; onDone() }
-    }, 850)
+    }, 1600)
     return () => clearTimeout(t)
   }, [onDone])
 

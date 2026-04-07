@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '../context/AppContext'
 
 const BUILD_STEPS = [
-  'Reading your taste profile',
-  'Designing your atmosphere',
-  'Selecting your venue',
-  'Composing your table',
-  'Finding your sound',
-  'Balancing your budget',
+  'קורא את פרופיל הטעם שלך',
+  'מעצב את האווירה',
+  'בוחר את המקום המושלם',
+  'מרכיב את השולחן',
+  'מוצא את המוזיקה',
+  'מאזן את התקציב',
 ]
 
 const BG_IMAGES = [
@@ -181,7 +181,7 @@ export default function Building() {
                 transition={{ delay: 0.3 }}
                 className="label-overline mb-5"
               >
-                EVO has built your event
+                EVO בנה את האירוע שלך
               </motion.p>
               <motion.h1
                 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}

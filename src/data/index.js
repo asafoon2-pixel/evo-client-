@@ -920,35 +920,35 @@ export const eventPackages = {
 }
 
 export const briefEventTypes = [
-  { id: 'birthday', label: 'Birthday', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80' },
-  { id: 'wedding', label: 'Wedding', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=400&q=80' },
-  { id: 'corporate', label: 'Corporate', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=80' },
-  { id: 'social', label: 'Social', image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=400&q=80' },
-  { id: 'private', label: 'Private', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=400&q=80' },
-  { id: 'other', label: 'Other', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80' },
+  { id: 'birthday', label: 'יום הולדת', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80' },
+  { id: 'wedding', label: 'חתונה', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=400&q=80' },
+  { id: 'corporate', label: 'קורפורייט', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=80' },
+  { id: 'social', label: 'אירוע חברתי', image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=400&q=80' },
+  { id: 'private', label: 'פרטי', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=400&q=80' },
+  { id: 'other', label: 'אחר', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80' },
 ]
 
 export const briefScales = [
-  { id: 'intimate', label: 'Intimate', sublabel: 'Under 30', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80' },
-  { id: 'medium', label: 'Medium', sublabel: '30 – 100', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80' },
-  { id: 'grand', label: 'Grand', sublabel: '100+', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80' },
+  { id: 'intimate', label: 'אינטימי', sublabel: 'עד 30', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80' },
+  { id: 'medium', label: 'בינוני', sublabel: '30 – 100', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80' },
+  { id: 'grand', label: 'גדול', sublabel: '100+', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80' },
 ]
 
 export const briefBudgetTiers = [
-  { id: 'essential', label: 'Essential', range: '₪15K – ₪35K', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', multiplier: 0.6 },
-  { id: 'elevated', label: 'Elevated', range: '₪35K – ₪70K', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80', multiplier: 1.0 },
-  { id: 'signature', label: 'Signature', range: '₪70K+', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80', multiplier: 1.5 },
+  { id: 'essential', label: 'בסיסי', range: '₪15K – ₪35K', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', multiplier: 0.6 },
+  { id: 'elevated', label: 'מורם', range: '₪35K – ₪70K', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80', multiplier: 1.0 },
+  { id: 'signature', label: 'סיגנייצ׳ר', range: '₪70K+', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80', multiplier: 1.5 },
 ]
 
 export const categories = [
-  { id: 'venue',         name: 'Venue',         description: 'Spaces that set the tone', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80', count: 8 },
-  { id: 'catering',      name: 'Catering',       description: 'Food worth lingering over', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', count: 6 },
-  { id: 'music',         name: 'Music',          description: 'Sound that shapes the room', image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=600&q=80', count: 7 },
-  { id: 'lighting',      name: 'Lighting',       description: 'Atmosphere is mostly lighting', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80', count: 5 },
-  { id: 'photography',   name: 'Photography',    description: 'Moments worth keeping', image: 'https://images.unsplash.com/photo-1516997121675-4c2d1696aa90?auto=format&fit=crop&w=600&q=80', count: 9 },
-  { id: 'decor',         name: 'Decor',          description: 'Details that define the event', image: 'https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=600&q=80', count: 6 },
-  { id: 'dj',            name: 'DJ',             description: 'Energy and rhythm all night', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80', count: 5 },
-  { id: 'bar',           name: 'Bar & Drinks',   description: 'Premium drinks experience', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80', count: 4 },
+  { id: 'venue',         name: 'מקום',         description: 'חללים שמגדירים את הטון', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80', count: 8 },
+  { id: 'catering',      name: 'קייטרינג',     description: 'אוכל שאי אפשר להפסיק', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', count: 6 },
+  { id: 'music',         name: 'מוזיקה',       description: 'צליל שמעצב את החדר', image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=600&q=80', count: 7 },
+  { id: 'lighting',      name: 'תאורה',        description: 'האווירה היא בעיקר תאורה', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80', count: 5 },
+  { id: 'photography',   name: 'צילום',        description: 'רגעים שראויים להישמר', image: 'https://images.unsplash.com/photo-1516997121675-4c2d1696aa90?auto=format&fit=crop&w=600&q=80', count: 9 },
+  { id: 'decor',         name: 'עיצוב',        description: 'פרטים שמגדירים את האירוע', image: 'https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=600&q=80', count: 6 },
+  { id: 'dj',            name: 'DJ',           description: 'אנרגיה וקצב כל הלילה', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80', count: 5 },
+  { id: 'bar',           name: 'בר ומשקאות',  description: 'חוויית שתייה פרימיום', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80', count: 4 },
 ]
 
 export const suppliers = {

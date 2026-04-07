@@ -84,8 +84,8 @@ function TimeWheel({ value, onChange, label }) {
   )
 }
 
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa']
+const MONTHS = ['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ']
+const DAYS   = ['א','ב','ג','ד','ה','ו','ש']
 
 function CalendarPicker({ selected, onSelect }) {
   const today = new Date()
@@ -160,10 +160,10 @@ function SummaryChips({ answers, step }) {
   }
   if (step > 1 && answers.scale) {
     const sc = briefScales.find(s => s.id === answers.scale)
-    if (sc) chips.push({ key: 'scale', label: sc.sublabel + ' guests' })
+    if (sc) chips.push({ key: 'scale', label: sc.sublabel + ' אורחים' })
   }
   if (step > 2 && answers.date) {
-    chips.push({ key: 'date', label: answers.date === 'flexible' ? 'Flexible date' : answers.date })
+    chips.push({ key: 'date', label: answers.date === 'flexible' ? 'תאריך גמיש' : answers.date })
   }
 
   if (chips.length === 0) return null
@@ -264,7 +264,7 @@ export default function Brief() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Sticky header */}
       <div className="sticky top-0 z-20 pt-5 pb-2" style={{ background: 'var(--background)' }}>
@@ -307,9 +307,9 @@ export default function Brief() {
             <motion.div key="type" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="flex-1 flex flex-col px-6 pt-6 pb-6">
-              <p className="label-overline mb-2">What are we celebrating?</p>
+              <p className="label-overline mb-2">מה אנחנו חוגגים?</p>
               <h2 className="font-display text-[32px] font-light leading-snug mb-6" style={{ color: 'var(--text-primary)' }}>
-                Pick your event type
+                בחר סוג אירוע
               </h2>
 
               <button onClick={() => navigate('categories')}
@@ -320,7 +320,7 @@ export default function Brief() {
                   border: '1.5px solid rgba(45,27,105,0.18)',
                   color: 'var(--primary)',
                 }}>
-                I already have an event — add suppliers →
+                יש לי אירוע — הוסף ספקים ←
               </button>
 
               <div className="grid grid-cols-2 gap-3 flex-1">
@@ -351,9 +351,9 @@ export default function Brief() {
             <motion.div key="scale" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="flex-1 flex flex-col px-6 pt-6 pb-6">
-              <p className="label-overline mb-2">Guest count</p>
+              <p className="label-overline mb-2">מספר אורחים</p>
               <h2 className="font-display text-[32px] font-light leading-snug mb-6" style={{ color: 'var(--text-primary)' }}>
-                How many people?
+                כמה אנשים?
               </h2>
               <div className="flex flex-col gap-3">
                 {briefScales.map(s => (
@@ -367,7 +367,7 @@ export default function Brief() {
                     <div className="absolute inset-0 flex items-center justify-between px-5">
                       <div>
                         <p className="text-white text-base font-semibold">{s.label}</p>
-                        <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>{s.sublabel} guests</p>
+                        <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>{s.sublabel} אורחים</p>
                       </div>
                       {briefAnswers.scale === s.id && (
                         <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
@@ -386,9 +386,9 @@ export default function Brief() {
             <motion.div key="date" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="flex-1 flex flex-col px-6 pt-6 pb-6 overflow-y-auto">
-              <p className="label-overline mb-2">Event date & time</p>
+              <p className="label-overline mb-2">תאריך ושעה</p>
               <h2 className="font-display text-[32px] font-light leading-snug mb-5" style={{ color: 'var(--text-primary)' }}>
-                When is it?
+                מתי זה?
               </h2>
               {briefAnswers.date && briefAnswers.date !== 'flexible' && (
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
@@ -409,18 +409,18 @@ export default function Brief() {
                   border: briefAnswers.date === 'flexible' ? '1.5px solid rgba(45,27,105,0.4)' : '1.5px dashed rgba(45,27,105,0.2)',
                   background: briefAnswers.date === 'flexible' ? 'rgba(45,27,105,0.06)' : 'transparent',
                 }}>
-                {briefAnswers.date === 'flexible' ? '✓ Flexible date' : "I'm flexible with the date"}
+                {briefAnswers.date === 'flexible' ? '✓ תאריך גמיש' : 'אני גמיש עם התאריך'}
               </button>
 
               {/* Time pickers */}
               <div className="mt-6 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
                 <p className="text-xs tracking-widest uppercase text-center mb-4" style={{ color: 'var(--text-muted)' }}>
-                  Event Hours
+                  שעות האירוע
                 </p>
                 <div className="flex items-center justify-center gap-6">
-                  <TimeWheel label="Start" value={startTime} onChange={setStartTime} />
+                  <TimeWheel label="התחלה" value={startTime} onChange={setStartTime} />
                   <div className="text-2xl font-light" style={{ color: 'var(--text-dim)', marginTop: 20 }}>→</div>
-                  <TimeWheel label="End" value={endTime} onChange={setEndTime} />
+                  <TimeWheel label="סיום" value={endTime} onChange={setEndTime} />
                 </div>
               </div>
 
@@ -440,7 +440,7 @@ export default function Brief() {
                   boxShadow: 'var(--shadow-accent)',
                   opacity: briefAnswers.date ? 1 : 0.45,
                 }}>
-                Continue →
+                המשך ←
               </motion.button>
             </motion.div>
           )}
@@ -450,9 +450,9 @@ export default function Brief() {
             <motion.div key="budget" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="flex-1 flex flex-col px-6 pt-6 pb-6">
-              <p className="label-overline mb-2">Budget</p>
+              <p className="label-overline mb-2">תקציב</p>
               <h2 className="font-display text-[32px] font-light leading-snug mb-6" style={{ color: 'var(--text-primary)' }}>
-                What's your range?
+                מה הטווח שלך?
               </h2>
               <div className="flex flex-col gap-3">
                 {briefBudgetTiers.map(t => (
@@ -484,30 +484,30 @@ export default function Brief() {
             <motion.div key="setting" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="flex-1 flex flex-col px-6 pt-6 pb-6">
-              <p className="label-overline mb-2">Event setting</p>
+              <p className="label-overline mb-2">הגדרת האירוע</p>
               <h2 className="font-display text-[32px] font-light leading-snug mb-6" style={{ color: 'var(--text-primary)' }}>
-                Indoor or outdoor?
+                פנים או חוץ?
               </h2>
               <div className="flex flex-col gap-4 flex-1">
                 {[
                   {
                     id: 'indoor',
-                    label: 'Indoor',
-                    sublabel: 'Air-conditioned venue, full control over ambience',
+                    label: 'פנים',
+                    sublabel: 'מקום ממוזג, שליטה מלאה על האווירה',
                     Icon: Building2,
                     gradient: 'linear-gradient(135deg, #2D1B69 0%, #1a0f3e 100%)',
                   },
                   {
                     id: 'outdoor',
-                    label: 'Outdoor',
-                    sublabel: 'Open air, natural light, garden or rooftop',
+                    label: 'חוץ',
+                    sublabel: 'אוויר פתוח, אור טבעי, גן או גג',
                     Icon: TreePine,
                     gradient: 'linear-gradient(135deg, #1a4a2e 0%, #0d3320 100%)',
                   },
                   {
                     id: 'hybrid',
-                    label: "Both / Hybrid",
-                    sublabel: 'Indoor ceremony, outdoor reception — or vice versa',
+                    label: 'היברידי',
+                    sublabel: 'טקס בפנים, קבלת פנים בחוץ — או להפך',
                     Icon: null,
                     gradient: 'linear-gradient(135deg, #4a3a1a 0%, #2e2010 100%)',
                   },

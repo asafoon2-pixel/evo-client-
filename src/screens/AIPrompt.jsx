@@ -4,17 +4,17 @@ import { ArrowLeft, Sparkles, MapPin, Tag } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 const SUGGESTIONS = [
-  'Intimate candlelit dinner',
-  'Rooftop party with DJ',
-  'Garden wedding',
-  'Corporate gala',
-  'Live jazz and fine dining',
-  'High-energy celebration',
-  'Elegant black-tie',
-  'Outdoor summer vibes',
+  'ארוחת ערב אינטימית לאור נרות',
+  'מסיבת גג עם DJ',
+  'חתונה בגן',
+  'גאלה קורפורייטי',
+  'ג׳אז חי ואוכל משובח',
+  'חגיגה עם אנרגיה גבוהה',
+  'אלגנטי ורשמי',
+  'ווייבס קיץ בחוץ',
 ]
 
-const PLACEHOLDER = 'e.g. Classy rooftop dinner with live jazz and Italian food for 50 guests...'
+const PLACEHOLDER = 'למשל: ארוחת ערב מפוארת על הגג עם ג׳אז חי ואוכל איטלקי ל-50 אורחים...'
 
 export default function AIPrompt() {
   const { navigate, buildPackageFromText, briefAnswers, updateBrief, updateEventDetails, eventDetails } = useApp()
@@ -40,7 +40,7 @@ export default function AIPrompt() {
   const canSubmit = text.trim().length > 3 && eventDetails.city.trim().length > 1 && briefAnswers.hasVenue !== null
 
   return (
-    <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="flex items-center px-6 pt-12 pb-4">
@@ -62,7 +62,7 @@ export default function AIPrompt() {
           className="text-[10px] font-semibold tracking-[0.25em] uppercase mb-3"
           style={{ color: 'var(--primary)' }}
         >
-          AI Event Builder
+          בניית אירוע עם AI
         </motion.p>
 
         <motion.h1
@@ -71,8 +71,8 @@ export default function AIPrompt() {
           className="text-[34px] font-light leading-tight mb-2"
           style={{ color: 'var(--text-primary)' }}
         >
-          Describe your<br />
-          <span style={{ color: 'var(--primary)' }}>perfect event</span>
+          תאר את<br />
+          <span style={{ color: 'var(--primary)' }}>האירוע המושלם</span>
         </motion.h1>
 
         <motion.p
@@ -81,7 +81,7 @@ export default function AIPrompt() {
           className="text-sm font-light mb-8"
           style={{ color: 'var(--text-muted)' }}
         >
-          Write anything — vibe, food, music, feel. EVO will do the rest.
+          כתוב כל דבר — ווייב, אוכל, מוזיקה, תחושה. EVO יעשה את השאר.
         </motion.p>
 
         {/* Text input */}
@@ -127,7 +127,7 @@ export default function AIPrompt() {
           className="mt-5"
         >
           <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-            Quick add
+            הוסף במהירות
           </p>
           <div className="flex flex-wrap gap-2">
             {SUGGESTIONS.map(s => (
@@ -156,7 +156,7 @@ export default function AIPrompt() {
           className="mt-6 space-y-3"
         >
           <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-            Event details
+            פרטי האירוע
           </p>
 
           {/* City */}
@@ -164,7 +164,7 @@ export default function AIPrompt() {
             <MapPin size={15} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-dim)' }} />
             <input
               type="text"
-              placeholder="Event city (e.g. Tel Aviv)"
+              placeholder="עיר האירוע (למשל תל אביב)"
               value={eventDetails.city}
               onChange={e => updateEventDetails('city', e.target.value)}
               className="w-full pl-11 pr-4 py-3.5 text-sm outline-none transition-all"
@@ -185,7 +185,7 @@ export default function AIPrompt() {
             <Tag size={15} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-dim)' }} />
             <input
               type="text"
-              placeholder="Event name (optional)"
+              placeholder="שם האירוע (אופציונלי)"
               value={eventDetails.title}
               onChange={e => updateEventDetails('title', e.target.value)}
               className="w-full pl-11 pr-4 py-3.5 text-sm outline-none transition-all"
@@ -209,12 +209,12 @@ export default function AIPrompt() {
           className="mt-6 mb-6"
         >
           <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-            Do you have a venue?
+            יש לך מקום?
           </p>
           <div className="flex gap-3">
             {[
-              { value: true,  label: 'Yes, I have a venue',  sub: "I'll fill in the details later" },
-              { value: false, label: 'No, I need a venue',   sub: 'EVO will suggest one for you' },
+              { value: true,  label: 'כן, יש לי מקום',  sub: 'אמלא את הפרטים אחר כך' },
+              { value: false, label: 'לא, אני צריך מקום',   sub: 'EVO יציע לי אחד' },
             ].map(opt => {
               const active = briefAnswers.hasVenue === opt.value
               return (
@@ -273,7 +273,7 @@ export default function AIPrompt() {
                   className="w-4 h-4 rounded-full border-2 animate-spin"
                   style={{ borderColor: 'rgba(255,255,255,0.4)', borderTopColor: '#fff' }}
                 />
-                Building your event...
+                בונה את האירוע שלך...
               </motion.div>
             ) : (
               <motion.div
@@ -282,14 +282,14 @@ export default function AIPrompt() {
                 className="flex items-center gap-2"
               >
                 <Sparkles size={15} />
-                Build My Event
+                בנה את האירוע שלי
               </motion.div>
             )}
           </AnimatePresence>
         </motion.button>
 
         <p className="text-center text-xs mt-3" style={{ color: 'var(--text-dim)' }}>
-          EVO will match vendors based on your description
+          EVO יתאים ספקים בהתאם לתיאור שלך
         </p>
       </motion.div>
     </div>

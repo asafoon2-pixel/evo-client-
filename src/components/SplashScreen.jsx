@@ -15,8 +15,8 @@ export default function SplashScreen({ onDone }) {
   const [exiting, setExiting] = useState(false)
 
   useEffect(() => {
-    const t1 = setTimeout(() => setExiting(true), 2000)
-    const t2 = setTimeout(onDone, 2600)
+    const t1 = setTimeout(() => setExiting(true), 3500)
+    const t2 = setTimeout(onDone, 4200)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [onDone])
 

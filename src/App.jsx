@@ -92,8 +92,8 @@ function AppContent() {
     prevScreenRef.current = currentScreen
     screenCountRef.current += 1
 
-    // Show animated icon splash every 2 screen changes (skip on loading screens)
-    if (screenCountRef.current % 2 === 0 && !SKIP_SPLASH_SCREENS.has(currentScreen)) {
+    // Show animated icon splash on every screen change (skip on loading screens)
+    if (!SKIP_SPLASH_SCREENS.has(currentScreen)) {
       setIconIndex(i => (i + 1) % 6)
       setIconSplash(true)
     }

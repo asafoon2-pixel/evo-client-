@@ -19,29 +19,29 @@ export default function PreAISummary() {
   const rows = [
     {
       icon: LayoutGrid,
-      label: 'Event type',
+      label: 'סוג אירוע',
       value: eventType?.label || '—',
       image: eventType?.image,
     },
     {
       icon: Users,
-      label: 'Guests',
+      label: 'אורחים',
       value: scale ? `${scale.label} · ${scale.sublabel}` : '—',
     },
     {
       icon: Calendar,
-      label: 'Date',
-      value: briefAnswers.date === 'flexible' ? 'Flexible' : briefAnswers.date || '—',
+      label: 'תאריך',
+      value: briefAnswers.date === 'flexible' ? 'גמיש' : briefAnswers.date || '—',
     },
     {
       icon: Wallet,
-      label: 'Budget',
+      label: 'תקציב',
       value: budget ? `${budget.label} · ${budget.range}` : '—',
     },
   ]
 
   return (
-    <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="flex items-center px-6 pt-12 pb-6">
@@ -55,13 +55,13 @@ export default function PreAISummary() {
       <div className="flex-1 flex flex-col px-6">
 
         {/* Hero label */}
-        <motion.p {...f(0.05)} className="label-overline mb-3">Your event brief</motion.p>
+        <motion.p {...f(0.05)} className="label-overline mb-3">הבריף שלך</motion.p>
         <motion.h1 {...f(0.12)} className="font-display text-[36px] font-light leading-tight mb-2"
           style={{ color: 'var(--text-primary)' }}>
-          Here's what<br />we know
+          הנה מה<br />שיודעים
         </motion.h1>
         <motion.p {...f(0.18)} className="text-sm mb-8 font-light" style={{ color: 'var(--text-muted)' }}>
-          Review your selections before we build your event.
+          בדוק את הבחירות שלך לפני שנבנה את האירוע.
         </motion.p>
 
         {/* Summary card */}
@@ -105,7 +105,7 @@ export default function PreAISummary() {
         <motion.button {...f(0.55)} onClick={() => navigate('brief')}
           className="text-xs font-medium text-center mb-8 py-1"
           style={{ color: 'var(--text-muted)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-          Edit my selections
+          ערוך את הבחירות שלי
         </motion.button>
 
       </div>
@@ -116,7 +116,7 @@ export default function PreAISummary() {
         style={{ background: 'var(--background)', borderTop: '1px solid var(--border)' }}>
 
         <p className="text-xs text-center font-medium mb-4" style={{ color: 'var(--text-muted)' }}>
-          How would you like to build your event?
+          איך תרצה לבנות את האירוע?
         </p>
 
         {/* AI flow */}
@@ -131,7 +131,7 @@ export default function PreAISummary() {
             boxShadow: 'var(--shadow-accent)',
           }}>
           <Sparkles size={16} />
-          Let AI match my event vibe
+          תן ל-AI להתאים את ווייב האירוע
         </motion.button>
 
         {/* Manual flow */}
@@ -147,7 +147,7 @@ export default function PreAISummary() {
             boxShadow: '0 1px 4px rgba(45,27,105,0.07)',
           }}>
           <LayoutGrid size={15} />
-          Choose vendors manually
+          בחר ספקים ידנית
         </motion.button>
       </motion.div>
     </div>
