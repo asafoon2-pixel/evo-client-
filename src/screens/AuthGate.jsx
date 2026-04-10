@@ -35,12 +35,16 @@ export default function AuthGate() {
       navigate(isNew ? 'brief' : 'dashboard')
     } catch (e) {
       setError(
-        e.code === 'auth/wrong-password'       ? 'סיסמה שגויה' :
-        e.code === 'auth/user-not-found'        ? 'לא נמצא חשבון — להירשם?' :
-        e.code === 'auth/email-already-in-use'  ? 'האימייל כבר רשום' :
-        e.code === 'auth/invalid-email'         ? 'כתובת אימייל לא תקינה' :
-        e.code === 'auth/weak-password'         ? 'סיסמה חלשה מדי (מינימום 6 תווים)' :
-        'משהו השתבש, נסה שוב'
+        e.code === 'auth/wrong-password'          ? 'סיסמה שגויה' :
+        e.code === 'auth/invalid-credential'      ? 'אימייל או סיסמה שגויים' :
+        e.code === 'auth/user-not-found'          ? 'לא נמצא חשבון — להירשם?' :
+        e.code === 'auth/email-already-in-use'    ? 'האימייל כבר רשום' :
+        e.code === 'auth/invalid-email'           ? 'כתובת אימייל לא תקינה' :
+        e.code === 'auth/weak-password'           ? 'סיסמה חלשה מדי (מינימום 6 תווים)' :
+        e.code === 'auth/operation-not-allowed'   ? 'התחברות במייל לא מופעלת — פנה לתמיכה' :
+        e.code === 'auth/too-many-requests'       ? 'יותר מדי ניסיונות, נסה מאוחר יותר' :
+        e.code === 'auth/network-request-failed'  ? 'בעיית רשת, בדוק חיבור לאינטרנט' :
+        `שגיאה: ${e.code || 'לא ידועה'}`
       )
     } finally {
       setLoading(false)
