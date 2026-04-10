@@ -4,18 +4,18 @@ import { ArrowLeft, ArrowRight, MapPin, CheckCircle2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 const INDOOR_OUTDOOR = [
-  { id: 'indoor',  label: 'Indoor',  icon: '🏛️' },
-  { id: 'outdoor', label: 'Outdoor', icon: '🌿' },
-  { id: 'mixed',   label: 'Mixed',   icon: '✨' },
+  { id: 'indoor',  label: 'פנים',     icon: '🏛️' },
+  { id: 'outdoor', label: 'חוץ',      icon: '🌿' },
+  { id: 'mixed',   label: 'היברידי',  icon: '✨' },
 ]
 
 const AMENITIES = [
-  { id: 'kitchen',    label: 'Full kitchen' },
-  { id: 'bar',        label: 'Bar area' },
-  { id: 'av',         label: 'AV / sound system' },
-  { id: 'parking',    label: 'On-site parking' },
-  { id: 'accessible', label: 'Accessible entrance' },
-  { id: 'garden',     label: 'Garden / terrace' },
+  { id: 'kitchen',    label: 'מטבח מלא' },
+  { id: 'bar',        label: 'אזור בר' },
+  { id: 'av',         label: 'מערכת קול/מוצג' },
+  { id: 'parking',    label: 'חניה במקום' },
+  { id: 'accessible', label: 'כניסה נגישה' },
+  { id: 'garden',     label: 'גן / מרפסת' },
 ]
 
 export default function VenueQuestions() {
@@ -27,9 +27,6 @@ export default function VenueQuestions() {
     venueType:        null,        // 'indoor' | 'outdoor' | 'mixed'
     capacity:         '',
     amenities:        [],          // array of ids
-    noiseRestriction: null,        // true | false
-    coordinator:      null,        // true | false
-    vendorRestrictions: null,      // true | false
     notes:            '',
   })
 
@@ -53,21 +50,21 @@ export default function VenueQuestions() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="sticky top-0 z-10 backdrop-blur-md border-b px-6 pt-5 pb-4"
-        style={{ background: 'rgba(245,245,247,0.95)', borderColor: 'var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.95)', borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('summary')} style={{ color: 'var(--text-muted)' }}>
-            <ArrowLeft size={20} />
+            <ArrowLeft size={20} style={{ transform: 'scaleX(-1)' }} />
           </button>
           <div className="flex-1">
             <p className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--primary)' }}>
-              Your Venue
+              המקום שלך
             </p>
             <h1 className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>
-              Tell us about the space
+              ספר לנו על המרחב
             </h1>
           </div>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -82,18 +79,18 @@ export default function VenueQuestions() {
         {/* Intro */}
         <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           className="text-sm font-light leading-relaxed" style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
-          Since you already have a venue, help us understand the space so EVO can match the right vendors and logistics to it perfectly.
+          מכיוון שיש לך מקום, עזור לנו להבין את המרחב כדי שEVO יוכל להתאים את הספקים הנכונים.
         </motion.p>
 
         {/* Venue name */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Venue Name
+            שם המקום
           </label>
           <input
             value={form.venueName}
             onChange={e => set('venueName', e.target.value)}
-            placeholder="e.g. Villa Harmony, The Rooftop at Tel Aviv Port…"
+            placeholder="לדוגמה: Villa Harmony, The Rooftop at Tel Aviv Port…"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none transition-all"
             style={{
               background: 'var(--surface)',
@@ -106,12 +103,12 @@ export default function VenueQuestions() {
         {/* Address */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
           <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Address / Location
+            כתובת / מיקום
           </label>
           <input
             value={form.venueAddress}
             onChange={e => set('venueAddress', e.target.value)}
-            placeholder="Full address or neighborhood"
+            placeholder="כתובת מלאה או שכונה"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none transition-all"
             style={{
               background: 'var(--surface)',
@@ -124,7 +121,7 @@ export default function VenueQuestions() {
         {/* Indoor / Outdoor / Mixed */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }}>
           <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-            Space Type
+            סוג המרחב
           </label>
           <div className="grid grid-cols-3 gap-2">
             {INDOOR_OUTDOOR.map(opt => {
@@ -149,13 +146,13 @@ export default function VenueQuestions() {
         {/* Estimated capacity */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
           <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Estimated Capacity (guests)
+            קיבולת משוערת (אורחים)
           </label>
           <input
             type="number"
             value={form.capacity}
             onChange={e => set('capacity', e.target.value)}
-            placeholder="e.g. 120"
+            placeholder="לדוגמה: 120"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none transition-all"
             style={{
               background: 'var(--surface)',
@@ -168,7 +165,7 @@ export default function VenueQuestions() {
         {/* Amenities */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
           <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-            Available Amenities
+            מתקנים זמינים
           </label>
           <div className="grid grid-cols-2 gap-2">
             {AMENITIES.map(a => {
@@ -193,47 +190,17 @@ export default function VenueQuestions() {
           </div>
         </motion.div>
 
-        {/* Yes/No questions */}
-        {[
-          { key: 'noiseRestriction', label: 'Noise or time restrictions?', sub: 'Curfew, noise limits, neighbour rules' },
-          { key: 'coordinator',      label: 'Venue coordinator on-site?',  sub: 'Day-of venue manager available' },
-          { key: 'vendorRestrictions', label: 'Vendor restrictions?',       sub: 'Must use approved vendor list' },
-        ].map(({ key, label, sub }, idx) => (
-          <motion.div key={key} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + idx * 0.04 }}>
-            <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-              {label}
-            </label>
-            {sub && <p className="text-xs mb-3 font-light" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>{sub}</p>}
-            <div className="flex gap-3">
-              {[{ val: true, l: 'Yes' }, { val: false, l: 'No' }].map(({ val, l }) => {
-                const active = form[key] === val
-                return (
-                  <motion.button key={l} onClick={() => set(key, val)} whileTap={{ scale: 0.97 }}
-                    className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
-                    style={{
-                      background: active ? 'var(--primary-dim)' : 'var(--surface)',
-                      border: `1.5px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                      color: active ? 'var(--primary)' : 'var(--text-muted)',
-                    }}>
-                    {l}
-                  </motion.button>
-                )
-              })}
-            </div>
-          </motion.div>
-        ))}
 
         {/* Extra notes */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
           <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-            Anything else we should know?
+            עוד משהו שכדאי לדעת?
           </label>
           <textarea
             value={form.notes}
             onChange={e => set('notes', e.target.value)}
             rows={3}
-            placeholder="Unique quirks, access notes, parking info, special rules…"
+            placeholder="מאפיינים ייחודיים, הערות גישה, מידע חניה, כללים מיוחדים…"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light outline-none resize-none transition-all"
             style={{
               background: 'var(--surface)',
@@ -248,7 +215,7 @@ export default function VenueQuestions() {
 
       {/* Sticky CTA */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
-        style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button
           onClick={handleContinue}
           disabled={!canContinue}
@@ -262,10 +229,10 @@ export default function VenueQuestions() {
             boxShadow: canContinue ? 'var(--shadow-accent)' : 'none',
             opacity: canContinue ? 1 : 0.6,
           }}>
-          Continue <ArrowRight size={14} />
+          המשך <ArrowRight size={14} style={{ transform: 'scaleX(-1)' }} />
         </motion.button>
         <p className="text-center text-xs mt-2" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
-          A few personal questions next
+          כמה שאלות אישיות עכשיו
         </p>
       </div>
     </div>

@@ -49,15 +49,15 @@ export default function Discover() {
   }
 
   return (
-    <div className="relative w-full h-full min-h-screen flex flex-col bg-evo-black overflow-hidden">
+    <div dir="rtl" className="relative w-full h-full min-h-screen flex flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
       {/* Top bar */}
       <div className="relative z-20 flex items-center justify-between px-6 pt-12 pb-4">
         <button
           onClick={() => navigate('brief')}
-          className="flex items-center gap-2 text-evo-muted hover:text-white transition-colors"
+          className="flex items-center gap-2 transition-colors" style={{ color: 'var(--text-muted)' }}
         >
-          <ArrowLeft size={18} />
-          <span className="text-sm tracking-wide">Back</span>
+          <ArrowLeft size={18} style={{ transform: 'scaleX(-1)' }} />
+          <span className="text-sm tracking-wide">חזור</span>
         </button>
 
         {/* Dot progress */}
@@ -83,11 +83,11 @@ export default function Discover() {
 
       {/* Explainer heading */}
       <div className="relative z-10 px-6 mb-4">
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1A1A2E', lineHeight: 1.2 }}>
-          Choose your event style
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+          בחר את סגנון האירוע שלך
         </h2>
-        <p style={{ fontSize: 14, color: 'rgba(26,26,46,0.55)', lineHeight: 1.6, marginTop: 6 }}>
-          Swipe right on vibes that match your vision. We'll use this to recommend the right suppliers and setup for your event.
+        <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6, marginTop: 6 }}>
+          החלק ימינה על ויברציות שמתאימות לחזון שלך. נשתמש בזה כדי להמליץ על הספקים המתאימים לאירוע שלך.
         </p>
       </div>
 
@@ -102,19 +102,19 @@ export default function Discover() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
-                className="absolute inset-0 rounded-3xl bg-evo-card border border-evo-border flex flex-col items-center justify-center p-8 text-center z-20"
+                className="absolute inset-0 rounded-3xl flex flex-col items-center justify-center p-8 text-center z-20" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                <div className="w-10 h-10 rounded-full bg-evo-accent/10 border border-evo-accent/30 flex items-center justify-center mb-6">
-                  <span className="text-evo-accent text-lg font-light">E</span>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mb-6" style={{ background: 'rgba(107,95,228,0.1)', border: '1px solid rgba(107,95,228,0.3)' }}>
+                  <span className="text-lg font-light" style={{ color: 'var(--primary)' }}>E</span>
                 </div>
-                <p className="text-xs tracking-[0.25em] uppercase text-evo-accent mb-4">
-                  EVO is learning
+                <p className="text-xs tracking-[0.25em] uppercase mb-4" style={{ color: 'var(--primary)' }}>
+                  EVO לומד
                 </p>
-                <p className="text-white text-xl font-light leading-relaxed">
-                  Your taste is taking shape.
+                <p className="text-xl font-light leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                  הטעם שלך מתגבש.
                 </p>
-                <p className="text-evo-muted text-sm mt-3 leading-relaxed">
-                  Keep going — the full picture emerges at the end.
+                <p className="text-sm mt-3 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                  המשך — התמונה המלאה מתגלה בסוף.
                 </p>
               </motion.div>
             )}
@@ -148,7 +148,7 @@ export default function Discover() {
               >
                 <div className="w-3 h-3 rounded-full mb-6 animate-pulse" style={{ background: 'var(--primary)' }} />
                 <p className="text-lg font-light tracking-wide" style={{ color: 'var(--text-primary)' }}>
-                  Building your profile...
+                  בונה את הפרופיל שלך...
                 </p>
               </motion.div>
             </div>
@@ -163,7 +163,7 @@ export default function Discover() {
             whileTap={{ scale: 0.9 }}
             onClick={() => handleButtonSwipe('left')}
             disabled={showInsight || isDone}
-            className="w-16 h-16 rounded-full border border-evo-border bg-evo-card flex items-center justify-center hover:border-white/30 transition-all disabled:opacity-30"
+            className="w-16 h-16 rounded-full flex items-center justify-center transition-all disabled:opacity-30" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
           >
             <X size={22} className="text-white" />
           </motion.button>

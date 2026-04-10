@@ -48,6 +48,7 @@ import EventDashboard    from './screens/EventDashboard'
 import VenueQuestions    from './screens/VenueQuestions'
 import PersonalQuestions from './screens/PersonalQuestions'
 import ClientOnboarding  from './screens/ClientOnboarding'
+import AuthGate          from './screens/AuthGate'
 
 const screenMap = {
   home:            Home,
@@ -73,6 +74,7 @@ const screenMap = {
   venuequestions:   VenueQuestions,
   personalquestions: PersonalQuestions,
   onboarding:       ClientOnboarding,
+  authgate:         AuthGate,
 }
 
 // Screens that skip the icon splash (loading/building screens)

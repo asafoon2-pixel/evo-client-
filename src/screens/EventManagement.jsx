@@ -7,27 +7,27 @@ import { useApp } from '../context/AppContext'
 const DAYS_TO_EVENT = 47
 
 const activityFeed = [
-  { id: 1, message: 'Venue confirmed your booking — The Pearl House is secured.', time: '2 hours ago', status: 'confirmed' },
-  { id: 2, message: 'Catering brief sent to Atelier Culinaire — reply expected Thursday.', time: '5 hours ago', status: 'in-progress' },
-  { id: 3, message: 'EVO is following up on entertainment contract with Noa Ben David.', time: '1 day ago', status: 'in-progress' },
-  { id: 4, message: 'Photography package confirmed with Studio Lev.', time: '1 day ago', status: 'confirmed' },
-  { id: 5, message: 'Lighting consultation scheduled for next Tuesday at 3pm.', time: '2 days ago', status: 'pending' },
-  { id: 6, message: 'Deposit processed and distributed to vendors.', time: '2 days ago', status: 'confirmed' },
+  { id: 1, message: 'המקום אישר את ההזמנה שלך — The Pearl House מאובטח.', time: 'לפני שעתיים', status: 'confirmed' },
+  { id: 2, message: 'בריף קייטרינג נשלח ל-Atelier Culinaire — תגובה צפויה ביום חמישי.', time: 'לפני 5 שעות', status: 'in-progress' },
+  { id: 3, message: 'EVO עוקב אחר חוזה הבידור עם נועה בן דוד.', time: 'לפני יום', status: 'in-progress' },
+  { id: 4, message: 'חבילת צילום אושרה עם Studio Lev.', time: 'לפני יום', status: 'confirmed' },
+  { id: 5, message: 'ייעוץ תאורה נקבע לשלישי הקרוב בשעה 15:00.', time: 'לפני יומיים', status: 'pending' },
+  { id: 6, message: 'מקדמה עובדה והופצה לספקים.', time: 'לפני יומיים', status: 'confirmed' },
 ]
 
 const timelineMilestones = [
-  { title: 'Event Secured', status: 'completed', date: 'Today', steps: ['Deposit paid', 'Vendors notified', 'EVO brief created'] },
-  { title: 'Vendors Confirmed', status: 'in-progress', date: 'This week', steps: ['Venue ✓', 'Photography ✓', 'DJ — pending', 'Catering — in review'] },
-  { title: 'Briefings Sent', status: 'pending', date: 'Next week', steps: ['Detailed event brief', 'Timeline confirmation', 'Guest count finalized'] },
-  { title: 'Final Details', status: 'future', date: 'Week before', steps: ['Final headcount', 'Dietary requirements', 'Runsheet approved'] },
-  { title: 'Event Day', status: 'future', date: 'Event day', steps: ['Vendor arrival & setup', 'EVO on-site coordinator', 'Your perfect evening'] },
+  { title: 'אירוע מאובטח', status: 'completed', date: 'היום', steps: ['מקדמה שולמה', 'ספקים קיבלו הודעה', 'בריף EVO נוצר'] },
+  { title: 'ספקים אושרו', status: 'in-progress', date: 'השבוע', steps: ['מקום ✓', 'צילום ✓', 'DJ — ממתין', 'קייטרינג — בבדיקה'] },
+  { title: 'בריפים נשלחו', status: 'pending', date: 'שבוע הבא', steps: ['בריף אירוע מפורט', 'אישור לוח זמנים', 'מספר אורחים סופי'] },
+  { title: 'פרטים אחרונים', status: 'future', date: 'שבוע לפני', steps: ['ספירת ראשים סופית', 'דרישות תזונה', 'רשימת ריצה אושרה'] },
+  { title: 'יום האירוע', status: 'future', date: 'יום האירוע', steps: ['הגעת ספקים ותפאורה', 'רכז EVO באתר', 'הערב המושלם שלך'] },
 ]
 
 const chatMessages = [
-  { id: 1, from: 'evo', text: "Your event is looking beautiful. I've secured 4 of your 6 vendors and the remaining 2 are in final confirmation.", time: '2h ago' },
-  { id: 2, from: 'evo', text: "The venue sent over a floor plan. I'll incorporate this into the lighting and decor briefing.", time: '4h ago' },
-  { id: 3, from: 'user', text: 'Can we add a late-night snack station?', time: '1d ago' },
-  { id: 4, from: 'evo', text: "Absolutely. I've added this to the catering brief. Atelier Culinaire has a beautiful mezze station option that would fit perfectly.", time: '1d ago' },
+  { id: 1, from: 'evo', text: 'האירוע שלך נראה נפלא. אבטחתי 4 מתוך 6 ספקים והשניים הנותרים בשלב אישור סופי.', time: 'לפני 2ש' },
+  { id: 2, from: 'evo', text: 'המקום שלח תוכנית קומה. אשלב אותה בבריף התאורה והעיצוב.', time: 'לפני 4ש' },
+  { id: 3, from: 'user', text: 'אפשר להוסיף תחנת נשנושים לילית?', time: 'לפני יום' },
+  { id: 4, from: 'evo', text: 'בהחלט. הוספתי זאת לבריף הקייטרינג. ל-Atelier Culinaire יש אפשרות מזה נהדרת שתתאים בול.', time: 'לפני יום' },
 ]
 
 const STATUS_CONFIG = {
@@ -46,7 +46,8 @@ function StatusDot({ status }) {
   )
 }
 
-const TABS = ['overview', 'timeline', 'messages']
+const TABS = ['סקירה', 'ציר זמן', 'הודעות']
+const TAB_KEYS = ['overview', 'timeline', 'messages']
 
 export default function EventManagement() {
   const { navigate, eventPackage } = useApp()
@@ -64,8 +65,8 @@ export default function EventManagement() {
     setTimeout(() => {
       setMessages(prev => [...prev, {
         id: Date.now() + 1, from: 'evo',
-        text: "Got it — I'll take care of that and update you shortly.",
-        time: 'now',
+        text: 'הבנתי — אטפל בזה ואעדכן אותך בקרוב.',
+        time: 'עכשיו',
       }])
     }, 1200)
   }
@@ -77,23 +78,24 @@ export default function EventManagement() {
   }, [messages, activeTab])
 
   return (
-    <div className="w-full min-h-screen bg-evo-black flex flex-col overflow-hidden">
+    <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
       {/* Header */}
-      <div className="bg-evo-black border-b border-evo-border px-6 pt-12 pb-4 shrink-0">
+      <div className="px-6 pt-12 pb-4 shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] tracking-[0.3em] uppercase text-evo-accent font-medium">EVO</span>
-            <h1 className="text-lg font-light text-white mt-0.5 leading-tight">
-              {eventPackage?.name || 'Your Event'}
+            <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: 'var(--primary)' }}>EVO</span>
+            <h1 className="text-lg font-light mt-0.5 leading-tight" style={{ color: 'var(--text-primary)' }}>
+              {eventPackage?.name || 'האירוע שלך'}
             </h1>
           </div>
           <div className="flex items-end gap-3">
-            <button className="w-9 h-9 rounded-full border border-evo-border flex items-center justify-center text-evo-muted hover:text-white transition-colors">
+            <button className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
               <Bell size={15} />
             </button>
-            <div className="text-right">
-              <p className="text-evo-dim text-[10px] tracking-wide uppercase">Days left</p>
-              <p className="text-evo-accent text-3xl font-light leading-none">{DAYS_TO_EVENT}</p>
+            <div className="text-left">
+              <p className="text-[10px] tracking-wide uppercase" style={{ color: 'var(--text-dim)' }}>ימים נותרו</p>
+              <p className="text-3xl font-light leading-none" style={{ color: 'var(--primary)' }}>{DAYS_TO_EVENT}</p>
             </div>
           </div>
         </div>
@@ -102,7 +104,7 @@ export default function EventManagement() {
       <div className="flex-1 overflow-y-auto">
         {/* Vendor mosaic */}
         <div className="px-6 pt-5 pb-4">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-evo-muted mb-3">Vendor Status</p>
+          <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>סטטוס ספקים</p>
           <div className="grid grid-cols-3 gap-1.5">
             {Array.from({ length: 6 }, (_, i) => {
               const section = sections[i]
@@ -128,7 +130,7 @@ export default function EventManagement() {
                     {!isConfirmed && (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-black/60 rounded-full px-2 py-0.5">
-                          <span className="text-evo-accent text-[8px] uppercase tracking-widest">Pending</span>
+                          <span className="text-[8px] uppercase tracking-widest" style={{ color: 'var(--primary)' }}>ממתין</span>
                         </div>
                       </div>
                     )}
@@ -145,19 +147,19 @@ export default function EventManagement() {
         </div>
 
         {/* Tab bar */}
-        <div className="px-6 border-b border-evo-border">
+        <div className="px-6" style={{ borderBottom: '1px solid var(--border)' }}>
           <div className="flex gap-0">
-            {TABS.map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`relative py-3 px-4 text-xs font-medium tracking-widest uppercase transition-all capitalize ${
-                  activeTab === tab ? 'text-white' : 'text-evo-muted hover:text-white/60'
-                }`}
+            {TABS.map((tab, idx) => (
+              <button key={tab} onClick={() => setActiveTab(TAB_KEYS[idx])}
+                className="relative py-3 px-4 text-xs font-medium tracking-widest uppercase transition-all"
+                style={{ color: activeTab === TAB_KEYS[idx] ? 'var(--text-primary)' : 'var(--text-muted)' }}
               >
                 {tab}
-                {activeTab === tab && (
+                {activeTab === TAB_KEYS[idx] && (
                   <motion.div
                     layoutId="tab-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-evo-accent rounded-full"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                    style={{ background: 'var(--primary)' }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -168,7 +170,7 @@ export default function EventManagement() {
 
         {/* Tab content */}
         <AnimatePresence mode="wait">
-          {activeTab === 'overview' && (
+          {activeTab === 'overview' && ( // eslint-disable-line
             <motion.div key="overview"
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
@@ -177,21 +179,23 @@ export default function EventManagement() {
               {/* Action required */}
               <motion.div
                 whileTap={{ scale: 0.98 }}
-                className="bg-evo-accent/5 border border-evo-accent/20 rounded-2xl p-4 flex items-center gap-4 cursor-pointer"
+                className="rounded-2xl p-4 flex items-center gap-4 cursor-pointer"
+                style={{ background: 'rgba(107,95,228,0.05)', border: '1px solid rgba(107,95,228,0.2)' }}
               >
-                <div className="w-10 h-10 rounded-xl bg-evo-accent/10 flex items-center justify-center shrink-0">
-                  <Clock size={16} className="text-evo-accent" />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: 'rgba(107,95,228,0.1)' }}>
+                  <Clock size={16} style={{ color: 'var(--primary)' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium">Action Required</p>
-                  <p className="text-evo-muted text-xs mt-0.5">Final headcount due in 8 days</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>נדרשת פעולה</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>ספירת ראשים סופית תוך 8 ימים</p>
                 </div>
-                <ChevronRight size={16} className="text-evo-dim shrink-0" />
+                <ChevronRight size={16} style={{ color: 'var(--text-dim)' }} className="shrink-0" />
               </motion.div>
 
               {/* Activity feed */}
               <div>
-                <p className="text-[10px] tracking-[0.25em] uppercase text-evo-muted mb-4">EVO Activity</p>
+                <p className="text-[10px] tracking-[0.25em] uppercase mb-4" style={{ color: 'var(--text-muted)' }}>פעילות EVO</p>
                 <div className="space-y-4">
                   {activityFeed.map((item, i) => (
                     <motion.div
@@ -202,8 +206,8 @@ export default function EventManagement() {
                     >
                       <StatusDot status={item.status} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm leading-relaxed font-light">{item.message}</p>
-                        <p className="text-evo-dim text-xs mt-1">{item.time}</p>
+                        <p className="text-sm leading-relaxed font-light" style={{ color: 'var(--text-primary)' }}>{item.message}</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>{item.time}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -213,9 +217,10 @@ export default function EventManagement() {
               <motion.button
                 onClick={() => navigate('preview')}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-full border border-evo-border text-evo-muted text-xs font-medium tracking-widest uppercase hover:border-evo-accent/30 hover:text-white transition-all"
+                className="w-full py-3.5 rounded-full text-xs font-medium tracking-widest uppercase transition-all"
+                style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
               >
-                View Event Preview
+                צפה בתצוגה מקדימה
               </motion.button>
             </motion.div>
           )}
@@ -248,15 +253,12 @@ export default function EventManagement() {
                       </div>
                       <div className="flex-1 pb-2">
                         <div className="flex items-center justify-between mb-2">
-                          <p className={`text-sm font-medium ${
-                            m.status === 'completed'   ? 'text-green-400' :
-                            m.status === 'in-progress' ? 'text-white' : 'text-evo-muted'
-                          }`}>{m.title}</p>
-                          <span className="text-evo-dim text-xs">{m.date}</span>
+                          <p className="text-sm font-medium" style={{ color: m.status === 'completed' ? '#22c55e' : m.status === 'in-progress' ? 'var(--text-primary)' : 'var(--text-muted)' }}>{m.title}</p>
+                          <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{m.date}</span>
                         </div>
                         <div className="space-y-1">
                           {m.steps.map((step, j) => (
-                            <p key={j} className="text-evo-dim text-xs leading-relaxed">{step}</p>
+                            <p key={j} className="text-xs leading-relaxed" style={{ color: 'var(--text-dim)' }}>{step}</p>
                           ))}
                         </div>
                       </div>
@@ -297,16 +299,18 @@ export default function EventManagement() {
                 ))}
               </div>
 
-              <div className="px-6 py-4 border-t border-evo-border bg-evo-black shrink-0">
+              <div className="px-6 py-4 shrink-0" style={{ borderTop: '1px solid var(--border)', background: 'var(--background)' }}>
                 <div className="flex gap-3 items-center">
                   <input type="text" value={message}
                     onChange={e => setMessage(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                    placeholder="Ask EVO anything..."
-                    className="flex-1 bg-evo-card border border-evo-border rounded-xl px-4 py-3 text-white text-sm placeholder-evo-dim focus:outline-none focus:border-evo-accent/50 transition-colors"
+                    placeholder="שאל את EVO כל דבר..."
+                    className="flex-1 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                   />
                   <motion.button onClick={sendMessage} whileTap={{ scale: 0.92 }}
-                    className="w-10 h-10 rounded-xl bg-evo-accent flex items-center justify-center hover:bg-[#1E1060] transition-all">
+                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                    style={{ background: 'var(--primary)' }}>
                     <Send size={15} className="text-white" />
                   </motion.button>
                 </div>

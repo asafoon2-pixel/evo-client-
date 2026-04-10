@@ -30,7 +30,7 @@ export default function Building() {
     if (builtRef.current) return
     builtRef.current = true
 
-    setEventName(eventPackage?.name || 'Your Curated Event')
+    setEventName(eventPackage?.name || 'האירוע המיוחד שלך')
 
     const stepInterval = setInterval(() => {
       setStepIndex(i => {
@@ -65,7 +65,7 @@ export default function Building() {
   }, [])
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: 'var(--background)' }}>
 
       {/* Dot grid ambient */}
       <div className="absolute inset-0 dot-grid pointer-events-none" style={{ opacity: 0.25 }} />
@@ -83,7 +83,7 @@ export default function Building() {
           transition={{ duration: 1.5 }}
         />
       </AnimatePresence>
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,245,247,0.7) 0%, transparent 40%, rgba(245,245,247,0.7) 100%)' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(245,240,232,0.7) 0%, transparent 40%, rgba(245,240,232,0.7) 100%)' }} />
 
       {/* Progress bar */}
       <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--border)' }}>
@@ -146,8 +146,17 @@ export default function Building() {
                 </motion.p>
               </AnimatePresence>
 
+              {/* Subtitle */}
+              <motion.p
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}
+                className="mt-6 text-sm font-light leading-relaxed max-w-xs text-center"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                תן לנו את המעט פרטים שאנחנו צריכים ואנחנו נתאים לך ספקים מדויקים לאירוע שלך ולווייב שלך.
+              </motion.p>
+
               {/* Step dots */}
-              <div className="mt-10 flex gap-2">
+              <div className="mt-8 flex gap-2">
                 {BUILD_STEPS.map((_, i) => (
                   <motion.div
                     key={i}

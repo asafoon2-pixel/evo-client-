@@ -5,11 +5,11 @@ import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 
 const CATEGORY_META = {
-  venue:         { label: 'The Space',      tagline: 'Where the evening begins' },
-  catering:      { label: 'The Table',      tagline: 'Food worth lingering over' },
-  entertainment: { label: 'The Sound',      tagline: 'Music that moves the room' },
-  lighting:      { label: 'The Atmosphere', tagline: 'Light that shapes the mood' },
-  decor:         { label: 'The Feeling',    tagline: 'Details that tell your story' },
+  venue:         { label: 'החלל',      tagline: 'היכן מתחיל הערב' },
+  catering:      { label: 'השולחן',    tagline: 'אוכל שאי אפשר להפסיק ממנו' },
+  entertainment: { label: 'הצליל',     tagline: 'מוזיקה שמניעה את החדר' },
+  lighting:      { label: 'האווירה',   tagline: 'תאורה שמעצבת את המצב רוח' },
+  decor:         { label: 'התחושה',    tagline: 'פרטים שמספרים את הסיפור שלך' },
 }
 
 // ── Expandable vendor card ────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ function VendorCard({ section, index, openSwapSheet, openProfile }) {
                   <Zap size={11} className="shrink-0 mt-0.5" style={{ color: '#C8A96E' }} />
                   <div>
                     <p className="text-[10px] tracking-[0.18em] uppercase mb-0.5 font-semibold" style={{ color: '#C8A96E' }}>
-                      Why EVO chose this
+                      למה EVO בחר בזה
                     </p>
                     <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                       {section.vendor.whyChosen}
@@ -106,14 +106,14 @@ function VendorCard({ section, index, openSwapSheet, openProfile }) {
                   onClick={() => openProfile(section)}
                   className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
                   style={{ border: '1px solid rgba(45,27,105,0.25)', color: 'var(--primary)', background: 'rgba(45,27,105,0.06)' }}>
-                  <ChevronRight size={11} /> View profile
+                  <ChevronRight size={11} /> צפה בפרופיל
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.96 }}
                   onClick={() => openSwapSheet(section.id)}
                   className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
                   style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'var(--elevated)' }}>
-                  <RefreshCw size={11} /> Swap vendor
+                  <RefreshCw size={11} /> החלף ספק
                 </motion.button>
               </div>
             </div>
@@ -137,9 +137,9 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
   ]
 
   const fakeReviews = [
-    { name: 'Noa K.',    rating: 5, text: 'Absolutely stunning setup — every detail was perfect.', date: 'Mar 2025' },
-    { name: 'Oren M.',   rating: 5, text: 'Professional, responsive, and the result was beyond expectations.', date: 'Jan 2025' },
-    { name: 'Shira L.',  rating: 4, text: 'Great communication throughout. Highly recommend.', date: 'Dec 2024' },
+    { name: 'נועה כ.',   rating: 5, text: 'הכנה מדהימה — כל פרט היה מושלם.', date: 'מרץ 2025' },
+    { name: 'אורן מ.',   rating: 5, text: 'מקצועי, קשוב, והתוצאה עברה את כל הציפיות.', date: 'ינואר 2025' },
+    { name: 'שירה ל.',   rating: 4, text: 'תקשורת מעולה לאורך כל הדרך. ממליצה בחום.', date: 'דצמבר 2024' },
   ]
 
   return (
@@ -196,7 +196,7 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
                 </div>
                 <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{vendor.rating}</span>
                 {vendor.reviewCount && (
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>· {vendor.reviewCount} reviews</span>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>· {vendor.reviewCount} ביקורות</span>
                 )}
               </div>
             )}
@@ -205,7 +205,7 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
               style={{ background: 'rgba(45,27,105,0.08)', border: '1px solid rgba(45,27,105,0.2)' }}>
               <ShieldCheck size={11} style={{ color: 'var(--primary)' }} />
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--primary)' }}>EVO Verified</span>
+              <span className="text-[11px] font-semibold" style={{ color: 'var(--primary)' }}>מאומת על ידי EVO</span>
             </div>
           </div>
 
@@ -215,7 +215,7 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
               <span className="text-2xl font-light" style={{ color: 'var(--text-primary)' }}>
                 ₪{vendor.price?.toLocaleString()}
               </span>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>for your event</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>לאירוע שלך</span>
             </div>
           </div>
 
@@ -233,7 +233,7 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
               <Zap size={13} className="shrink-0 mt-0.5" style={{ color: '#C8A96E' }} />
               <div>
                 <p className="text-[10px] tracking-[0.18em] uppercase mb-1 font-semibold" style={{ color: '#C8A96E' }}>
-                  Why EVO chose this
+                  למה EVO בחר בזה
                 </p>
                 <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   {vendor.whyChosen}
@@ -248,15 +248,15 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck size={13} style={{ color: 'var(--primary)' }} />
               <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>
-                EVO Verification
+                אימות EVO
               </p>
             </div>
             <div className="space-y-2">
               {[
-                'Personally vetted by EVO curators',
-                'Business license & insurance verified',
-                'Past event references checked',
-                'Quality standards confirmed on-site',
+                'נבדק אישית על ידי צוות EVO',
+                'רישיון עסק וביטוח אומתו',
+                'הפניות לאירועים קודמים נבדקו',
+                'סטנדרטים אומתו במקום',
               ].map(item => (
                 <div key={item} className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
@@ -274,7 +274,7 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
             <div className="flex items-center gap-2 mb-3">
               <Image size={13} style={{ color: 'var(--text-muted)' }} />
               <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--text-muted)' }}>
-                Portfolio
+                תיק עבודות
               </p>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
@@ -290,7 +290,7 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
           {/* Reviews */}
           <div className="mt-5 px-5">
             <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Client Reviews
+              חוות דעת לקוחות
             </p>
             <div className="space-y-3">
               {fakeReviews.map((r, i) => (
@@ -322,12 +322,12 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
           <motion.button onClick={onSwap} whileTap={{ scale: 0.97 }}
             className="w-full py-3.5 text-sm font-semibold tracking-wide rounded-full mb-2 flex items-center justify-center gap-2"
             style={{ background: 'var(--elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}>
-            <RefreshCw size={13} /> Swap this vendor
+            <RefreshCw size={13} /> החלף ספק זה
           </motion.button>
           <motion.button onClick={onClose} whileTap={{ scale: 0.97 }}
             className="w-full py-3.5 text-sm font-semibold tracking-wider uppercase rounded-full"
             style={{ background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }}>
-            Keep this vendor
+            שמור ספק זה
           </motion.button>
         </div>
       </motion.div>
@@ -380,7 +380,7 @@ export default function EventSummary() {
 
   const eventName = isAIFlow
     ? eventPackage.name
-    : (generatedEvent?.name || 'Your Curated Evening')
+    : (generatedEvent?.name || 'הערב המאוצר שלך')
 
   const guestCount = briefAnswers?.scale
     ? { intimate: '20–40', medium: '50–100', large: '100–200', grand: '200+' }[briefAnswers.scale] || briefAnswers.scale
@@ -396,18 +396,18 @@ export default function EventSummary() {
   }
 
   return (
-    <div ref={pageRef} className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" ref={pageRef} className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="sticky top-0 z-20 backdrop-blur-md border-b px-6 pt-5 pb-4"
-        style={{ background: 'rgba(245,245,247,0.95)', borderColor: 'var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.95)', borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(isAIFlow ? 'package' : 'categories')}
             style={{ color: 'var(--text-muted)' }}>
-            <ArrowLeft size={20} />
+            <ArrowLeft size={20} style={{ transform: 'scaleX(-1)' }} />
           </button>
           <h1 className="text-lg font-light tracking-wide flex-1" style={{ color: 'var(--text-primary)' }}>
-            Event Summary
+            סיכום האירוע
           </h1>
         </div>
       </div>
@@ -417,7 +417,7 @@ export default function EventSummary() {
         {/* Event name + meta */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <p className="text-xs tracking-[0.25em] uppercase mb-2" style={{ color: 'var(--primary)' }}>
-            EVO Built This For You
+            EVO בנה את זה בשבילך
           </p>
           <h2 className="text-2xl font-light leading-tight" style={{ color: 'var(--text-primary)' }}>
             {eventName}
@@ -441,7 +441,7 @@ export default function EventSummary() {
             style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             {briefAnswers?.eventType && (
               <div>
-                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Type</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>סוג</p>
                 <p className="text-sm font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
                   {briefAnswers.eventType}
                 </p>
@@ -449,13 +449,13 @@ export default function EventSummary() {
             )}
             {guestCount && (
               <div>
-                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Guests</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>אורחים</p>
                 <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{guestCount}</p>
               </div>
             )}
             {briefAnswers?.date && (
               <div>
-                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Date</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>תאריך</p>
                 <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{briefAnswers.date}</p>
               </div>
             )}
@@ -467,7 +467,7 @@ export default function EventSummary() {
           <div>
             <p className="text-[10px] font-semibold tracking-[0.22em] uppercase mb-4"
               style={{ color: 'var(--text-muted)' }}>
-              Tap any card to see what's included
+              לחץ על כרטיס לראות מה כלול
             </p>
             <div className="space-y-3">
               {eventPackage.sections.map((section, i) => (
@@ -487,7 +487,7 @@ export default function EventSummary() {
         {!isAIFlow && selectedEntries.length > 0 && (
           <div>
             <h3 className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Your Suppliers
+              הספקים שלך
             </h3>
             <div className="space-y-3">
               {selectedEntries.map(([catId, supplier], i) => {
@@ -507,7 +507,7 @@ export default function EventSummary() {
                         <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{supplier.name}</p>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{cat?.name}</p>
                         <p className="text-xs mt-1 font-semibold" style={{ color: 'var(--primary)' }}>
-                          {formatPrice(price)} — {supplier.selectedPackage?.name || 'Premium'}
+                          {formatPrice(price)} — {supplier.selectedPackage?.name || 'פרמיום'}
                         </p>
                       </div>
                       <button onClick={() => removeSupplier(catId)}
@@ -527,7 +527,7 @@ export default function EventSummary() {
         {!isAIFlow && missingCategories.length > 0 && (
           <div>
             <h3 className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Add More
+              הוסף עוד
             </h3>
             <div className="space-y-2">
               {missingCategories.slice(0, 4).map((cat) => (
@@ -553,9 +553,9 @@ export default function EventSummary() {
             style={{ background: 'var(--surface)', borderLeft: '2px solid var(--primary)', border: '1px solid var(--border)' }}>
             <Zap size={14} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
             <div>
-              <p className="text-xs tracking-widest uppercase mb-1" style={{ color: 'var(--primary)' }}>EVO Note</p>
+              <p className="text-xs tracking-widest uppercase mb-1" style={{ color: 'var(--primary)' }}>הערת EVO</p>
               <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                Every vendor here was hand-picked for your event. Tap "View" on any vendor to see their full profile, reviews, and why EVO chose them.
+                כל ספק כאן נבחר בקפידה עבור האירוע שלך. לחץ "צפה" על כל ספק לפרופיל המלא, ביקורות, ולמה EVO בחר בהם.
               </p>
             </div>
           </motion.div>
@@ -567,7 +567,7 @@ export default function EventSummary() {
             className="rounded-2xl p-5"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <p className="text-xs tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--text-muted)' }}>
-              Payment Summary
+              סיכום תשלום
             </p>
             {isAIFlow && eventPackage.sections.map(s => (
               <div key={s.id} className="flex justify-between py-2.5"
@@ -590,17 +590,17 @@ export default function EventSummary() {
               )
             })}
             <div className="flex justify-between mt-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-              <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Total Event Value</span>
+              <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>שווי האירוע הכולל</span>
               <span className="text-xl font-light" style={{ color: 'var(--text-primary)' }}>{formatPrice(effectiveTotal)}</span>
             </div>
             <div className="flex justify-between mt-2">
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Deposit to secure (20%)</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>מקדמה לאבטחה (20%)</span>
               <span className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{formatPrice(effectiveDeposit)}</span>
             </div>
             <div className="mt-4 pt-4 flex items-start gap-2" style={{ borderTop: '1px solid var(--border)' }}>
               <Zap size={12} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
               <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                EVO handles all vendor payments. You pay once — we coordinate everything.
+                EVO מטפל בכל תשלומי הספקים. אתה משלם פעם אחת — אנחנו מתאמים הכל.
               </p>
             </div>
           </motion.div>
@@ -612,11 +612,11 @@ export default function EventSummary() {
       {/* Sticky CTA */}
       {effectiveTotal > 0 && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
-          style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+          style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
           <motion.button onClick={handleContinue} whileTap={{ scale: 0.98 }}
             className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all"
             style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
-            Continue to my event →
+            המשך לאירוע שלי ←
           </motion.button>
         </div>
       )}

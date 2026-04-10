@@ -4,16 +4,16 @@ import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle } 
 import { useApp } from '../context/AppContext'
 
 const GENDER_OPTIONS = [
-  { id: 'female', label: 'Female' },
-  { id: 'male',   label: 'Male' },
-  { id: 'other',  label: 'Other' },
+  { id: 'female', label: 'נקבה' },
+  { id: 'male',   label: 'זכר' },
+  { id: 'other',  label: 'אחר' },
 ]
 
 const CONTACT_OPTIONS = [
   { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
-  { id: 'call',     label: 'Call',     Icon: Phone },
+  { id: 'call',     label: 'שיחה',     Icon: Phone },
   { id: 'sms',      label: 'SMS',      Icon: Phone },
-  { id: 'email',    label: 'Email',    Icon: Mail },
+  { id: 'email',    label: 'מייל',     Icon: Mail },
 ]
 
 const LANGUAGE_OPTIONS = [
@@ -66,24 +66,24 @@ export default function PersonalQuestions() {
 
   const label = (text, optional) => (
     <p className="text-[10px] font-semibold tracking-[0.22em] uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-      {text}{optional && <span className="font-light normal-case tracking-normal opacity-60 ml-1">— optional</span>}
+      {text}{optional && <span className="font-light normal-case tracking-normal opacity-60 ml-1">— אופציונלי</span>}
     </p>
   )
 
   return (
-    <div className="w-full min-h-screen overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="sticky top-0 z-20 px-6 pt-5 pb-4 backdrop-blur-md"
-        style={{ background: 'rgba(245,245,247,0.95)', borderBottom: '1px solid var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.95)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(briefAnswers?.hasVenue === true ? 'venuequestions' : 'summary')}
             style={{ color: 'var(--text-muted)' }}>
-            <ArrowLeft size={20} />
+            <ArrowLeft size={20} style={{ transform: 'scaleX(-1)' }} />
           </button>
           <div className="flex-1">
-            <p className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--primary)' }}>About You</p>
-            <h1 className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>Your details</h1>
+            <p className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--primary)' }}>עליך</p>
+            <h1 className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>הפרטים שלך</h1>
           </div>
         </div>
       </div>
@@ -103,22 +103,22 @@ export default function PersonalQuestions() {
               : <Camera size={18} style={{ color: 'var(--text-muted)' }} />
             }
           </button>
-          <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>Add a photo</p>
+          <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>הוסף תמונה</p>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
         </motion.div>
 
         {/* Name */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-          {label('Full name')}
+          {label('שם מלא')}
           <input value={form.full_name} onChange={e => set('full_name', e.target.value)}
-            placeholder="Your name"
+            placeholder="השם שלך"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
             style={field('full_name')} />
         </motion.div>
 
         {/* Gender */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
-          {label('Gender')}
+          {label('מגדר')}
           <div className="flex gap-2">
             {GENDER_OPTIONS.map(g => {
               const active = form.gender === g.id
@@ -141,16 +141,16 @@ export default function PersonalQuestions() {
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
           className="grid grid-cols-2 gap-3">
           <div>
-            {label('Age')}
+            {label('גיל')}
             <input type="number" value={form.age} onChange={e => set('age', e.target.value)}
               placeholder="—"
               className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
               style={field('age')} />
           </div>
           <div>
-            {label('City')}
+            {label('עיר')}
             <input value={form.city} onChange={e => set('city', e.target.value)}
-              placeholder="Tel Aviv…"
+              placeholder="תל אביב…"
               className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
               style={field('city')} />
           </div>
@@ -161,7 +161,7 @@ export default function PersonalQuestions() {
 
         {/* Email */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          {label('Email')}
+          {label('אימייל')}
           <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
             placeholder="your@email.com"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
@@ -170,7 +170,7 @@ export default function PersonalQuestions() {
 
         {/* Phone */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-          {label('Phone')}
+          {label('טלפון')}
           <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
             placeholder="+972 5x xxx xxxx"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
@@ -179,7 +179,7 @@ export default function PersonalQuestions() {
 
         {/* WhatsApp */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }}>
-          {label('WhatsApp', true)}
+          {label('וואטסאפ', true)}
           <input type="tel" value={form.whatsapp_number} onChange={e => set('whatsapp_number', e.target.value)}
             placeholder="+972 5x xxx xxxx"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
@@ -188,7 +188,7 @@ export default function PersonalQuestions() {
 
         {/* Alternate phone */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
-          {label('Alternate phone', true)}
+          {label('טלפון נוסף', true)}
           <input type="tel" value={form.alternate_phone} onChange={e => set('alternate_phone', e.target.value)}
             placeholder="+972 5x xxx xxxx"
             className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
@@ -197,7 +197,7 @@ export default function PersonalQuestions() {
 
         {/* Preferred contact */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          {label('Best way to reach you')}
+          {label('הדרך הטובה ביותר להגיע אליך')}
           <div className="grid grid-cols-2 gap-2">
             {CONTACT_OPTIONS.map(({ id, label: l, Icon }) => {
               const active = form.preferred_contact === id
@@ -218,7 +218,7 @@ export default function PersonalQuestions() {
 
         {/* Language */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
-          {label('Preferred language')}
+          {label('שפה מועדפת')}
           <div className="flex gap-2">
             {LANGUAGE_OPTIONS.map(l => {
               const active = form.preferred_language === l.id
@@ -239,7 +239,7 @@ export default function PersonalQuestions() {
 
         {/* Instagram */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
-          {label('Instagram', true)}
+          {label('אינסטגרם', true)}
           <div className="relative">
             <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
               style={{ color: form.instagram_handle ? 'var(--primary)' : 'var(--text-muted)' }} />
@@ -255,7 +255,7 @@ export default function PersonalQuestions() {
 
       {/* CTA */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
-        style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button onClick={handleContinue} disabled={!canContinue}
           whileTap={canContinue ? { scale: 0.98 } : {}}
           className="w-full py-4 text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all"
@@ -267,7 +267,7 @@ export default function PersonalQuestions() {
             opacity: canContinue ? 1 : 0.55,
             boxShadow: canContinue ? 'var(--shadow-accent)' : 'none',
           }}>
-          Continue <ArrowRight size={14} />
+          המשך <ArrowRight size={14} style={{ transform: 'scaleX(-1)' }} />
         </motion.button>
       </div>
     </div>

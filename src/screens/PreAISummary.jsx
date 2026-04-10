@@ -58,7 +58,7 @@ export default function PreAISummary() {
         <motion.p {...f(0.05)} className="label-overline mb-3">הבריף שלך</motion.p>
         <motion.h1 {...f(0.12)} className="font-display text-[36px] font-light leading-tight mb-2"
           style={{ color: 'var(--text-primary)' }}>
-          הנה מה<br />שיודעים
+          כל הפרטים על<br />האירוע שלך
         </motion.h1>
         <motion.p {...f(0.18)} className="text-sm mb-8 font-light" style={{ color: 'var(--text-muted)' }}>
           בדוק את הבחירות שלך לפני שנבנה את האירוע.

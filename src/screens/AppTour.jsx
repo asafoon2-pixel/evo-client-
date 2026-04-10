@@ -60,8 +60,8 @@ function SceneChat({ active }) {
   }, [active])
 
   const messages = [
-    { from: 'vendor', name: 'The Pearl House', msg: 'Hi! Looking forward to your event 🎉', time: '10:42' },
-    { from: 'vendor', name: 'The Pearl House', msg: 'We\'ll have the rooftop ready from 6pm.', time: '10:43' },
+    { from: 'vendor', name: 'The Pearl House', msg: 'היי! מצפה לאירוע שלך 🎉', time: '10:42' },
+    { from: 'vendor', name: 'The Pearl House', msg: 'הגג יהיה מוכן משעה 18:00.', time: '10:43' },
   ]
 
   return (
@@ -76,7 +76,7 @@ function SceneChat({ active }) {
         </div>
         <div>
           <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>The Pearl House</p>
-          <p className="text-[10px]" style={{ color: '#22c55e' }}>Online</p>
+          <p className="text-[10px]" style={{ color: '#22c55e' }}>מחובר</p>
         </div>
       </div>
 
@@ -104,9 +104,9 @@ function SceneChat({ active }) {
               <div className="px-3 py-2 rounded-2xl text-xs"
                 style={{ background: 'var(--primary)', color: '#fff', borderRadius: '18px 18px 4px 18px', maxWidth: '75%' }}>
                 {phase === 1 ? (
-                  <TypedText text="Can we do a site visit next Thursday?" speed={32} />
+                  <TypedText text="אפשר לעשות ביקור אתר ביום חמישי הקרוב?" speed={32} />
                 ) : (
-                  'Can we do a site visit next Thursday?'
+                  'אפשר לעשות ביקור אתר ביום חמישי הקרוב?'
                 )}
               </div>
             </motion.div>
@@ -122,7 +122,7 @@ function SceneChat({ active }) {
                 <p className="text-[10px] font-semibold mb-1 ml-1" style={{ color: 'var(--text-muted)' }}>The Pearl House</p>
                 <div className="px-3 py-2 rounded-2xl text-xs"
                   style={{ background: 'var(--elevated)', color: 'var(--text-primary)', borderRadius: '4px 18px 18px 18px', maxWidth: '75%' }}>
-                  Absolutely — does 3pm work? 😊
+                  בהחלט — 15:00 מתאים? 😊
                 </div>
               </div>
             </motion.div>
@@ -135,7 +135,7 @@ function SceneChat({ active }) {
         className="flex items-center gap-2 px-3 py-2 mx-3 mb-3 rounded-full"
         style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
         <div className="flex-1 text-xs py-1" style={{ color: phase < 1 ? 'var(--text-muted)' : 'transparent' }}>
-          {phase < 1 ? 'Message…' : ''}
+          {phase < 1 ? 'הודעה...' : ''}
         </div>
         <motion.div animate={{ scale: phase === 2 ? [1, 1.2, 1] : 1 }}
           className="w-7 h-7 rounded-full flex items-center justify-center"
@@ -155,10 +155,10 @@ function SceneTimeline({ active }) {
   const [tapPos, setTapPos] = useState(null)
 
   const items = [
-    { id: 'confirm', date: 'Today',  label: 'Event confirmed',    type: 'done',    locked: true },
-    { id: 'dep1',    date: 'Apr 12', label: 'Venue deposit due',  type: 'payment', amount: '₪2,800' },
-    { id: 'taste',   date: 'Apr 18', label: 'Catering tasting',   type: 'meeting' },
-    { id: 'guests',  date: 'May 3',  label: 'Final guest count',  type: 'task' },
+    { id: 'confirm', date: 'היום',   label: 'אירוע אושר',          type: 'done',    locked: true },
+    { id: 'dep1',    date: '12/4',   label: 'מקדמת מקום לתשלום',  type: 'payment', amount: '₪2,800' },
+    { id: 'taste',   date: '18/4',   label: 'טעימת קייטרינג',      type: 'meeting' },
+    { id: 'guests',  date: '3/5',    label: 'ספירת אורחים סופית',  type: 'task' },
   ]
 
   const typeStyle = {
@@ -182,8 +182,8 @@ function SceneTimeline({ active }) {
       style={{ background: 'var(--background)' }}>
 
       <div className="px-4 py-3 shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>Timeline</p>
-        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>Your event roadmap</p>
+        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>ציר זמן</p>
+        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>מפת הדרך של האירוע</p>
       </div>
 
       <div className="flex-1 px-4 py-3 space-y-3 overflow-hidden">
@@ -228,9 +228,9 @@ function SceneVendors({ active }) {
   const [tapPos, setTapPos] = useState(null)
 
   const vendors = [
-    { name: 'The Pearl House',    cat: 'Venue',    rating: 4.9, status: 'Confirmed', color: '#22c55e' },
-    { name: 'Atelier Culinaire',  cat: 'Catering', rating: 4.8, status: 'Confirmed', color: '#22c55e' },
-    { name: 'Noir Sound',         cat: 'Music',    rating: 4.7, status: 'Pending',   color: '#f59e0b' },
+    { name: 'The Pearl House',    cat: 'מקום',     rating: 4.9, status: 'מאושר',   color: '#22c55e' },
+    { name: 'Atelier Culinaire',  cat: 'קייטרינג', rating: 4.8, status: 'מאושר',   color: '#22c55e' },
+    { name: 'Noir Sound',         cat: 'מוזיקה',   rating: 4.7, status: 'ממתין',   color: '#f59e0b' },
   ]
 
   useEffect(() => {
@@ -246,8 +246,8 @@ function SceneVendors({ active }) {
       style={{ background: 'var(--background)' }}>
 
       <div className="px-4 py-3 shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>Vendors</p>
-        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>Your team</p>
+        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>ספקים</p>
+        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>הצוות שלך</p>
       </div>
 
       <div className="flex-1 px-3 py-3 space-y-2 overflow-hidden">
@@ -277,15 +277,15 @@ function SceneVendors({ active }) {
                     <div className="flex gap-2 pt-1">
                       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold"
                         style={{ background: 'var(--elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                        <ShieldCheck size={9} style={{ color: 'var(--primary)' }} /> EVO Verified
+                        <ShieldCheck size={9} style={{ color: 'var(--primary)' }} /> מאומת EVO
                       </div>
                       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold"
                         style={{ background: 'var(--elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                        <MessageCircle size={9} /> Message
+                        <MessageCircle size={9} /> הודעה
                       </div>
                       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-semibold"
                         style={{ background: 'var(--elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                        <RefreshCw size={9} /> Swap
+                        <RefreshCw size={9} /> החלף
                       </div>
                     </div>
                   </motion.div>
@@ -307,9 +307,9 @@ function SceneAddons({ active }) {
   const [tapPos, setTapPos] = useState(null)
 
   const addons = [
-    { name: 'Floral arch',      price: '₪2,400', tag: 'Popular', emoji: '🌸' },
-    { name: 'Photo booth',      price: '₪1,800', tag: 'New',     emoji: '📷' },
-    { name: 'Late-night bar',   price: '₪3,200', tag: '',        emoji: '🍹' },
+    { name: 'קשת פרחים',   price: '₪2,400', tag: 'פופולרי', emoji: '🌸' },
+    { name: 'פינת צילום',  price: '₪1,800', tag: 'חדש',     emoji: '📷' },
+    { name: 'בר לילה',     price: '₪3,200', tag: '',        emoji: '🍹' },
   ]
 
   useEffect(() => {
@@ -326,8 +326,8 @@ function SceneAddons({ active }) {
       style={{ background: 'var(--background)' }}>
 
       <div className="px-4 py-3 shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>Add-ons</p>
-        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>Upgrade your event</p>
+        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--primary)' }}>תוספות</p>
+        <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>שדרג את האירוע שלך</p>
       </div>
 
       <div className="flex-1 px-3 py-3 space-y-2 overflow-hidden">
@@ -371,7 +371,7 @@ function SceneAddons({ active }) {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
               className="flex justify-between items-center px-3 py-2 rounded-xl mt-1"
               style={{ background: 'rgba(45,27,105,0.06)', border: '1px solid rgba(45,27,105,0.12)' }}>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{added.length} add-on{added.length > 1 ? 's' : ''} selected</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{added.length} תוספ{added.length > 1 ? 'ות' : 'ת'} נבחרו</p>
               <p className="text-xs font-bold" style={{ color: 'var(--primary)' }}>
                 ₪{[2400, 1800, 3200].filter((_, i) => added.includes(i)).reduce((a, b) => a + b, 0).toLocaleString()}
               </p>
@@ -391,9 +391,9 @@ function ScenePayments({ active }) {
   const [tapPos, setTapPos] = useState(null)
 
   const payments = [
-    { vendor: 'Venue',    amount: '₪2,800', due: 'Due Apr 12' },
-    { vendor: 'Catering', amount: '₪3,600', due: 'Due Apr 20' },
-    { vendor: 'Music',    amount: '₪1,400', due: 'Due Apr 25' },
+    { vendor: 'מקום',     amount: '₪2,800', due: 'לתשלום 12/4' },
+    { vendor: 'קייטרינג', amount: '₪3,600', due: 'לתשלום 20/4' },
+    { vendor: 'מוזיקה',   amount: '₪1,400', due: 'לתשלום 25/4' },
   ]
 
   useEffect(() => {
@@ -414,11 +414,11 @@ function ScenePayments({ active }) {
       <div className="px-4 py-3 shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex gap-4">
           <div>
-            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Paid</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>שולם</p>
             <p className="text-sm font-bold" style={{ color: '#22c55e' }}>₪{totalPaid.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Due</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>לתשלום</p>
             <p className="text-sm font-bold" style={{ color: '#f59e0b' }}>₪{totalDue.toLocaleString()}</p>
           </div>
         </div>
@@ -439,7 +439,7 @@ function ScenePayments({ active }) {
               <div>
                 <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{p.vendor}</p>
                 <p className="text-[10px] mt-0.5" style={{ color: isPaid ? '#22c55e' : 'var(--text-muted)' }}>
-                  {isPaid ? 'Paid ✓' : p.due}
+                  {isPaid ? 'שולם ✓' : p.due}
                 </p>
               </div>
               <p className="text-sm font-bold" style={{ color: isPaid ? '#22c55e' : 'var(--text-primary)' }}>
@@ -454,7 +454,7 @@ function ScenePayments({ active }) {
           style={{ background: 'rgba(45,27,105,0.05)', border: '1px solid rgba(45,27,105,0.1)' }}>
           <Zap size={11} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
           <p className="text-[10px] font-light" style={{ color: 'var(--text-muted)' }}>
-            EVO handles all payments. You pay once — we coordinate.
+            EVO מטפל בכל התשלומים. אתה משלם פעם אחת — אנחנו מתאמים.
           </p>
         </motion.div>
       </div>
@@ -469,51 +469,51 @@ const STEPS = [
   {
     id: 'chat',
     emoji: '💬',
-    label: 'Chat',
+    label: 'צ׳אט',
     color: '#2D1B69',
     bg: 'rgba(45,27,105,0.08)',
-    title: 'Talk to every vendor — instantly',
-    desc: 'Each vendor has a dedicated chat thread. Ask questions, confirm details, share references — never lost in email.',
+    title: 'שוחח עם כל ספק — מיידית',
+    desc: 'לכל ספק יש שרשור צ׳אט ייעודי. שאל שאלות, אשר פרטים, שתף מראות — ללא אבדן במיילים.',
     Scene: SceneChat,
   },
   {
     id: 'timeline',
     emoji: '📅',
-    label: 'Timeline',
+    label: 'ציר זמן',
     color: '#1A6969',
     bg: 'rgba(26,105,105,0.08)',
-    title: 'Every milestone, mapped',
-    desc: 'Deposit dates, tastings, meetings, and tasks — laid out so nothing falls through the cracks.',
+    title: 'כל אבן דרך ממופה',
+    desc: 'תאריכי מקדמות, טעימות, פגישות ומשימות — מסודרות כדי שלא יפול דבר בין הכסאות.',
     Scene: SceneTimeline,
   },
   {
     id: 'vendors',
     emoji: '⭐',
-    label: 'Vendors',
+    label: 'ספקים',
     color: '#6B1F6B',
     bg: 'rgba(107,31,107,0.08)',
-    title: 'Your vendor team, at a glance',
-    desc: 'See ratings, verification status, and portfolio. Swap or message any vendor from one place.',
+    title: 'צוות הספקים שלך, במבט אחד',
+    desc: 'ראה דירוגים, אימות ותיק עבודות. החלף או שלח הודעה לכל ספק ממקום אחד.',
     Scene: SceneVendors,
   },
   {
     id: 'addons',
     emoji: '✨',
-    label: 'Add-ons',
+    label: 'תוספות',
     color: '#1A6940',
     bg: 'rgba(26,105,64,0.08)',
-    title: 'Upgrade any moment',
-    desc: 'Browse curated extras — florals, photo booths, late-night surprises — and add them in one tap.',
+    title: 'שדרג כל רגע',
+    desc: 'עיין בתוספות נבחרות — פרחים, פינת צילום, הפתעות לילה — והוסף בנגיעה אחת.',
     Scene: SceneAddons,
   },
   {
     id: 'payments',
     emoji: '💳',
-    label: 'Payments',
+    label: 'תשלומים',
     color: '#7C4A1A',
     bg: 'rgba(124,74,26,0.08)',
-    title: 'Payments, totally under control',
-    desc: "All deposits, balances, and schedules in one view. You'll always know what's paid and what's next.",
+    title: 'תשלומים, תחת שליטה מלאה',
+    desc: 'כל המקדמות, היתרות והלוחות בתצוגה אחת. תמיד תדע מה שולם ומה הבא.',
     Scene: ScenePayments,
   },
 ]
@@ -549,7 +549,7 @@ export default function AppTour() {
         <button onClick={() => navigate('dashboard')}
           className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full"
           style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-          <X size={11} /> Skip tour
+          <X size={11} /> דלג על הסיור
         </button>
       </div>
 
@@ -639,7 +639,7 @@ export default function AppTour() {
             <motion.span key={step}
               initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.2 }}>
-              {isLast ? 'Go to my dashboard' : `Next: ${STEPS[step + 1].label}`}
+              {isLast ? 'עבור ללוח הבקרה שלי' : `הבא: ${STEPS[step + 1].label}`}
             </motion.span>
           </AnimatePresence>
           {!isLast && <ArrowRight size={15} />}

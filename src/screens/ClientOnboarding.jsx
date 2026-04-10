@@ -6,40 +6,40 @@ import { useApp } from '../context/AppContext'
 // ── Data ─────────────────────────────────────────────────────────────────────
 
 const VIBE_TAGS = [
-  'Intimate', 'Glamorous', 'Minimal', 'Bold',
-  'Romantic', 'Outdoor', 'Classic', 'Electric',
-  'Boho', 'Modern', 'Luxurious', 'Playful',
+  'אינטימי', 'מפואר', 'מינימליסטי', 'נועז',
+  'רומנטי', 'חיצוני', 'קלאסי', 'אלקטרי',
+  'בוהו', 'מודרני', 'יוקרתי', 'שובבי',
 ]
 
 const COLOR_OPTIONS = [
-  { id: 'black_gold',  label: 'Black & Gold',   colors: ['#0A0A0A', '#C8A96E'] },
-  { id: 'white_blush', label: 'White & Blush',  colors: ['#FAFAFA', '#E8B4B8'] },
-  { id: 'deep_purple', label: 'Deep Purple',    colors: ['#2D1B69', '#8B5CF6'] },
-  { id: 'forest',      label: 'Forest & Sage',  colors: ['#1A3D2B', '#6B8F71'] },
-  { id: 'terracotta',  label: 'Terracotta',     colors: ['#C17A50', '#E8C5A0'] },
-  { id: 'navy_silver', label: 'Navy & Silver',  colors: ['#1B2A4A', '#C0C8D0'] },
+  { id: 'black_gold',  label: 'שחור וזהב',     colors: ['#0A0A0A', '#C8A96E'] },
+  { id: 'white_blush', label: 'לבן ורוד עדין', colors: ['#FAFAFA', '#E8B4B8'] },
+  { id: 'deep_purple', label: 'סגול עמוק',     colors: ['#2D1B69', '#8B5CF6'] },
+  { id: 'forest',      label: 'יער וסייג',     colors: ['#1A3D2B', '#6B8F71'] },
+  { id: 'terracotta',  label: 'טרקוטה',        colors: ['#C17A50', '#E8C5A0'] },
+  { id: 'navy_silver', label: 'נייבי וכסף',    colors: ['#1B2A4A', '#C0C8D0'] },
 ]
 
 const STYLE_OPTIONS = [
-  { id: 'modern',         label: 'Modern',         emoji: '◻️' },
-  { id: 'classic',        label: 'Classic',         emoji: '🏛️' },
-  { id: 'boho',           label: 'Boho',            emoji: '🌿' },
-  { id: 'industrial',     label: 'Industrial',      emoji: '⚙️' },
-  { id: 'mediterranean',  label: 'Mediterranean',   emoji: '🌊' },
-  { id: 'maximalist',     label: 'Maximalist',      emoji: '✨' },
+  { id: 'modern',         label: 'מודרני',         emoji: '◻️' },
+  { id: 'classic',        label: 'קלאסי',           emoji: '🏛️' },
+  { id: 'boho',           label: 'בוהו',            emoji: '🌿' },
+  { id: 'industrial',     label: 'תעשייתי',         emoji: '⚙️' },
+  { id: 'mediterranean',  label: 'ים תיכוני',       emoji: '🌊' },
+  { id: 'maximalist',     label: 'מקסימליסטי',      emoji: '✨' },
 ]
 
 const GENDER_OPTIONS = [
-  { id: 'female', label: 'Female' },
-  { id: 'male',   label: 'Male' },
-  { id: 'other',  label: 'Other' },
+  { id: 'female', label: 'נקבה' },
+  { id: 'male',   label: 'זכר' },
+  { id: 'other',  label: 'אחר' },
 ]
 
 const CONTACT_OPTIONS = [
-  { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
-  { id: 'call',     label: 'Call',     Icon: Phone },
-  { id: 'sms',      label: 'SMS',      Icon: Phone },
-  { id: 'email',    label: 'Email',    Icon: Mail },
+  { id: 'whatsapp', label: 'WhatsApp',  Icon: MessageCircle },
+  { id: 'call',     label: 'שיחה',     Icon: Phone },
+  { id: 'sms',      label: 'SMS',       Icon: Phone },
+  { id: 'email',    label: 'אימייל',   Icon: Mail },
 ]
 
 const LANGUAGE_OPTIONS = [
@@ -122,10 +122,10 @@ export default function ClientOnboarding() {
     fontFamily: 'inherit',
   })
 
-  const energyLabels = ['Very calm', 'Calm', 'Balanced', 'Energetic', 'Electric']
+  const energyLabels = ['רגוע מאוד', 'רגוע', 'מאוזן', 'אנרגטי', 'אלקטרי']
 
   return (
-    <div className="w-full min-h-screen overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen overflow-y-auto pb-32" style={{ background: 'var(--background)' }}>
 
       {/* Hero top */}
       <div className="relative px-6 pt-16 pb-10 text-center overflow-hidden">
@@ -134,15 +134,15 @@ export default function ClientOnboarding() {
         <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           className="text-[10px] font-semibold tracking-[0.32em] uppercase mb-3"
           style={{ color: 'var(--primary)' }}>
-          Welcome to EVO
+          ברוך הבא ל-EVO
         </motion.p>
         <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
           className="font-display text-[28px] font-light leading-tight" style={{ color: 'var(--text-primary)' }}>
-          Let's get to know you
+          בוא נכיר אותך
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.16 }}
           className="text-sm font-light mt-2 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-          This helps EVO personalise every event around you.
+          זה עוזר ל-EVO להתאים כל אירוע אישית עבורך.
         </motion.p>
       </div>
 
@@ -150,7 +150,7 @@ export default function ClientOnboarding() {
 
         {/* ── SECTION 1: Identity ─────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <SectionLabel step="01" title="Who are you?" />
+          <SectionLabel step="01" title="מי אתה?" />
 
           {/* Avatar */}
           <div className="flex flex-col items-center mb-8">
@@ -165,7 +165,7 @@ export default function ClientOnboarding() {
               ) : (
                 <div className="flex flex-col items-center gap-1">
                   <Camera size={20} style={{ color: 'var(--text-muted)' }} />
-                  <span className="text-[9px] tracking-wide uppercase" style={{ color: 'var(--text-muted)' }}>Photo</span>
+                  <span className="text-[9px] tracking-wide uppercase" style={{ color: 'var(--text-muted)' }}>תמונה</span>
                 </div>
               )}
               {form.profile_photo_url && (
@@ -176,7 +176,7 @@ export default function ClientOnboarding() {
               )}
             </motion.button>
             <p className="text-xs mt-2 font-light" style={{ color: 'var(--text-muted)' }}>
-              Tap to add a photo
+              לחץ להוספת תמונה
             </p>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
           </div>
@@ -184,10 +184,10 @@ export default function ClientOnboarding() {
           {/* Full name — large, centered */}
           <div className="mb-5">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-              Full name
+              שם מלא
             </label>
             <input value={form.full_name} onChange={e => set('full_name', e.target.value)}
-              placeholder="Your name…"
+              placeholder="השם שלך…"
               className="w-full px-4 py-4 rounded-2xl text-xl font-light outline-none transition-all"
               style={inputStyle(form.full_name)} />
           </div>
@@ -195,7 +195,7 @@ export default function ClientOnboarding() {
           {/* Gender */}
           <div className="mb-5">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Gender
+              מגדר
             </label>
             <div className="flex gap-2">
               {GENDER_OPTIONS.map(g => {
@@ -219,7 +219,7 @@ export default function ClientOnboarding() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                Age
+                גיל
               </label>
               <input type="number" value={form.age} onChange={e => set('age', e.target.value)}
                 placeholder="—"
@@ -228,7 +228,7 @@ export default function ClientOnboarding() {
             </div>
             <div>
               <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                City
+                עיר
               </label>
               <input value={form.city} onChange={e => set('city', e.target.value)}
                 placeholder="Tel Aviv…"
@@ -242,13 +242,13 @@ export default function ClientOnboarding() {
 
         {/* ── SECTION 2: Contact ──────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <SectionLabel step="02" title="How do we reach you?"
-            subtitle="Your details stay private — only used to coordinate your event." />
+          <SectionLabel step="02" title="איך יוצרים איתך קשר?"
+            subtitle="הפרטים שלך נשמרים בפרטיות — משמשים רק לתיאום האירוע שלך." />
 
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                Email
+                אימייל
               </label>
               <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
                 placeholder="your@email.com"
@@ -258,7 +258,7 @@ export default function ClientOnboarding() {
 
             <div>
               <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                Phone
+                טלפון
               </label>
               <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
                 placeholder="+972 5x xxx xxxx"
@@ -268,7 +268,7 @@ export default function ClientOnboarding() {
 
             <div>
               <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                WhatsApp <span className="font-light normal-case tracking-normal" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>— if different</span>
+                WhatsApp <span className="font-light normal-case tracking-normal" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>— אם שונה</span>
               </label>
               <input type="tel" value={form.whatsapp_number} onChange={e => set('whatsapp_number', e.target.value)}
                 placeholder="+972 5x xxx xxxx"
@@ -278,7 +278,7 @@ export default function ClientOnboarding() {
 
             <div>
               <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                Alternate phone <span className="font-light normal-case tracking-normal" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>— optional</span>
+                טלפון חלופי <span className="font-light normal-case tracking-normal" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>— אופציונלי</span>
               </label>
               <input type="tel" value={form.alternate_phone} onChange={e => set('alternate_phone', e.target.value)}
                 placeholder="+972 5x xxx xxxx"
@@ -290,7 +290,7 @@ export default function ClientOnboarding() {
           {/* Preferred contact */}
           <div className="mt-6">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Best way to reach you
+              הדרך הטובה ביותר ליצור קשר
             </label>
             <div className="grid grid-cols-2 gap-2">
               {CONTACT_OPTIONS.map(({ id, label, Icon }) => {
@@ -315,7 +315,7 @@ export default function ClientOnboarding() {
           {/* Language */}
           <div className="mt-6">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Preferred language
+              שפה מועדפת
             </label>
             <div className="flex gap-3">
               {LANGUAGE_OPTIONS.map(l => {
@@ -338,7 +338,7 @@ export default function ClientOnboarding() {
           {/* Instagram */}
           <div className="mt-6">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-              Instagram <span className="font-light normal-case tracking-normal" style={{ opacity: 0.6 }}>— optional</span>
+              Instagram <span className="font-light normal-case tracking-normal" style={{ opacity: 0.6 }}>— אופציונלי</span>
             </label>
             <div className="relative">
               <Instagram size={15} className="absolute left-4 top-1/2 -translate-y-1/2"
@@ -355,13 +355,13 @@ export default function ClientOnboarding() {
 
         {/* ── SECTION 3: Taste ────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <SectionLabel step="03" title="Your taste"
-            subtitle="EVO uses this to curate vendors that actually match your style." />
+          <SectionLabel step="03" title="הטעם שלך"
+            subtitle="EVO משתמש בזה כדי לבחור ספקים שמתאימים לסגנון שלך." />
 
           {/* Vibe tags */}
           <div className="mb-7">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Vibes that speak to you
+              ויברציות שמדברות אליך
             </label>
             <div className="flex flex-wrap gap-2">
               {VIBE_TAGS.map(tag => {
@@ -385,7 +385,7 @@ export default function ClientOnboarding() {
           {/* Preferred colors */}
           <div className="mb-7">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Colour palette
+              פלטת צבעים
             </label>
             <div className="grid grid-cols-2 gap-2.5">
               {COLOR_OPTIONS.map(c => {
@@ -416,7 +416,7 @@ export default function ClientOnboarding() {
           {/* Preferred styles */}
           <div className="mb-7">
             <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-              Event style
+              סגנון אירוע
             </label>
             <div className="grid grid-cols-3 gap-2">
               {STYLE_OPTIONS.map(s => {
@@ -442,10 +442,10 @@ export default function ClientOnboarding() {
           {/* Energy level */}
           <div>
             <label className="block text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--text-muted)' }}>
-              Event energy
+              אנרגיית האירוע
             </label>
             <p className="text-xs mb-4 font-light" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>
-              How lively do you want the atmosphere?
+              כמה תוסס אתה רוצה שיהיה האירוע?
             </p>
             <div className="px-1">
               <div className="flex gap-2 mb-3">
@@ -460,11 +460,11 @@ export default function ClientOnboarding() {
                 })}
               </div>
               <div className="flex justify-between">
-                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Mellow</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>שקט</span>
                 <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
                   {energyLabels[form.energy_level - 1]}
                 </span>
-                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Electric</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>אלקטרי</span>
               </div>
             </div>
           </div>
@@ -476,7 +476,7 @@ export default function ClientOnboarding() {
           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <Zap size={13} className="shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
           <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)', lineHeight: 1.75 }}>
-            Your details are private and only used to personalise your EVO experience. We never share your information with vendors without your permission.
+            הפרטים שלך פרטיים ומשמשים רק להתאמת חוויית EVO שלך. אנחנו לעולם לא חולקים את המידע שלך עם ספקים ללא רשותך.
           </p>
         </motion.div>
 
@@ -485,7 +485,7 @@ export default function ClientOnboarding() {
 
       {/* Sticky CTA */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
-        style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button
           onClick={() => navigate('aiprompt')}
           disabled={!canSubmit}
@@ -499,7 +499,7 @@ export default function ClientOnboarding() {
             boxShadow: canSubmit ? 'var(--shadow-accent)' : 'none',
             opacity: canSubmit ? 1 : 0.55,
           }}>
-          Start building my event <ArrowRight size={14} />
+          התחל לבנות את האירוע שלי <ArrowRight size={14} />
         </motion.button>
       </div>
     </div>

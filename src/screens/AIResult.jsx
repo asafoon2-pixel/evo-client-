@@ -11,15 +11,15 @@ export default function AIResult() {
   const { navigate, generatedEvent } = useApp()
 
   const event = {
-    name: 'Your Curated Evening',
-    description: 'A thoughtfully composed event shaped entirely by your instincts.',
-    tags: ['Curated', 'Personal', 'Distinctive'],
+    name: 'הערב המיוחד שלך',
+    description: 'אירוע שנבנה בקפידה בהתאם לטעם ולאינסטינקטים שלך.',
+    tags: ['מותאם אישית', 'ייחודי', 'בלתי נשכח'],
     backgroundImage: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
     ...(generatedEvent || {}),
   }
 
   return (
-    <div className="relative w-full h-full min-h-screen flex flex-col items-center justify-center bg-evo-black overflow-hidden">
+    <div dir="rtl" className="relative w-full h-full min-h-screen flex flex-col items-center justify-center bg-evo-black overflow-hidden">
       {/* Background image */}
       {event.backgroundImage && (
         <div className="absolute inset-0 overflow-hidden">
@@ -37,9 +37,9 @@ export default function AIResult() {
         {/* EVO read label */}
         <motion.p
           {...stagger(0)}
-          className="text-xs tracking-[0.3em] uppercase text-evo-accent mb-10"
+          className="text-xs tracking-[0.3em] uppercase mb-10" style={{ color: 'var(--primary)' }}
         >
-          EVO Read Your Taste
+          EVO קרא את הטעם שלך
         </motion.p>
 
         {/* Event name */}
@@ -63,7 +63,7 @@ export default function AIResult() {
           {event.tags.map(tag => (
             <span
               key={tag}
-              className="text-xs font-medium tracking-widest uppercase text-evo-muted border border-evo-border rounded-full px-4 py-1.5"
+              className="text-xs font-medium tracking-widest uppercase rounded-full px-4 py-1.5" style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
             >
               {tag}
             </span>
@@ -73,7 +73,7 @@ export default function AIResult() {
         {/* Description */}
         <motion.p
           {...stagger(4)}
-          className="text-evo-muted text-sm leading-relaxed font-light max-w-sm"
+          className="text-sm leading-relaxed font-light max-w-sm" style={{ color: 'var(--text-muted)' }}
         >
           {event.description}
         </motion.p>
@@ -85,15 +85,15 @@ export default function AIResult() {
         >
           <button
             onClick={() => navigate('categories')}
-            className="w-full max-w-xs py-4 rounded-full border border-evo-accent text-evo-accent text-sm font-medium tracking-[0.12em] uppercase hover:bg-evo-accent hover:text-black transition-all duration-300 active:scale-95"
+            className="w-full max-w-xs py-4 rounded-full text-sm font-medium tracking-[0.12em] uppercase transition-all duration-300 active:scale-95" style={{ border: '1px solid var(--primary)', color: 'var(--primary)' }}
           >
-            Build This Event
+            בנה את האירוע הזה
           </button>
           <button
             onClick={() => navigate('discover')}
-            className="text-evo-muted text-sm tracking-wide hover:text-white transition-colors py-2"
+            className="text-sm tracking-wide transition-colors py-2" style={{ color: 'var(--text-muted)' }}
           >
-            Refine my taste
+            כוונן את הטעם שלי
           </button>
         </motion.div>
       </div>

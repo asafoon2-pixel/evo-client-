@@ -46,6 +46,7 @@ export function AppProvider({ children }) {
   const [currentScreen, setCurrentScreen]     = useState('home')
   const [currentUser, setCurrentUser]         = useState(null)
   const [authLoading, setAuthLoading]         = useState(true)
+  const [authIntent, setAuthIntent]           = useState(null)
 
   useEffect(() => {
     const unsub = onAuthChange(user => {
@@ -180,6 +181,7 @@ export function AppProvider({ children }) {
   const value = {
     currentScreen, navigate,
     currentUser, authLoading, signOut,
+    authIntent, setAuthIntent,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,
     eventPackage, buildPackage, buildPackageFromText,
