@@ -149,7 +149,7 @@ export default function Home() {
               style={{ background: 'linear-gradient(135deg, #6B5FE4, #D4607A)' }}
               onClick={() => navigate('userprofile')}
             >
-              {firstName[0]?.toUpperCase()}
+              {firstName?.[0]?.toUpperCase() ?? '?'}
             </button>
             <LanguageToggle />
           </div>
