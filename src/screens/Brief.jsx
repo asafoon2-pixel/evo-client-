@@ -216,6 +216,245 @@ function OptionCard({ active, justSelected, onClick, children, style = {}, class
   )
 }
 
+// ── Inline SVG illustrations (EVO warm palette, stroke-based) ────────────────
+function BirthdayIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+      <rect x="9" y="38" width="44" height="18" rx="5" fill="#E8B86D" opacity="0.75"/>
+      <path d="M9 38 Q16 31 22 38 Q28 31 34 38 Q40 31 46 38 Q52 31 53 38" stroke="#FDFAF5" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <rect x="15" y="25" width="32" height="15" rx="4" fill="#F2C49B" opacity="0.8"/>
+      <path d="M15 25 Q21 19 27 25 Q33 19 39 25 Q45 19 47 25" stroke="#FDFAF5" strokeWidth="2" fill="none" strokeLinecap="round"/>
+      <rect x="22" y="13" width="4" height="14" rx="2" fill="#D4607A" opacity="0.85"/>
+      <rect x="30" y="11" width="4" height="16" rx="2" fill="#6B5FE4" opacity="0.8"/>
+      <rect x="38" y="13" width="4" height="14" rx="2" fill="#E8A030" opacity="0.85"/>
+      <ellipse cx="24" cy="11" rx="2.5" ry="3.5" fill="#FFE090" opacity="0.9"/>
+      <ellipse cx="32" cy="9" rx="2.5" ry="3.5" fill="#FFE090" opacity="0.9"/>
+      <ellipse cx="40" cy="11" rx="2.5" ry="3.5" fill="#FFE090" opacity="0.9"/>
+      <circle cx="7" cy="30" r="2" fill="#D4607A" opacity="0.35"/>
+      <circle cx="55" cy="28" r="1.5" fill="#E8B86D" opacity="0.4"/>
+    </svg>
+  )
+}
+
+function WeddingIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+      <circle cx="24" cy="34" r="13" stroke="#C8A96E" strokeWidth="4" fill="rgba(200,169,110,0.08)"/>
+      <circle cx="39" cy="34" r="13" stroke="#E8B86D" strokeWidth="4" fill="rgba(232,184,109,0.08)"/>
+      <polygon points="31.5,12 34.5,19 31.5,26 28.5,19" fill="#9B8FD4" opacity="0.8"/>
+      <polygon points="28.5,19 34.5,19 31.5,26" fill="#6B5FE4" opacity="0.6"/>
+      <circle cx="10" cy="20" r="3.5" fill="#D4607A" opacity="0.55"/>
+      <circle cx="10" cy="20" r="1.5" fill="#FDFAF5" opacity="0.9"/>
+      <circle cx="52" cy="20" r="3.5" fill="#D4607A" opacity="0.55"/>
+      <circle cx="52" cy="20" r="1.5" fill="#FDFAF5" opacity="0.9"/>
+      <path d="M52 10 L53.5 14 L57 15.5 L53.5 17 L52 21 L50.5 17 L47 15.5 L50.5 14 Z" fill="#E8B86D" opacity="0.65"/>
+    </svg>
+  )
+}
+
+function CorporateIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+      <rect x="8" y="20" width="20" height="34" rx="2" stroke="#8B7A65" strokeWidth="1.8" fill="rgba(139,122,101,0.06)"/>
+      <rect x="18" y="10" width="16" height="44" rx="2" stroke="#5A5040" strokeWidth="2" fill="rgba(90,80,64,0.09)"/>
+      <rect x="36" y="26" width="18" height="28" rx="2" stroke="#8B7A65" strokeWidth="1.5" fill="rgba(139,122,101,0.05)"/>
+      <rect x="22" y="15" width="5" height="6" rx="1" fill="#E8B86D" opacity="0.55"/>
+      <rect x="29" y="15" width="5" height="6" rx="1" fill="#E8B86D" opacity="0.4"/>
+      <rect x="10" y="27" width="5" height="5" rx="1" fill="#6B5FE4" opacity="0.35"/>
+      <rect x="22" y="25" width="5" height="5" rx="1" fill="#6B5FE4" opacity="0.45"/>
+      <rect x="29" y="25" width="5" height="5" rx="1" fill="#4A9E72" opacity="0.4"/>
+      <rect x="22" y="34" width="5" height="5" rx="1" fill="#E8B86D" opacity="0.4"/>
+      <rect x="38" y="33" width="5" height="5" rx="1" fill="#6B5FE4" opacity="0.35"/>
+      <rect x="46" y="33" width="5" height="5" rx="1" fill="#4A9E72" opacity="0.35"/>
+      <line x1="4" y1="54" x2="58" y2="54" stroke="#8B7A65" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+    </svg>
+  )
+}
+
+function SocialIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+      <rect x="6" y="10" width="9" height="9" rx="2.5" fill="#E8B86D" opacity="0.8" transform="rotate(15 10 14)"/>
+      <rect x="45" y="7" width="7" height="7" rx="2" fill="#D4607A" opacity="0.7" transform="rotate(-20 48 10)"/>
+      <rect x="46" y="30" width="8" height="8" rx="2.5" fill="#6B5FE4" opacity="0.65" transform="rotate(25 50 34)"/>
+      <rect x="5" y="34" width="7" height="7" rx="2" fill="#4A9E72" opacity="0.65" transform="rotate(-10 8 37)"/>
+      <path d="M27 42 L31 24 L36 42 Z" stroke="#C8A96E" strokeWidth="2" fill="rgba(200,169,110,0.15)" strokeLinejoin="round"/>
+      <line x1="31" y1="42" x2="31" y2="54" stroke="#C8A96E" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="25" y1="54" x2="37" y2="54" stroke="#C8A96E" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="30" cy="35" r="2" fill="#FDFAF5" opacity="0.85"/>
+      <circle cx="32" cy="29" r="1.2" fill="#FDFAF5" opacity="0.7"/>
+      <path d="M8 20 Q14 15 12 24 Q7 28 14 30" stroke="#E8A030" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+      <path d="M50 14 Q46 21 53 24" stroke="#D4607A" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+      <path d="M52 8 L53.5 12 L57 13 L53.5 14 L52 18 L50.5 14 L47 13 L50.5 12 Z" fill="#E8B86D" opacity="0.75"/>
+    </svg>
+  )
+}
+
+function PrivateIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+      <path d="M36 7 Q50 14 50 29 Q50 44 36 51 Q22 46 20 38 Q14 26 22 17 Q27 9 36 7 Z" stroke="#9B8FD4" strokeWidth="2" fill="rgba(155,143,212,0.1)"/>
+      <path d="M34 11 Q45 17 45 29 Q45 40 34 46 Q23 42 21 34 Q16 24 24 17 Q27 12 34 11 Z" fill="rgba(155,143,212,0.08)"/>
+      <circle cx="10" cy="13" r="2.5" fill="#E8B86D" opacity="0.9"/>
+      <circle cx="50" cy="11" r="2" fill="#E8B86D" opacity="0.7"/>
+      <circle cx="54" cy="32" r="2.5" fill="#9B8FD4" opacity="0.75"/>
+      <circle cx="8" cy="42" r="2" fill="#E8B86D" opacity="0.6"/>
+      <path d="M50 19 L52 24 L50 29 L48 24 Z" fill="#E8B86D" opacity="0.6"/>
+      <path d="M12 27 L13.5 31 L12 35 L10.5 31 Z" fill="#9B8FD4" opacity="0.65"/>
+      <circle cx="40" cy="42" r="1.5" fill="#B0A8E0" opacity="0.6"/>
+      <circle cx="47" cy="47" r="1" fill="#B0A8E0" opacity="0.5"/>
+      <line x1="40" y1="42" x2="47" y2="47" stroke="#B0A8E0" strokeWidth="0.8" opacity="0.4"/>
+    </svg>
+  )
+}
+
+function OtherIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+      <path d="M31 7 L33.5 20 L46 17 L37 27 L46 31 L33.5 34 L36 47 L31 37 L26 47 L28.5 34 L16 31 L25 27 L16 17 L28.5 20 Z" stroke="#E8B86D" strokeWidth="1.8" fill="rgba(232,184,109,0.1)" strokeLinejoin="round"/>
+      <path d="M52 12 L54 17 L52 22 L50 17 Z" fill="#6B5FE4" opacity="0.55"/>
+      <path d="M11 17 L12.5 21 L11 25 L9.5 21 Z" fill="#4A9E72" opacity="0.55"/>
+      <path d="M52 40 L54 45 L52 50 L50 45 Z" fill="#D4607A" opacity="0.5"/>
+      <path d="M9 38 L10.5 42 L9 46 L7.5 42 Z" fill="#E8B86D" opacity="0.5"/>
+      <circle cx="46" cy="28" r="3.5" stroke="#E8B86D" strokeWidth="1.5" fill="rgba(232,184,109,0.1)"/>
+      <circle cx="16" cy="34" r="3" stroke="#6B5FE4" strokeWidth="1.5" fill="rgba(107,95,228,0.08)"/>
+      <circle cx="31" cy="27" r="2.5" fill="#E8B86D" opacity="0.65"/>
+    </svg>
+  )
+}
+
+const ILLUS_MAP = {
+  birthday:  BirthdayIllus,
+  wedding:   WeddingIllus,
+  corporate: CorporateIllus,
+  social:    SocialIllus,
+  private:   PrivateIllus,
+  other:     OtherIllus,
+}
+
+// ── Graphics for event types ──────────────────────────────────────────────────
+const EVENT_GRAPHICS = {
+  birthday:  { gradient: 'linear-gradient(150deg, #FFF0E8 0%, #F5D8C0 100%)' },
+  wedding:   { gradient: 'linear-gradient(150deg, #FDF5E4 0%, #F0E0C4 100%)' },
+  corporate: { gradient: 'linear-gradient(150deg, #EEEAE0 0%, #DDD5C8 100%)' },
+  social:    { gradient: 'linear-gradient(150deg, #FFF4E0 0%, #F5E0B8 100%)' },
+  private:   { gradient: 'linear-gradient(150deg, #F0EEF8 0%, #E0D8F0 100%)' },
+  other:     { gradient: 'linear-gradient(150deg, #EEF5E8 0%, #D8ECCC 100%)' },
+}
+
+const SCALE_GRAPHICS = {
+  intimate: { gradient: 'linear-gradient(150deg, #F2EFF8 0%, #E4DCF0 100%)', accent: '#6B5FE4' },
+  medium:   { gradient: 'linear-gradient(150deg, #EEF5E8 0%, #D8ECCC 100%)', accent: '#4A9E72' },
+  grand:    { gradient: 'linear-gradient(150deg, #FFF4E0 0%, #F5E0B8 100%)', accent: '#C8763A' },
+}
+
+const BUDGET_GRAPHICS = {
+  essential: { gradient: 'linear-gradient(150deg, #F5EDE0 0%, #EDD8C0 100%)', accent: '#8B6A3A' },
+  elevated:  { gradient: 'linear-gradient(150deg, #EEEAE0 0%, #E0D5C8 100%)', accent: '#5A5040' },
+  signature: { gradient: 'linear-gradient(150deg, #FDF5E4 0%, #F0E0B8 100%)', accent: '#C8A96E' },
+}
+
+function EventTypeCard({ t, active, justSelected, onClick }) {
+  const g = EVENT_GRAPHICS[t.id] || EVENT_GRAPHICS.other
+  const Illus = ILLUS_MAP[t.id] || OtherIllus
+  return (
+    <motion.button
+      onClick={onClick}
+      whileTap={{ scale: 0.96 }}
+      className="relative overflow-hidden transition-all duration-200"
+      style={{
+        height: 130,
+        borderRadius: 'var(--radius)',
+        border:    active ? '2px solid var(--primary)' : '1.5px solid rgba(44,32,22,0.08)',
+        boxShadow: active
+          ? '0 0 0 3px rgba(107,95,228,0.12), 0 4px 16px rgba(44,32,22,0.1)'
+          : '0 2px 8px rgba(44,32,22,0.07)',
+        background: g.gradient,
+      }}>
+      {/* Selection flash */}
+      <AnimatePresence>
+        {justSelected && (
+          <motion.div className="absolute inset-0 z-10 pointer-events-none"
+            initial={{ opacity: 0.3 }} animate={{ opacity: 0 }} transition={{ duration: 0.35 }}
+            style={{ background: 'var(--primary)' }} />
+        )}
+      </AnimatePresence>
+      {/* Illustration */}
+      <div className="absolute inset-0 flex items-center justify-center" style={{ paddingBottom: 28 }}>
+        <Illus />
+      </div>
+      {/* Bottom label strip */}
+      <div className="absolute bottom-0 inset-x-0 px-3 py-2.5 flex items-center justify-between"
+        style={{
+          background: 'rgba(253,250,245,0.88)',
+          backdropFilter: 'blur(6px)',
+          borderTop: '1px solid rgba(44,32,22,0.06)',
+        }}>
+        <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t.label}</span>
+        <AnimatePresence>
+          {active && (
+            <motion.div
+              initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              className="w-5 h-5 rounded-full flex items-center justify-center"
+              style={{ background: 'var(--primary)' }}>
+              <Check size={11} color="white" strokeWidth={3} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.button>
+  )
+}
+
+function ScaleCard({ s, active, justSelected, onClick }) {
+  const g = SCALE_GRAPHICS[s.id] || SCALE_GRAPHICS.medium
+  return (
+    <motion.button
+      onClick={onClick}
+      whileTap={{ scale: 0.97 }}
+      className="relative overflow-hidden transition-all duration-200 w-full"
+      style={{
+        height: 88,
+        borderRadius: 'var(--radius)',
+        border:    active ? '2px solid var(--primary)' : '1.5px solid rgba(44,32,22,0.08)',
+        boxShadow: active
+          ? '0 0 0 3px rgba(107,95,228,0.12), 0 4px 12px rgba(44,32,22,0.08)'
+          : '0 2px 8px rgba(44,32,22,0.06)',
+        background: g.gradient,
+      }}>
+      {/* Selection flash */}
+      <AnimatePresence>
+        {justSelected && (
+          <motion.div className="absolute inset-0 z-10 pointer-events-none"
+            initial={{ opacity: 0.3 }} animate={{ opacity: 0 }} transition={{ duration: 0.35 }}
+            style={{ background: 'var(--primary)' }} />
+        )}
+      </AnimatePresence>
+      {/* Accent circle bg */}
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full opacity-20"
+        style={{ width: 64, height: 64, background: g.accent }} />
+      {/* Content */}
+      <div className="absolute inset-0 flex items-center justify-between px-5">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full" style={{ background: g.accent, opacity: 0.85 }} />
+            <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{s.label}</p>
+          </div>
+          <p className="text-sm font-light" style={{ color: 'var(--text-muted)' }}>{s.sublabel} אורחים</p>
+        </div>
+        <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
+          style={{
+            borderColor: active ? 'var(--primary)' : 'rgba(44,32,22,0.2)',
+            background: active ? 'var(--primary)' : 'transparent',
+          }}>
+          {active && <Check size={13} color="white" strokeWidth={3} />}
+        </div>
+      </div>
+    </motion.button>
+  )
+}
+
 const steps = ['type', 'scale', 'date', 'budget', 'setting']
 
 const slideVariants = {
@@ -265,6 +504,23 @@ export default function Brief() {
 
   return (
     <div dir="rtl" className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+
+      {/* Subtle animated background blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+        {[
+          { x: '8%',  y: '18%', size: 180, color: 'rgba(107,95,228,0.045)', dur: 9,  d: 0 },
+          { x: '68%', y: '12%', size: 120, color: 'rgba(232,184,109,0.055)', dur: 11, d: 1 },
+          { x: '15%', y: '62%', size: 150, color: 'rgba(74,158,114,0.04)',   dur: 13, d: 2 },
+          { x: '72%', y: '65%', size: 100, color: 'rgba(212,96,122,0.04)',   dur: 10, d: 1.5 },
+        ].map((b, i) => (
+          <motion.div key={i}
+            className="absolute rounded-full"
+            style={{ left: b.x, top: b.y, width: b.size, height: b.size, background: b.color, filter: 'blur(40px)' }}
+            animate={{ y: [0, -18, 0], x: [0, 8, 0] }}
+            transition={{ duration: b.dur, repeat: Infinity, ease: 'easeInOut', delay: b.d }}
+          />
+        ))}
+      </div>
 
       {/* Sticky header */}
       <div className="sticky top-0 z-20 pt-5 pb-2" style={{ background: 'var(--background)' }}>
@@ -325,22 +581,12 @@ export default function Brief() {
 
               <div className="grid grid-cols-2 gap-3 flex-1">
                 {briefEventTypes.map(t => (
-                  <OptionCard key={t.id}
+                  <EventTypeCard key={t.id}
+                    t={t}
                     active={briefAnswers.eventType === t.id}
                     justSelected={justSelected === t.id}
                     onClick={() => selectAndAdvance('eventType', t.id)}
-                    style={{ height: 130 }}>
-                    <img src={t.image} alt={t.label} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: briefAnswers.eventType === t.id ? 'rgba(8,10,15,0.3)' : 'rgba(8,10,15,0.55)' }} />
-                    <div className="absolute inset-0 flex items-end p-4 justify-between">
-                      <span className="text-white text-sm font-semibold">{t.label}</span>
-                      {briefAnswers.eventType === t.id && (
-                        <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
-                          <Check size={12} color="white" strokeWidth={3} />
-                        </div>
-                      )}
-                    </div>
-                  </OptionCard>
+                  />
                 ))}
               </div>
             </motion.div>
@@ -357,25 +603,12 @@ export default function Brief() {
               </h2>
               <div className="flex flex-col gap-3">
                 {briefScales.map(s => (
-                  <OptionCard key={s.id}
+                  <ScaleCard key={s.id}
+                    s={s}
                     active={briefAnswers.scale === s.id}
                     justSelected={justSelected === s.id}
                     onClick={() => selectAndAdvance('scale', s.id)}
-                    style={{ height: 96 }}>
-                    <img src={s.image} alt={s.label} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: briefAnswers.scale === s.id ? 'rgba(8,10,15,0.3)' : 'rgba(8,10,15,0.62)' }} />
-                    <div className="absolute inset-0 flex items-center justify-between px-5">
-                      <div>
-                        <p className="text-white text-base font-semibold">{s.label}</p>
-                        <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>{s.sublabel} אורחים</p>
-                      </div>
-                      {briefAnswers.scale === s.id && (
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
-                          <Check size={14} color="white" strokeWidth={3} />
-                        </div>
-                      )}
-                    </div>
-                  </OptionCard>
+                  />
                 ))}
               </div>
             </motion.div>
@@ -455,26 +688,46 @@ export default function Brief() {
                 מה הטווח שלך?
               </h2>
               <div className="flex flex-col gap-3">
-                {briefBudgetTiers.map(t => (
-                  <OptionCard key={t.id}
-                    active={briefAnswers.budgetTier === t.id}
-                    justSelected={justSelected === t.id}
-                    onClick={() => selectAndFinish('budgetTier', t.id)}
-                    className="flex items-center justify-between px-5"
-                    style={{ height: 88, background: briefAnswers.budgetTier === t.id ? 'rgba(45,27,105,0.06)' : 'var(--surface)' }}>
-                    <div className="text-left">
-                      <p className="font-semibold" style={{ color: 'var(--text-primary)', fontSize: 15 }}>{t.label}</p>
-                      <p className="font-bold mt-1" style={{ color: 'var(--primary)', fontSize: 17 }}>{t.range}</p>
-                    </div>
-                    <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all"
+                {briefBudgetTiers.map(t => {
+                  const g = BUDGET_GRAPHICS[t.id] || BUDGET_GRAPHICS.elevated
+                  const active = briefAnswers.budgetTier === t.id
+                  return (
+                    <motion.button key={t.id}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => selectAndFinish('budgetTier', t.id)}
+                      className="relative overflow-hidden transition-all duration-200"
                       style={{
-                        borderColor: briefAnswers.budgetTier === t.id ? 'var(--primary)' : 'rgba(45,27,105,0.25)',
-                        background:  briefAnswers.budgetTier === t.id ? 'var(--primary)' : 'transparent',
+                        height: 96,
+                        borderRadius: 'var(--radius)',
+                        border: active ? '2px solid var(--primary)' : '1.5px solid rgba(44,32,22,0.08)',
+                        boxShadow: active
+                          ? '0 0 0 3px rgba(107,95,228,0.12), 0 4px 12px rgba(44,32,22,0.08)'
+                          : '0 2px 8px rgba(44,32,22,0.06)',
+                        background: g.gradient,
                       }}>
-                      {briefAnswers.budgetTier === t.id && <Check size={13} color="white" strokeWidth={3} />}
-                    </div>
-                  </OptionCard>
-                ))}
+                      {/* Ambient accent */}
+                      <div className="absolute right-0 top-0 bottom-0 w-28 opacity-30"
+                        style={{ background: `linear-gradient(to left, ${g.accent}40, transparent)` }} />
+                      {/* Content */}
+                      <div className="absolute inset-0 flex items-center justify-between px-5">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: g.accent, opacity: 0.9 }} />
+                            <p className="font-semibold" style={{ fontSize: 15, color: 'var(--text-primary)' }}>{t.label}</p>
+                          </div>
+                          <p className="font-bold mt-0.5" style={{ color: g.accent, fontSize: 18 }}>{t.range}</p>
+                        </div>
+                        <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                          style={{
+                            borderColor: active ? 'var(--primary)' : 'rgba(44,32,22,0.2)',
+                            background: active ? 'var(--primary)' : 'transparent',
+                          }}>
+                          {active && <Check size={13} color="white" strokeWidth={3} />}
+                        </div>
+                      </div>
+                    </motion.button>
+                  )
+                })}
               </div>
             </motion.div>
           )}
@@ -495,21 +748,21 @@ export default function Brief() {
                     label: 'פנים',
                     sublabel: 'מקום ממוזג, שליטה מלאה על האווירה',
                     Icon: Building2,
-                    gradient: 'linear-gradient(135deg, #2D1B69 0%, #1a0f3e 100%)',
+                    gradient: 'linear-gradient(to bottom, #7B6FE8, #9B8FD4)',
                   },
                   {
                     id: 'outdoor',
                     label: 'חוץ',
                     sublabel: 'אוויר פתוח, אור טבעי, גן או גג',
                     Icon: TreePine,
-                    gradient: 'linear-gradient(135deg, #1a4a2e 0%, #0d3320 100%)',
+                    gradient: 'linear-gradient(to bottom, #5AB484, #4A9E72)',
                   },
                   {
                     id: 'hybrid',
                     label: 'היברידי',
                     sublabel: 'טקס בפנים, קבלת פנים בחוץ — או להפך',
                     Icon: null,
-                    gradient: 'linear-gradient(135deg, #4a3a1a 0%, #2e2010 100%)',
+                    gradient: 'linear-gradient(to bottom, #E8B86D, #C8A056)',
                   },
                 ].map(opt => {
                   const active = briefAnswers.indoorOutdoor === opt.id

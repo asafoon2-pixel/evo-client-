@@ -4,7 +4,7 @@ import {
   Home, MessageCircle, Calendar, CreditCard, User,
   Bell, ChevronRight, Send, Plus, X, Check,
   CheckCircle2, Circle, MapPin, Users, Clock,
-  Camera, Edit2, Instagram, Sparkles,
+  Camera, Edit2, Instagram, Sparkles, Percent, Tag,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
@@ -28,10 +28,10 @@ const MOOD_IMAGES = [
 ]
 
 const INITIAL_SUGGESTIONS = [
-  { id: 1, icon: '📸', title: 'Add a photographer', body: "You haven't booked a photographer yet. Capture every moment.", cta: 'Browse photographers' },
-  { id: 2, icon: '🎂', title: 'Upgrade your catering', body: 'Add a dessert station or welcome drinks to elevate the experience.', cta: 'See upgrades' },
-  { id: 3, icon: '📋', title: 'Set your final guest count', body: 'Your vendors need a confirmed headcount 3 weeks before the event.', cta: 'Update count' },
-  { id: 4, icon: '🎨', title: 'Share your mood board', body: 'Help your vendors understand your vision. Upload references or images.', cta: 'Add photos' },
+  { id: 1, icon: '📸', title: 'הוסף צלם', body: 'עדיין לא הזמנת צלם. תעד כל רגע.', cta: 'עיין בצלמים' },
+  { id: 2, icon: '🎂', title: 'שדרג את הקייטרינג', body: 'הוסף תחנת קינוחים או משקאות קבלת פנים לחוויה משודרגת.', cta: 'ראה שדרוגים' },
+  { id: 3, icon: '📋', title: 'קבע ספירת אורחים סופית', body: 'הספקים שלך צריכים מספר מאושר 3 שבועות לפני האירוע.', cta: 'עדכן מספר' },
+  { id: 4, icon: '🎨', title: 'שתף לוח השראה', body: 'עזור לספקים להבין את החזון שלך. העלה הפניות ותמונות.', cta: 'הוסף תמונות' },
 ]
 
 function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) {
@@ -44,7 +44,7 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
       {/* Event header */}
       <div className="px-6 pt-8 pb-6">
         <p className="text-[10px] font-semibold tracking-[0.25em] uppercase mb-2" style={{ color: 'var(--primary)' }}>
-          Your Event
+          האירוע שלך
         </p>
         <h1 className="text-2xl font-semibold leading-snug mb-4" style={{ color: 'var(--text-primary)' }}>
           {eventName}
@@ -54,10 +54,10 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
             <Chip icon={<Calendar size={11} />} label={eventDate} color="#2D1B69" />
           )}
           {days !== null && (
-            <Chip icon={<Clock size={11} />} label={days > 0 ? `${days} days to go` : 'Today!'} color="#ec4899" />
+            <Chip icon={<Clock size={11} />} label={days > 0 ? `עוד ${days} ימים` : 'היום!'} color="#ec4899" />
           )}
           {guests && (
-            <Chip icon={<Users size={11} />} label={`${guests} guests`} color="#1A6940" />
+            <Chip icon={<Users size={11} />} label={`${guests} אורחים`} color="#1A6940" />
           )}
           {totalPrice > 0 && (
             <Chip icon={<CreditCard size={11} />} label={fmt(totalPrice)} color="#6B4A1A" />
@@ -69,10 +69,10 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
       <div className="px-6 mb-6">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--text-dim)' }}>
-            Event Mood
+            אווירת האירוע
           </p>
           <button className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: 'var(--primary)' }}>
-            <Plus size={11} /> Add photos
+            <Plus size={11} /> הוסף תמונות
           </button>
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -87,7 +87,7 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
             style={{ aspectRatio: '1', background: 'var(--surface)', border: '1.5px dashed var(--border)' }}>
             <div className="flex flex-col items-center gap-1">
               <Camera size={20} style={{ color: 'var(--text-dim)' }} />
-              <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>Add photo</p>
+              <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>הוסף תמונה</p>
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
       {suggestions.length > 0 && (
         <div className="px-6">
           <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-            Suggestions
+            הצעות
           </p>
           <div className="space-y-3">
             <AnimatePresence>
@@ -151,46 +151,46 @@ const MOCK_CHATS = [
   {
     id: 'pearl',
     name: 'The Pearl House',
-    cat: 'Venue',
+    cat: 'מקום',
     avatar: 'P',
     color: '#2D1B69',
     unread: 2,
     time: '10:42',
-    last: 'Looking forward to hosting your event! 🎉',
+    last: 'מצפים לארח את האירוע שלך! 🎉',
     messages: [
-      { from: 'vendor', text: 'Hi! So excited to be part of your event 🎉', time: '10:30' },
-      { from: 'user',   text: 'Thanks! Can we schedule a site visit?', time: '10:38' },
-      { from: 'vendor', text: 'Of course — does Thursday 3pm work?', time: '10:40' },
-      { from: 'vendor', text: 'Looking forward to hosting your event! 🎉', time: '10:42' },
+      { from: 'vendor', text: 'היי! כל כך מתרגש להיות חלק מהאירוע שלך 🎉', time: '10:30' },
+      { from: 'user',   text: 'תודה! אפשר לקבוע ביקור אתר?', time: '10:38' },
+      { from: 'vendor', text: 'כמובן — חמישי ב-15:00 מתאים?', time: '10:40' },
+      { from: 'vendor', text: 'מצפים לארח את האירוע שלך! 🎉', time: '10:42' },
     ],
   },
   {
     id: 'atelier',
     name: 'Atelier Culinaire',
-    cat: 'Catering',
+    cat: 'קייטרינג',
     avatar: 'A',
     color: '#1A6940',
     unread: 0,
     time: '09:15',
-    last: 'Menu tasting confirmed for Apr 18 ✓',
+    last: 'טעימת תפריט אושרה ל-18/4 ✓',
     messages: [
-      { from: 'vendor', text: 'Your menu options are ready to review!', time: '08:50' },
-      { from: 'user',   text: 'Great, can we do a tasting?', time: '09:10' },
-      { from: 'vendor', text: 'Menu tasting confirmed for Apr 18 ✓', time: '09:15' },
+      { from: 'vendor', text: 'אפשרויות התפריט שלך מוכנות לסקירה!', time: '08:50' },
+      { from: 'user',   text: 'מעולה, אפשר לעשות טעימה?', time: '09:10' },
+      { from: 'vendor', text: 'טעימת תפריט אושרה ל-18/4 ✓', time: '09:15' },
     ],
   },
   {
     id: 'noir',
     name: 'Noir Sound',
-    cat: 'Music',
+    cat: 'מוזיקה',
     avatar: 'N',
     color: '#6B1F6B',
     unread: 1,
     time: 'Yesterday',
-    last: 'Playlist draft incoming tomorrow 🎶',
+    last: 'טיוטת פלייליסט מגיעה מחר 🎶',
     messages: [
-      { from: 'vendor', text: 'We have some playlist ideas for you', time: 'Yesterday' },
-      { from: 'vendor', text: 'Playlist draft incoming tomorrow 🎶', time: 'Yesterday' },
+      { from: 'vendor', text: 'יש לנו כמה רעיונות לפלייליסט', time: 'אתמול' },
+      { from: 'vendor', text: 'טיוטת פלייליסט מגיעה מחר 🎶', time: 'אתמול' },
     ],
   },
 ]
@@ -262,7 +262,7 @@ function ChatTab() {
           <input
             value={msg} onChange={e => setMsg(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && sendMsg()}
-            placeholder="Message..."
+            placeholder="הודעה..."
             className="flex-1 px-4 py-3 text-sm rounded-full outline-none"
             style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}
           />
@@ -278,8 +278,8 @@ function ChatTab() {
 
   return (
     <div className="px-6 pt-8 pb-4">
-      <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Chats</h2>
-      <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>Your vendor conversations</p>
+      <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>שיחות</h2>
+      <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>השיחות שלך עם ספקים</p>
       <div className="space-y-2">
         {chatData.map(c => (
           <motion.button key={c.id} whileTap={{ scale: 0.99 }} onClick={() => setActiveId(c.id)}
@@ -309,29 +309,29 @@ function ChatTab() {
 
 // ── TIMELINE TAB ──────────────────────────────────────────────────────────────
 const TYPE_STYLE = {
-  done:    { color: '#22c55e', icon: CheckCircle2, label: 'Done' },
-  payment: { color: '#f59e0b', icon: CreditCard,   label: 'Payment' },
-  meeting: { color: '#6366f1', icon: MapPin,        label: 'Meeting' },
-  task:    { color: '#64748b', icon: Circle,         label: 'Task' },
-  event:   { color: '#ec4899', icon: Sparkles,       label: 'Event' },
+  done:    { color: '#22c55e', icon: CheckCircle2, label: 'הושלם' },
+  payment: { color: '#f59e0b', icon: CreditCard,   label: 'תשלום' },
+  meeting: { color: '#6366f1', icon: MapPin,        label: 'פגישה' },
+  task:    { color: '#64748b', icon: Circle,         label: 'משימה' },
+  event:   { color: '#ec4899', icon: Sparkles,       label: 'אירוע' },
 }
 
 // vendorStatus: 'confirmed' | 'awaiting' | 'cancelled'
 const DEFAULT_ITEMS = [
-  { id: 1,  date: 'Today',  label: 'Event confirmed by EVO',                type: 'done',    done: true,  vendorStatus: 'confirmed', vendorName: 'EVO' },
-  { id: 2,  date: 'Apr 12', label: 'Venue deposit due — ₪2,800',           type: 'payment', done: false, vendorStatus: 'confirmed', vendorName: 'The Pearl House' },
-  { id: 3,  date: 'Apr 18', label: 'Catering tasting at Atelier Culinaire', type: 'meeting', done: false, vendorStatus: 'confirmed', vendorName: 'Atelier Culinaire' },
-  { id: 4,  date: 'Apr 25', label: 'Send final guest list to venue',        type: 'task',    done: false },
-  { id: 5,  date: 'May 3',  label: 'Final vendor confirmations',            type: 'task',    done: false },
-  { id: 6,  date: 'May 10', label: 'Music briefing with Noir Sound',        type: 'meeting', done: false, vendorStatus: 'awaiting',   vendorName: 'Noir Sound' },
-  { id: 7,  date: 'May 20', label: 'Catering balance payment',              type: 'payment', done: false, vendorStatus: 'confirmed',  vendorName: 'Atelier Culinaire' },
-  { id: 8,  date: 'Jun 1',  label: '🎉 Your Event Day!',                   type: 'event',   done: false },
+  { id: 1,  date: 'היום',  label: 'אירוע אושר על ידי EVO',               type: 'done',    done: true,  vendorStatus: 'confirmed', vendorName: 'EVO' },
+  { id: 2,  date: '12/4',  label: 'מקדמת מקום — ₪2,800',                type: 'payment', done: false, vendorStatus: 'confirmed', vendorName: 'The Pearl House' },
+  { id: 3,  date: '18/4',  label: 'טעימת קייטרינג ב-Atelier Culinaire', type: 'meeting', done: false, vendorStatus: 'confirmed', vendorName: 'Atelier Culinaire' },
+  { id: 4,  date: '25/4',  label: 'שלח רשימת אורחים סופית למקום',       type: 'task',    done: false },
+  { id: 5,  date: '3/5',   label: 'אישורי ספקים אחרונים',                type: 'task',    done: false },
+  { id: 6,  date: '10/5',  label: 'בריף מוזיקה עם Noir Sound',           type: 'meeting', done: false, vendorStatus: 'awaiting',   vendorName: 'Noir Sound' },
+  { id: 7,  date: '20/5',  label: 'תשלום יתרת קייטרינג',                 type: 'payment', done: false, vendorStatus: 'confirmed',  vendorName: 'Atelier Culinaire' },
+  { id: 8,  date: '1/6',   label: '🎉 יום האירוע שלך!',                  type: 'event',   done: false },
 ]
 
 const VENDOR_STATUS_STYLE = {
-  confirmed: { label: '✅ Confirmed', bg: 'rgba(34,197,94,0.1)',   color: '#16a34a' },
-  awaiting:  { label: '⏳ Awaiting',  bg: 'rgba(245,158,11,0.1)',  color: '#d97706' },
-  cancelled: { label: '❌ Cancelled', bg: 'rgba(239,68,68,0.1)',   color: '#dc2626' },
+  confirmed: { label: '✅ מאושר',  bg: 'rgba(34,197,94,0.1)',   color: '#16a34a' },
+  awaiting:  { label: '⏳ ממתין',  bg: 'rgba(245,158,11,0.1)',  color: '#d97706' },
+  cancelled: { label: '❌ בוטל',   bg: 'rgba(239,68,68,0.1)',   color: '#dc2626' },
 }
 
 function TimelineTab() {
@@ -351,14 +351,14 @@ function TimelineTab() {
   return (
     <div className="px-6 pt-8 pb-4">
       <div className="flex items-center justify-between mb-1">
-        <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Timeline</h2>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>ציר זמן</h2>
         <motion.button whileTap={{ scale: 0.95 }} onClick={() => setAdding(a => !a)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
           style={{ background: adding ? 'var(--primary)' : 'rgba(45,27,105,0.08)', color: adding ? '#fff' : 'var(--primary)' }}>
-          <Plus size={12} /> Add item
+          <Plus size={12} /> הוסף פריט
         </motion.button>
       </div>
-      <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>Your full event journey</p>
+      <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>המסע המלא של האירוע שלך</p>
 
       {/* Add item form */}
       <AnimatePresence>
@@ -367,13 +367,13 @@ function TimelineTab() {
             exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.22 }}
             className="overflow-hidden mb-5">
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--surface)', border: '1.5px solid var(--primary)' }}>
-              <p className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>New item</p>
+              <p className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>פריט חדש</p>
               <input value={newItem.label} onChange={e => setNewItem(n => ({ ...n, label: e.target.value }))}
-                placeholder="What's happening?" className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
+                placeholder="מה קורה?" className="w-full text-sm px-3 py-2.5 rounded-xl outline-none"
                 style={{ background: 'var(--elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }} />
               <div className="flex gap-2">
                 <input value={newItem.date} onChange={e => setNewItem(n => ({ ...n, date: e.target.value }))}
-                  placeholder="Date (e.g. May 5)" className="flex-1 text-sm px-3 py-2.5 rounded-xl outline-none"
+                  placeholder="תאריך (למשל 5/5)" className="flex-1 text-sm px-3 py-2.5 rounded-xl outline-none"
                   style={{ background: 'var(--elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }} />
                 <select value={newItem.type} onChange={e => setNewItem(n => ({ ...n, type: e.target.value }))}
                   className="flex-1 text-sm px-3 py-2.5 rounded-xl outline-none"
@@ -385,9 +385,9 @@ function TimelineTab() {
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setAdding(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-                  style={{ background: 'var(--elevated)', color: 'var(--text-muted)' }}>Cancel</button>
+                  style={{ background: 'var(--elevated)', color: 'var(--text-muted)' }}>ביטול</button>
                 <button onClick={addItem} className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-                  style={{ background: 'var(--primary)', color: '#fff' }}>Add</button>
+                  style={{ background: 'var(--primary)', color: '#fff' }}>הוסף</button>
               </div>
             </div>
           </motion.div>
@@ -447,14 +447,14 @@ function PaymentsTab({ sections, totalPrice }) {
   const deposit = Math.round(totalPrice * 0.2)
 
   const rows = (sections.length > 0 ? sections : [
-    { label: 'Venue',    vendor: { name: 'The Pearl House',    price: 14000 } },
-    { label: 'Catering', vendor: { name: 'Atelier Culinaire',  price: 18000 } },
-    { label: 'Music',    vendor: { name: 'Noir Sound',          price: 6000  } },
-    { label: 'Lighting', vendor: { name: 'Lumière Studio',      price: 5500  } },
+    { label: 'מקום',    vendor: { name: 'The Pearl House',    price: 14000 } },
+    { label: 'קייטרינג', vendor: { name: 'Atelier Culinaire',  price: 18000 } },
+    { label: 'מוזיקה',    vendor: { name: 'Noir Sound',          price: 6000  } },
+    { label: 'תאורה', vendor: { name: 'Lumière Studio',      price: 5500  } },
   ]).map((s, i) => ({
     ...s,
     dep: Math.round(s.vendor.price * 0.2),
-    due: ['Apr 12', 'Apr 20', 'Apr 28', 'May 5'][i] || 'TBD',
+    due: ['12/4', '20/4', '28/4', '5/5'][i] || 'בהמשך',
     paid: i === 2,
   }))
 
@@ -464,15 +464,15 @@ function PaymentsTab({ sections, totalPrice }) {
 
   return (
     <div className="px-6 pt-8 pb-4">
-      <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Payments</h2>
-      <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>All deposits and balances</p>
+      <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>תשלומים</h2>
+      <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>כל המקדמות והיתרות</p>
 
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-2 mb-6">
         {[
-          { label: 'Total event', value: fmt(totalPrice || 43500), sub: '' },
-          { label: 'Paid',        value: fmt(paidAmount),           sub: 'deposits' },
-          { label: 'Pending',     value: fmt(pending),              sub: 'deposits' },
+          { label: 'סה״כ אירוע', value: fmt(totalPrice || 43500), sub: '' },
+          { label: 'שולם',       value: fmt(paidAmount),           sub: 'מקדמות' },
+          { label: 'ממתין',      value: fmt(pending),              sub: 'מקדמות' },
         ].map(c => (
           <div key={c.label} className="rounded-2xl px-3 py-3 text-center"
             style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
@@ -485,7 +485,7 @@ function PaymentsTab({ sections, totalPrice }) {
 
       {/* Deposit rows */}
       <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-        Deposit schedule
+        לוח מקדמות
       </p>
       <div className="space-y-2 mb-6">
         {rows.map((r, i) => (
@@ -497,11 +497,11 @@ function PaymentsTab({ sections, totalPrice }) {
               <p className="text-sm font-bold" style={{ color: r.paid ? '#16a34a' : 'var(--text-primary)' }}>{fmt(r.dep)}</p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{r.label} · Due {r.due}</p>
+              <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{r.label} · לתשלום {r.due}</p>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                 style={{ background: r.paid ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
                          color: r.paid ? '#16a34a' : '#d97706' }}>
-                {r.paid ? '✓ Paid' : 'Pending'}
+                {r.paid ? '✓ שולם' : 'ממתין'}
               </span>
             </div>
           </div>
@@ -512,7 +512,7 @@ function PaymentsTab({ sections, totalPrice }) {
         <motion.button whileTap={{ scale: 0.97 }}
           className="w-full py-4 rounded-full text-sm font-bold tracking-wide"
           style={{ background: '#6B4A1A', color: '#fff', boxShadow: '0 4px 16px rgba(107,74,26,0.35)' }}>
-          Pay pending deposits — {fmt(pending)}
+          שלם מקדמות ממתינות — {fmt(pending)}
         </motion.button>
       )}
     </div>
@@ -536,10 +536,10 @@ function ProfileTab() {
   }
 
   const fields = [
-    { key: 'fullName',  label: 'Full Name',          placeholder: 'Your name', icon: User,      multiline: false },
-    { key: 'instagram', label: 'Instagram',           placeholder: '@handle',   icon: Instagram,  multiline: false },
-    { key: 'bio',       label: 'About you',           placeholder: 'A short intro — who are you as an event host?', icon: Edit2, multiline: true },
-    { key: 'vibe',      label: 'Your event vibe',     placeholder: 'Describe your taste and style so vendors understand you before working with you...', icon: Sparkles, multiline: true },
+    { key: 'fullName',  label: 'שם מלא',        placeholder: 'השם שלך', icon: User,      multiline: false },
+    { key: 'instagram', label: 'Instagram',      placeholder: '@handle',  icon: Instagram,  multiline: false },
+    { key: 'bio',       label: 'אודותיך',        placeholder: 'מבוא קצר — מי אתה כמארח אירוע?', icon: Edit2, multiline: true },
+    { key: 'vibe',      label: 'ויב האירוע שלך', placeholder: 'תאר את הטעם והסגנון שלך כדי שהספקים יבינו אותך...', icon: Sparkles, multiline: true },
   ]
 
   return (
@@ -557,14 +557,14 @@ function ProfileTab() {
           </button>
         </div>
         <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-          {local.fullName || 'Your Name'}
+          {local.fullName || 'השם שלך'}
         </p>
         {local.instagram && (
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{local.instagram}</p>
         )}
         <p className="text-[11px] mt-2 px-4 py-1.5 rounded-full"
           style={{ background: 'rgba(45,27,105,0.07)', color: 'var(--primary)' }}>
-          Visible to your vendors
+          גלוי לספקים שלך
         </p>
       </div>
 
@@ -584,7 +584,7 @@ function ProfileTab() {
                 </div>
                 <button onClick={() => isEditing ? save(f.key) : setEditing(f.key)}
                   className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
-                  {isEditing ? 'Save' : 'Edit'}
+                  {isEditing ? 'שמור' : 'ערוך'}
                 </button>
               </div>
               {isEditing ? (
@@ -613,39 +613,97 @@ function ProfileTab() {
   )
 }
 
+// ── DEALS ─────────────────────────────────────────────────────────────────────
+const DEALS = [
+  {
+    id: 1,
+    vendor: 'Studio One',
+    category: 'צילום',
+    discount: '15%',
+    description: 'חבילת צילום + וידאו — תקף ל-30 יום',
+    emoji: '📸',
+    color: '#6B5FE4',
+  },
+  {
+    id: 2,
+    vendor: 'Lumière Studio',
+    category: 'תאורה',
+    discount: '10%',
+    description: 'עיצוב תאורה מלא לאירועים עד 150 אורחים',
+    emoji: '💡',
+    color: '#C8A96E',
+  },
+  {
+    id: 3,
+    vendor: 'The Craft Bar',
+    category: 'בר',
+    discount: '12%',
+    description: 'חבילת פרמיום כולל ציוד ואנשי צוות',
+    emoji: '🍹',
+    color: '#4A9E72',
+  },
+  {
+    id: 4,
+    vendor: 'Wild Botanica',
+    category: 'עיצוב',
+    discount: '20%',
+    description: 'עיצוב פרחוני לשולחנות ומרכזי חלל',
+    emoji: '🌸',
+    color: '#D4607A',
+  },
+]
+
 // ── BOTTOM NAV ────────────────────────────────────────────────────────────────
 const NAV_TABS = [
-  { id: 'home',     label: 'Home',     Icon: Home },
-  { id: 'chat',     label: 'Chat',     Icon: MessageCircle, badge: 3 },
-  { id: 'timeline', label: 'Timeline', Icon: Calendar },
-  { id: 'payments', label: 'Payments', Icon: CreditCard },
-  { id: 'profile',  label: 'Profile',  Icon: User },
+  { id: 'home',     label: 'בית',      Icon: Home },
+  { id: 'chat',     label: 'צ׳אט',     Icon: MessageCircle, badge: 3 },
+  { id: 'timeline', label: 'ציר זמן',  Icon: Calendar },
+  { id: 'payments', label: 'תשלומים',  Icon: CreditCard },
+  { id: 'profile',  label: 'פרופיל',   Icon: User },
 ]
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function EventDashboard() {
   const { eventPackage, briefAnswers, totalPrice } = useApp()
   const [tab, setTab] = useState('home')
+  const [showDeals, setShowDeals] = useState(false)
+  const dealsCount = DEALS.length
 
   const sections  = eventPackage?.sections || []
-  const eventName = eventPackage?.name || 'Your Curated Event'
+  const eventName = eventPackage?.name || 'האירוע שלך'
   const eventDate = briefAnswers?.date !== 'flexible' ? briefAnswers?.date : null
   const days      = eventDate ? daysUntil(eventDate) : null
   const guestMap  = { intimate: '20–40', medium: '50–100', large: '100–200', grand: '200+' }
   const guests    = briefAnswers?.scale ? guestMap[briefAnswers.scale] : null
 
   return (
-    <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+
+      {/* Subtle animated background blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+        {[
+          { x: '5%',  y: '20%', size: 200, color: 'rgba(107,95,228,0.035)', dur: 12, d: 0 },
+          { x: '65%', y: '8%',  size: 140, color: 'rgba(232,184,109,0.04)', dur: 14, d: 2 },
+          { x: '70%', y: '55%', size: 120, color: 'rgba(74,158,114,0.035)', dur: 10, d: 1 },
+        ].map((b, i) => (
+          <motion.div key={i}
+            className="absolute rounded-full"
+            style={{ left: b.x, top: b.y, width: b.size, height: b.size, background: b.color, filter: 'blur(50px)' }}
+            animate={{ y: [0, -15, 0], x: [0, 6, 0] }}
+            transition={{ duration: b.dur, repeat: Infinity, ease: 'easeInOut', delay: b.d }}
+          />
+        ))}
+      </div>
 
       {/* Top bar — minimal, just notification bell */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3"
         style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
           {tab === 'home' ? eventName
-           : tab === 'chat' ? 'Chats'
-           : tab === 'timeline' ? 'Timeline'
-           : tab === 'payments' ? 'Payments'
-           : 'Profile'}
+           : tab === 'chat' ? 'שיחות'
+           : tab === 'timeline' ? 'ציר זמן'
+           : tab === 'payments' ? 'תשלומים'
+           : 'פרופיל'}
         </p>
         <button className="w-9 h-9 rounded-full flex items-center justify-center relative"
           style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
@@ -675,9 +733,85 @@ export default function EventDashboard() {
         </AnimatePresence>
       </div>
 
+      {/* Floating deals button + panel — contained within max-w-md column */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 pointer-events-none"
+        style={{ paddingBottom: 88 }}>
+
+        {/* Deals panel */}
+        <AnimatePresence>
+          {showDeals && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="mx-4 mb-3 rounded-3xl overflow-hidden pointer-events-auto"
+              style={{ background: 'var(--background)', border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #E8A030, #C8763A)' }}>
+                    <Percent size={14} color="white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>מבצעים עבורך</p>
+                    <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{DEALS.length} הצעות זמינות</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowDeals(false)} className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'var(--surface)' }}>
+                  <X size={14} style={{ color: 'var(--text-muted)' }} />
+                </button>
+              </div>
+              {/* Deals list */}
+              <div className="p-4 space-y-2.5 max-h-72 overflow-y-auto">
+                {DEALS.map(deal => (
+                  <div key={deal.id} className="flex items-center gap-3 px-4 py-3 rounded-2xl"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
+                      style={{ background: deal.color + '14' }}>
+                      {deal.emoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{deal.vendor}</p>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                          style={{ background: deal.color + '18', color: deal.color }}>-{deal.discount}</span>
+                      </div>
+                      <p className="text-xs leading-snug" style={{ color: 'var(--text-muted)' }}>{deal.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Floating button */}
+        <div className="flex justify-end px-5 pointer-events-auto">
+          <motion.button
+            onClick={() => setShowDeals(s => !s)}
+            className="w-14 h-14 rounded-full flex items-center justify-center shadow-xl relative"
+            style={{ background: 'linear-gradient(135deg, #E8A030, #C8763A)', boxShadow: '0 8px 24px rgba(200,118,58,0.45)' }}
+            whileTap={{ scale: 0.92 }}
+            animate={{ scale: showDeals ? 0.9 : 1 }}
+          >
+            <Percent size={22} color="white" />
+            {!showDeals && dealsCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                style={{ background: 'var(--primary)', color: '#fff', border: '2px solid var(--background)' }}>
+                {dealsCount}
+              </span>
+            )}
+          </motion.button>
+        </div>
+      </div>
+
       {/* Bottom nav */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-40"
-        style={{ background: 'rgba(245,245,247,0.97)', backdropFilter: 'blur(20px)', borderTop: '1px solid var(--border)' }}>
+        style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(20px)', borderTop: '1px solid var(--border)' }}>
         <div className="flex items-center px-2 pb-6 pt-2">
           {NAV_TABS.map(({ id, label, Icon, badge }) => {
             const active = tab === id

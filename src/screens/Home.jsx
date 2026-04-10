@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useLanguage, LanguageToggle } from '../context/LanguageContext'
@@ -89,7 +89,7 @@ const HOW_STEPS = [
 ]
 
 export default function Home() {
-  const { navigate, currentUser } = useApp()
+  const { navigate, currentUser, setAuthIntent } = useApp()
   const { lang, t, isRTL } = useLanguage()
   const [activeCat, setActiveCat] = useState(0)
   const firstName = currentUser?.displayName?.split(' ')[0] || 'Asaf'
@@ -101,6 +101,23 @@ export default function Home() {
       className="w-full min-h-screen overflow-y-auto overflow-x-hidden pb-24"
       style={{ background: 'var(--background)' }}
     >
+      {/* Subtle animated background blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+        {[
+          { x: '5%',  y: '15%', size: 220, color: 'rgba(107,95,228,0.04)', dur: 11, d: 0 },
+          { x: '60%', y: '10%', size: 160, color: 'rgba(232,184,109,0.05)', dur: 13, d: 1.5 },
+          { x: '10%', y: '58%', size: 180, color: 'rgba(74,158,114,0.035)', dur: 15, d: 3 },
+          { x: '68%', y: '60%', size: 130, color: 'rgba(212,96,122,0.035)', dur: 10, d: 1 },
+        ].map((b, i) => (
+          <motion.div key={i}
+            className="absolute rounded-full"
+            style={{ left: b.x, top: b.y, width: b.size, height: b.size, background: b.color, filter: 'blur(50px)' }}
+            animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
+            transition={{ duration: b.dur, repeat: Infinity, ease: 'easeInOut', delay: b.d }}
+          />
+        ))}
+      </div>
+
       {/* ── Sticky Header ─────────────────────────────────────────────────── */}
       <div
         className="sticky top-0 z-20 px-5 pt-5 pb-3"
@@ -194,7 +211,7 @@ export default function Home() {
         <motion.div {...f(0.16)} className="grid grid-cols-2 gap-3">
           {/* Build with AI — left, purple */}
           <button
-            onClick={() => navigate('brief')}
+            onClick={() => { setAuthIntent('new'); navigate('authgate') }}
             className="flex flex-col p-5 card-hover"
             style={{
               background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
@@ -214,7 +231,7 @@ export default function Home() {
 
           {/* My Events — right */}
           <button
-            onClick={() => navigate('management')}
+            onClick={() => { setAuthIntent('existing'); navigate('authgate') }}
             className="flex flex-col p-5 card-hover"
             style={{
               background: 'var(--surface)',
