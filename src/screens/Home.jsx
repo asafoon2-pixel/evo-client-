@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
@@ -89,11 +89,29 @@ const HOW_STEPS = [
 ]
 
 export default function Home() {
-  const { navigate, currentUser, setAuthIntent } = useApp()
+  const { navigate, currentUser, setAuthIntent, firestoreUser } = useApp()
   const { lang, t, isRTL } = useLanguage()
-  const [activeCat, setActiveCat] = useState(0)
-  const firstName = currentUser?.displayName?.split(' ')[0] || 'Asaf'
+  const [activeCat, setActiveCat]       = useState(0)
+  const [userEvents, setUserEvents]     = useState([])
+  const [eventsLoading, setEventsLoading] = useState(false)
+  const firstName = firestoreUser?.full_name?.split(' ')[0]
+    || currentUser?.displayName?.split(' ')[0]
+    || null
   const ChevronNav = isRTL ? ChevronLeft : ChevronRight
+
+  useEffect(() => {
+    if (!currentUser) { setUserEvents([]); return }
+    let cancelled = false
+    setEventsLoading(true)
+    import('../lib/eventsService').then(({ getUserEvents }) =>
+      getUserEvents(currentUser.uid)
+    ).then(events => {
+      if (!cancelled) { setUserEvents(events); setEventsLoading(false) }
+    }).catch(() => {
+      if (!cancelled) setEventsLoading(false)
+    })
+    return () => { cancelled = true }
+  }, [currentUser])
 
   return (
     <div
@@ -375,52 +393,56 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── Recent Events ──────────────────────────────────────────────── */}
-        <motion.div {...f(0.46)} className="pb-4">
-          <p className="text-xs font-semibold tracking-[0.22em] uppercase mb-3"
-            style={{ color: 'var(--text-muted)', textAlign: isRTL ? 'right' : 'left' }}>
-            {lang === 'he' ? 'אירועים שנסגרו לאחרונה' : 'Recently booked events'}
-          </p>
-          <div className="space-y-2">
-            {[
-              {
-                he: { name: "יום הולדת של יואב", type: "יום הולדת", vendors: 8, price: "₪20,000" },
-                en: { name: "Yoav's Birthday", type: "Birthday", vendors: 8, price: "₪20,000" },
-                emoji: '🎂', color: '#6B5FE4',
-              },
-              {
-                he: { name: "חתונת שירה ואורי", type: "חתונה", vendors: 12, price: "₪85,000" },
-                en: { name: "Shira & Uri's Wedding", type: "Wedding", vendors: 12, price: "₪85,000" },
-                emoji: '💍', color: '#D4607A',
-              },
-              {
-                he: { name: "כנס חברת אלפא", type: "אירוע קורפורייט", vendors: 6, price: "₪34,000" },
-                en: { name: "Alpha Corp Conference", type: "Corporate", vendors: 6, price: "₪34,000" },
-                emoji: '🏢', color: '#4A9E72',
-              },
-            ].map((event, i) => {
-              const d = lang === 'he' ? event.he : event.en
-              return (
-                <div key={i}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
-                >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xl"
-                    style={{ background: `${event.color}15` }}>
-                    {event.emoji}
+        {/* ── My Events ──────────────────────────────────────────────────── */}
+        {currentUser && (
+          <motion.div {...f(0.46)} className="pb-4">
+            <p className="text-xs font-semibold tracking-[0.22em] uppercase mb-3"
+              style={{ color: 'var(--text-muted)', textAlign: isRTL ? 'right' : 'left' }}>
+              {lang === 'he' ? 'האירועים שלי' : 'My events'}
+            </p>
+            {eventsLoading ? (
+              <div className="space-y-2">
+                {[1,2].map(i => (
+                  <div key={i} className="h-16 rounded-2xl animate-pulse"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }} />
+                ))}
+              </div>
+            ) : userEvents.length === 0 ? (
+              <div className="py-8 text-center rounded-2xl"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                  {lang === 'he' ? 'עדיין אין אירועים — בוא נתחיל!' : 'No events yet — let\'s start!'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {userEvents.map(ev => (
+                  <div key={ev.id}
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: 'rgba(107,95,228,0.1)' }}>
+                      <span style={{ fontSize: 18 }}>🎉</span>
+                    </div>
+                    <div className="flex-1 min-w-0" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+                      <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+                        {ev.title || (lang === 'he' ? 'האירוע שלי' : 'My Event')}
+                      </p>
+                      <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                        {ev.type || ''}{ev.date ? ` · ${ev.date}` : ''}
+                      </p>
+                    </div>
+                    {ev.budget_exact > 0 && (
+                      <span className="text-sm font-bold shrink-0" style={{ color: 'var(--primary)' }}>
+                        ₪{ev.budget_exact.toLocaleString()}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0" style={{ textAlign: isRTL ? 'right' : 'left' }}>
-                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-                    <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                      {d.type} · {d.vendors} {lang === 'he' ? 'ספקים' : 'vendors'}
-                    </p>
-                  </div>
-                  <span className="text-sm font-bold shrink-0" style={{ color: event.color }}>{d.price}</span>
-                </div>
-              )
-            })}
-          </div>
-        </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
       </div>
 
       {/* ── Bottom CTA ────────────────────────────────────────────────────── */}

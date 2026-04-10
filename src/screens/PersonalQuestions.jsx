@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { updateUser } from '../lib/usersService'
 
 const GENDER_OPTIONS = [
   { id: 'female', label: 'נקבה' },
@@ -24,7 +25,7 @@ const LANGUAGE_OPTIONS = [
 
 
 export default function PersonalQuestions() {
-  const { navigate, updateBrief, briefAnswers } = useApp()
+  const { navigate, updateBrief, briefAnswers, currentUser, setFirestoreUser } = useApp()
   const fileRef = useRef(null)
 
   const [form, setForm] = useState({
@@ -51,8 +52,29 @@ export default function PersonalQuestions() {
 
   const canContinue = form.full_name.trim().length > 1 && form.phone.trim().length > 5
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     updateBrief('clientDetails', form)
+    if (currentUser) {
+      try {
+        const data = {
+          full_name:          form.full_name,
+          email:              form.email,
+          phone:              form.phone,
+          whatsapp_number:    form.whatsapp_number,
+          alternate_phone:    form.alternate_phone,
+          age:                form.age ? Number(form.age) : null,
+          gender:             form.gender             || '',
+          city:               form.city,
+          instagram_handle:   form.instagram_handle,
+          preferred_language: form.preferred_language || 'he',
+          preferred_contact:  form.preferred_contact  || '',
+        }
+        await updateUser(currentUser.uid, data)
+        setFirestoreUser(prev => ({ ...prev, ...data }))
+      } catch (e) {
+        console.error('updateUser failed:', e)
+      }
+    }
     navigate('tour')
   }
 

@@ -80,8 +80,23 @@ const screenMap = {
 // Screens that skip the icon splash (loading/building screens)
 const SKIP_SPLASH_SCREENS = new Set(['building', 'result'])
 
+// Screens that require authentication
+const PROTECTED_SCREENS = new Set([
+  'dashboard', 'userprofile', 'management',
+  'checkout', 'summary', 'personalquestions',
+  'eventdetails', 'confirmation',
+])
+
 function AppContent() {
-  const { currentScreen } = useApp()
+  const { currentScreen, currentUser, authLoading, navigate } = useApp()
+
+  // Redirect unauthenticated users away from protected screens
+  useEffect(() => {
+    if (!authLoading && !currentUser && PROTECTED_SCREENS.has(currentScreen)) {
+      navigate('authgate')
+    }
+  }, [currentScreen, currentUser, authLoading])
+
   const Screen = screenMap[currentScreen] || Home
 
   const [iconSplash, setIconSplash] = useState(false)

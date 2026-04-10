@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle, PhoneCall, Zap } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { updateUser } from '../lib/usersService'
 
 const VIBE_TAGS = [
   'אינטימי', 'מרהיב', 'מינימלי', 'נועז',
@@ -69,27 +70,30 @@ function Divider() {
 }
 
 export default function UserProfile() {
-  const { navigate, userProfile, updateProfile, depositAmount, eventPackage } = useApp()
+  const { navigate, userProfile, updateProfile, depositAmount, eventPackage,
+          currentUser, firestoreUser, setFirestoreUser } = useApp()
   const isAIFlow = !!eventPackage
   const fileRef = useRef(null)
 
+  // Prefer firestoreUser data when available, fall back to context userProfile
+  const src = firestoreUser || {}
   const [form, setForm] = useState({
-    full_name:          userProfile?.fullName          || '',
-    email:              userProfile?.email             || '',
-    phone:              userProfile?.phone             || '',
-    whatsapp_number:    userProfile?.whatsappNumber    || '',
-    alternate_phone:    userProfile?.alternatePhone    || '',
-    age:                userProfile?.age               || '',
-    gender:             userProfile?.gender            || null,
-    city:               userProfile?.city              || '',
-    instagram_handle:   userProfile?.instagramHandle   || '',
-    preferred_language: userProfile?.preferredLanguage || null,
-    preferred_contact:  userProfile?.preferredContact  || null,
-    vibe_tags:          userProfile?.vibeTags          || [],
-    preferred_colors:   userProfile?.preferredColors   || null,
-    preferred_styles:   userProfile?.preferredStyles   || [],
-    energy_level:       userProfile?.energyLevel       || 3,
-    profile_photo_url:  userProfile?.photoUrl          || null,
+    full_name:          src.full_name          || userProfile?.fullName          || '',
+    email:              src.email              || userProfile?.email             || '',
+    phone:              src.phone              || userProfile?.phone             || '',
+    whatsapp_number:    src.whatsapp_number    || userProfile?.whatsappNumber    || '',
+    alternate_phone:    src.alternate_phone    || userProfile?.alternatePhone    || '',
+    age:                src.age               != null ? String(src.age) : userProfile?.age || '',
+    gender:             src.gender             || userProfile?.gender            || null,
+    city:               src.city              || userProfile?.city              || '',
+    instagram_handle:   src.instagram_handle  || userProfile?.instagramHandle   || '',
+    preferred_language: src.preferred_language || userProfile?.preferredLanguage || null,
+    preferred_contact:  src.preferred_contact  || userProfile?.preferredContact  || null,
+    vibe_tags:          src.vibe_tags          || userProfile?.vibeTags          || [],
+    preferred_colors:   (src.preferred_colors?.length ? src.preferred_colors[0] : null) || userProfile?.preferredColors || null,
+    preferred_styles:   src.preferred_styles   || userProfile?.preferredStyles   || [],
+    energy_level:       src.energy_level      != null ? src.energy_level : userProfile?.energyLevel || 3,
+    profile_photo_url:  src.profile_photo_url  || userProfile?.photoUrl          || null,
   })
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
@@ -106,8 +110,9 @@ export default function UserProfile() {
 
   const canContinue = form.full_name.trim().length > 1 && form.phone.trim().length > 5
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canContinue) return
+    // Update context (existing logic)
     updateProfile('fullName',          form.full_name)
     updateProfile('email',             form.email)
     updateProfile('phone',             form.phone)
@@ -124,6 +129,32 @@ export default function UserProfile() {
     updateProfile('preferredStyles',   form.preferred_styles)
     updateProfile('energyLevel',       form.energy_level)
     updateProfile('photoUrl',          form.profile_photo_url)
+    // Persist to Firestore
+    if (currentUser) {
+      try {
+        const data = {
+          full_name:          form.full_name,
+          email:              form.email,
+          phone:              form.phone,
+          whatsapp_number:    form.whatsapp_number,
+          alternate_phone:    form.alternate_phone,
+          age:                form.age ? Number(form.age) : null,
+          gender:             form.gender             || '',
+          city:               form.city,
+          instagram_handle:   form.instagram_handle,
+          preferred_language: form.preferred_language || 'he',
+          preferred_contact:  form.preferred_contact  || '',
+          vibe_tags:          form.vibe_tags,
+          preferred_colors:   form.preferred_colors ? [form.preferred_colors] : [],
+          preferred_styles:   form.preferred_styles,
+          energy_level:       form.energy_level,
+        }
+        await updateUser(currentUser.uid, data)
+        setFirestoreUser(prev => ({ ...prev, ...data }))
+      } catch (e) {
+        console.error('updateUser failed:', e)
+      }
+    }
     navigate('checkout')
   }
 

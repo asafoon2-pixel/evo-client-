@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { eventPackages } from '../data/index'
 import { onAuthChange, logout } from '../lib/authService'
+import { getUser } from '../lib/usersService'
+import { createEvent } from '../lib/eventsService'
 
 const AppContext = createContext(null)
 
@@ -47,11 +49,21 @@ export function AppProvider({ children }) {
   const [currentUser, setCurrentUser]         = useState(null)
   const [authLoading, setAuthLoading]         = useState(true)
   const [authIntent, setAuthIntent]           = useState(null)
+  const [firestoreUser, setFirestoreUser]     = useState(null)
+  const [currentEventId, setCurrentEventId]  = useState(null)
 
   useEffect(() => {
-    const unsub = onAuthChange(user => {
+    const unsub = onAuthChange(async user => {
       setCurrentUser(user)
       setAuthLoading(false)
+      if (user) {
+        try {
+          const doc = await getUser(user.uid)
+          setFirestoreUser(doc)
+        } catch (_) {}
+      } else {
+        setFirestoreUser(null)
+      }
     })
     return unsub
   }, [])
@@ -172,15 +184,53 @@ export function AppProvider({ children }) {
     0
   )
 
+  // Save event to Firestore when user confirms at checkout
+  const createEventInDb = useCallback(async () => {
+    if (!currentUser) return null
+    const guestMap = { intimate: 30, medium: 75, grand: 150 }
+    try {
+      const eventId = await createEvent(currentUser.uid, {
+        title:             generatedEvent?.name || 'האירוע שלי',
+        type:              briefAnswers.eventType              || '',
+        date:              briefAnswers.date !== 'flexible' ? briefAnswers.date : '',
+        start_time:        briefAnswers.startTime              || '',
+        end_time:          briefAnswers.endTime                || '',
+        indoor_outdoor:    briefAnswers.indoorOutdoor          || '',
+        guest_count:       guestMap[briefAnswers.scale]        || null,
+        budget_range:      briefAnswers.budgetTier             || '',
+        budget_exact:      totalPrice                          || 0,
+        venue_name:        eventDetails.venueName              || '',
+        full_address:      eventDetails.fullAddress            || '',
+        city:              eventDetails.city                   || '',
+        floor:             eventDetails.floor                  || '',
+        entrance_notes:    eventDetails.entranceNotes          || '',
+        parking_available: eventDetails.parkingAvailable       || false,
+        parking_notes:     eventDetails.parkingNotes           || '',
+        special_requests:  eventDetails.specialRequests        || '',
+        is_private:        eventDetails.isPrivate              || false,
+        status:            'active',
+      })
+      setCurrentEventId(eventId)
+      return eventId
+    } catch (e) {
+      console.error('createEventInDb failed:', e)
+      return null
+    }
+  }, [currentUser, briefAnswers, eventDetails, generatedEvent, totalPrice])
+
   const signOut = useCallback(async () => {
     await logout()
     setCurrentUser(null)
+    setFirestoreUser(null)
+    setCurrentEventId(null)
     navigate('home')
   }, [])
 
   const value = {
     currentScreen, navigate,
     currentUser, authLoading, signOut,
+    firestoreUser, setFirestoreUser,
+    currentEventId, createEventInDb,
     authIntent, setAuthIntent,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,

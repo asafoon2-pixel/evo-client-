@@ -5,23 +5,40 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db, googleProvider } from './firebase'
 
-// Create or update user doc in Firestore
+// Create or update user doc in Firestore (full Users schema)
 async function upsertUser(firebaseUser) {
-  const ref = doc(db, 'users', firebaseUser.uid)
+  const ref  = doc(db, 'users', firebaseUser.uid)
   const snap = await getDoc(ref)
   if (!snap.exists()) {
     await setDoc(ref, {
-      uid:         firebaseUser.uid,
-      email:       firebaseUser.email,
-      displayName: firebaseUser.displayName || '',
-      photoURL:    firebaseUser.photoURL || '',
-      createdAt:   serverTimestamp(),
+      id:                 firebaseUser.uid,
+      email:              firebaseUser.email        || '',
+      full_name:          firebaseUser.displayName  || '',
+      profile_photo_url:  firebaseUser.photoURL     || '',
+      phone:              '',
+      age:                null,
+      gender:             '',
+      city:               '',
+      instagram_handle:   '',
+      preferred_language: 'he',
+      preferred_contact:  '',
+      whatsapp_number:    '',
+      alternate_phone:    '',
+      vibe_tags:          [],
+      preferred_colors:   [],
+      preferred_styles:   [],
+      energy_level:       null,
+      swipe_history:      [],
+      taste_last_updated: null,
+      created_at:         serverTimestamp(),
+      last_active_at:     serverTimestamp(),
     })
+  } else {
+    await updateDoc(ref, { last_active_at: serverTimestamp() })
   }
-  return snap.exists() ? snap.data() : null
 }
 
 export async function loginWithGoogle() {

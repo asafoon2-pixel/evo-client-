@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Lock, CreditCard } from 'lucide-react'
+import { ArrowLeft, Lock, CreditCard, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 export default function Checkout() {
-  const { navigate, totalBudget, generatedEvent, selectedSuppliers } = useApp()
+  const { navigate, totalBudget, generatedEvent, selectedSuppliers, createEventInDb } = useApp()
+  const [saving, setSaving] = useState(false)
   const [cardNumber, setCardNumber] = useState('')
   const [expiry, setExpiry] = useState('')
   const [cvv, setCvv] = useState('')
@@ -173,12 +174,18 @@ export default function Checkout() {
       {/* Sticky CTA */}
       <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md px-6 py-4 z-30" style={{ background: 'rgba(245,240,232,0.97)', borderTop: '1px solid var(--border)' }}>
         <button
-          onClick={() => navigate('confirmation')}
+          onClick={async () => {
+            setSaving(true)
+            await createEventInDb()
+            setSaving(false)
+            navigate('confirmation')
+          }}
+          disabled={saving}
           className="w-full max-w-lg mx-auto flex items-center justify-center gap-3 py-4 rounded-full text-sm font-medium tracking-wider uppercase transition-all active:scale-[0.98]"
-          style={{ background: 'var(--primary)', color: '#fff' }}
+          style={{ background: 'var(--primary)', color: '#fff', opacity: saving ? 0.75 : 1 }}
         >
-          <Lock size={14} />
-          השלם מקדמה — {formatPrice(deposit)}
+          {saving ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
+          {saving ? 'שומר...' : `השלם מקדמה — ${formatPrice(deposit)}`}
         </button>
       </div>
     </div>

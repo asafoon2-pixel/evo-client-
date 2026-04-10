@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Camera, ArrowRight, Instagram, Globe, Phone, Mail, MessageCircle, Zap } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { updateUser } from '../lib/usersService'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -73,7 +74,7 @@ function Divider() {
 
 // ── Main Screen ───────────────────────────────────────────────────────────────
 export default function ClientOnboarding() {
-  const { navigate } = useApp()
+  const { navigate, currentUser, setFirestoreUser } = useApp()
 
   const [form, setForm] = useState({
     full_name:          '',
@@ -487,7 +488,35 @@ export default function ClientOnboarding() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
         style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
         <motion.button
-          onClick={() => navigate('aiprompt')}
+          onClick={async () => {
+            if (!canSubmit) return
+            if (currentUser) {
+              try {
+                const data = {
+                  full_name:          form.full_name,
+                  email:              form.email,
+                  phone:              form.phone,
+                  whatsapp_number:    form.whatsapp_number,
+                  alternate_phone:    form.alternate_phone,
+                  age:                form.age ? Number(form.age) : null,
+                  gender:             form.gender              || '',
+                  city:               form.city,
+                  instagram_handle:   form.instagram_handle,
+                  preferred_language: form.preferred_language  || 'he',
+                  preferred_contact:  form.preferred_contact   || '',
+                  vibe_tags:          form.vibe_tags,
+                  preferred_colors:   form.preferred_colors ? [form.preferred_colors] : [],
+                  preferred_styles:   form.preferred_styles,
+                  energy_level:       form.energy_level,
+                }
+                await updateUser(currentUser.uid, data)
+                setFirestoreUser(prev => ({ ...prev, ...data }))
+              } catch (e) {
+                console.error('updateUser failed:', e)
+              }
+            }
+            navigate('aiprompt')
+          }}
           disabled={!canSubmit}
           whileTap={canSubmit ? { scale: 0.98 } : {}}
           className="w-full py-4 text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all"

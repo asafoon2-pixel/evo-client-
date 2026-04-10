@@ -3,12 +3,13 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  projectId:         'evo-app---clinet',
-  appId:             '1:803193642856:web:f2503eea27549e583040dd',
-  storageBucket:     'evo-app---clinet.firebasestorage.app',
-  apiKey:            'AIzaSyBH0xmTCjqNhWoJ7DKzDL4VbeDnH_wHqF8',
-  authDomain:        'evo-app---clinet.firebaseapp.com',
-  messagingSenderId: '803193642856',
+  apiKey:            'AIzaSyAo3BJW3qky1evqwWw1_jt-lsNamxkRjkQ',
+  authDomain:        'evo-supplier.firebaseapp.com',
+  projectId:         'evo-supplier',
+  storageBucket:     'evo-supplier.firebasestorage.app',
+  messagingSenderId: '440413409193',
+  appId:             '1:440413409193:web:b37bc250087811d053feb8',
+  measurementId:     'G-KD4ETCC0CJ',
 }
 
 const app      = initializeApp(firebaseConfig)
