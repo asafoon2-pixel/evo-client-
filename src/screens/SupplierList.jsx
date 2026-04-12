@@ -1,19 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Star, ChevronLeft, Zap } from 'lucide-react'
+import { ArrowLeft, Star, ChevronLeft, Zap, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { suppliers, categories } from '../data/index'
+import { categories } from '../data/index'
+import { getVendorsByCategory } from '../lib/suppliersService'
 
 export default function SupplierList() {
   const { navigate, currentCategory, setCurrentSupplier, selectedSuppliers } = useApp()
   const [activeFilter, setActiveFilter] = useState('all')
+  const [vendors, setVendors] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!currentCategory) return
+    setLoading(true)
+    getVendorsByCategory(currentCategory)
+      .then(setVendors)
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [currentCategory])
 
   const cat = categories.find(c => c.id === currentCategory)
-  const catSuppliers = suppliers[currentCategory] || []
+  const catSuppliers = vendors
 
   const filtered = catSuppliers.filter(s => {
     if (activeFilter === 'recommended') return s.rating >= 4.8
-    if (activeFilter === 'top-rated') return s.rating === 4.9
+    if (activeFilter === 'top-rated') return s.rating >= 4.9
     return true
   })
 
@@ -52,7 +64,7 @@ export default function SupplierList() {
               {cat?.name || 'ספקים'}
             </h1>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {catSuppliers.length} ספקים זמינים
+              {loading ? 'טוען...' : `${catSuppliers.length} ספקים זמינים`}
             </p>
           </div>
         </div>
@@ -96,8 +108,16 @@ export default function SupplierList() {
           ))}
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--primary)' }} />
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>טוען ספקים...</p>
+          </div>
+        )}
+
         {/* Supplier list */}
-        <div className="space-y-3">
+        {!loading && <div className="space-y-3">
           {filtered.map((supplier, i) => {
             const isEVOPick = supplier.id === recommended?.id
             const isSelected = currentSelected?.id === supplier.id
@@ -162,14 +182,19 @@ export default function SupplierList() {
               </motion.button>
             )
           })}
-        </div>
+        </div>}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <div className="text-center py-16 rounded-2xl"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <div className="text-4xl mb-3">🔍</div>
-            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>לא נמצאו ספקים</p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>נסה לשנות את הסינון או לחזור לכל הספקים</p>
+            <div className="text-4xl mb-3">{vendors.length === 0 ? '🚧' : '🔍'}</div>
+            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+              {vendors.length === 0 ? 'ספקים בקרוב' : 'לא נמצאו ספקים'}
+            </p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              {vendors.length === 0
+                ? 'אנחנו מוסיפים ספקים לקטגוריה זו. חזור בקרוב!'
+                : 'נסה לשנות את הסינון או לחזור לכל הספקים'}</p>
           </div>
         )}
       </div>

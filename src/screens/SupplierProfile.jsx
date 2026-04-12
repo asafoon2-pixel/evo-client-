@@ -1,17 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Star, Clock, Camera, Check, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Star, Clock, Camera, Check, MessageCircle, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
+import { getVendorPackages } from '../lib/suppliersService'
 
 export default function SupplierProfile() {
   const { navigate, currentSupplier, currentCategory, selectSupplier, selectedSuppliers } = useApp()
   const [selectedPackage, setSelectedPackage] = useState(null)
+  const [packages, setPackages] = useState([])
+  const [pkgLoading, setPkgLoading] = useState(true)
+
+  useEffect(() => {
+    if (!currentSupplier?.id) return
+    setPkgLoading(true)
+    getVendorPackages(currentSupplier.id)
+      .then(pkgs => {
+        setPackages(pkgs)
+        // Auto-select first package
+        if (pkgs.length > 0) setSelectedPackage(pkgs[0])
+      })
+      .catch(console.error)
+      .finally(() => setPkgLoading(false))
+  }, [currentSupplier?.id])
 
   if (!currentSupplier) {
     return (
-      <div className="w-full h-screen bg-evo-black flex items-center justify-center">
-        <button onClick={() => navigate('supplierList')} className="text-evo-muted">
+      <div className="w-full h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+        <button onClick={() => navigate('supplierList')} style={{ color: 'var(--text-muted)' }}>
           <ArrowLeft size={20} />
         </button>
       </div>
@@ -24,7 +40,7 @@ export default function SupplierProfile() {
   const handleAddToEvent = () => {
     const supplierWithPackage = {
       ...currentSupplier,
-      selectedPackage: selectedPackage || currentSupplier.packages[1],
+      selectedPackage: selectedPackage || packages[0] || null,
     }
     selectSupplier(currentCategory, supplierWithPackage)
     navigate('categories')
@@ -35,12 +51,14 @@ export default function SupplierProfile() {
       <Star
         key={i}
         size={size}
-        className={i < Math.floor(rating) ? 'text-evo-accent fill-evo-accent' : 'text-evo-dim'}
+        style={i < Math.floor(rating)
+          ? { color: 'var(--primary)', fill: 'var(--primary)' }
+          : { color: 'rgba(44,32,22,0.2)' }}
       />
     ))
 
-  const pkg = selectedPackage || currentSupplier.packages?.[1] || currentSupplier.packages?.[0] || { price: 0, name: 'Standard', features: [] }
-  const displayPrice = `₪${pkg.price.toLocaleString()}`
+  const pkg = selectedPackage || packages[0] || null
+  const displayPrice = pkg ? `₪${pkg.price.toLocaleString()}` : '—'
 
   return (
     <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
@@ -110,14 +128,16 @@ export default function SupplierProfile() {
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>גלריה</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-            {(currentSupplier.gallery || [currentSupplier.image, currentSupplier.image, currentSupplier.image]).map((img, i) => (
-              <div
-                key={i}
-                className="w-24 h-24 rounded-xl overflow-hidden bg-evo-card shrink-0"
-              >
+            {(currentSupplier.gallery || (currentSupplier.image ? [currentSupplier.image] : [])).map((img, i) => (
+              <div key={i} className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
                 <img src={img} alt="" className="w-full h-full object-cover" />
               </div>
             ))}
+            {!(currentSupplier.gallery || currentSupplier.image) && (
+              <div className="w-24 h-24 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <Camera size={20} style={{ color: 'var(--text-dim)' }} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -132,48 +152,51 @@ export default function SupplierProfile() {
         {/* Packages */}
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>חבילות</h2>
-          <div className="space-y-3">
-            {(currentSupplier.packages || []).map((p, i) => {
-              const isActive = selectedPackage?.id === p.id || selectedPackage?.name === p.name || (!selectedPackage && i === 1)
-              return (
-                <motion.button
-                  key={p.name}
-                  onClick={() => setSelectedPackage(p)}
-                  whileTap={{ scale: 0.99 }}
-                  className={`w-full text-left rounded-2xl border p-5 transition-all duration-200 ${
-                    isActive
-                      ? 'border-evo-accent bg-evo-accent/5'
-                      : 'border-evo-border bg-evo-card hover:border-evo-border/70'
-                  }`}
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <div>
-                      <span className="text-white text-sm font-semibold">{p.name || p.label}</span>
-                      {i === 1 && (
-                        <span className="ml-2 text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
-                          style={{ color: 'var(--primary)', border: '1px solid rgba(107,95,228,0.4)' }}>
-                          פופולרי
+          {pkgLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 size={20} className="animate-spin" style={{ color: 'var(--primary)' }} />
+            </div>
+          ) : packages.length === 0 ? (
+            <p className="text-sm text-center py-6" style={{ color: 'var(--text-muted)' }}>אין חבילות זמינות</p>
+          ) : (
+            <div className="space-y-3">
+              {packages.map((p, i) => {
+                const isActive = selectedPackage?.id === p.id
+                return (
+                  <motion.button
+                    key={p.id}
+                    onClick={() => setSelectedPackage(p)}
+                    whileTap={{ scale: 0.99 }}
+                    className="w-full text-right rounded-2xl p-5 transition-all duration-200"
+                    style={{
+                      background: isActive ? 'rgba(107,95,228,0.07)' : 'var(--surface)',
+                      border: isActive ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                    }}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.label}</span>
+                        {p.badge === 'most_popular' && (
+                          <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
+                            style={{ color: 'var(--primary)', border: '1px solid rgba(107,95,228,0.4)' }}>פופולרי</span>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <span className="text-lg font-light" style={{ color: isActive ? 'var(--primary)' : 'var(--text-primary)' }}>
+                          ₪{p.price.toLocaleString()}
                         </span>
-                      )}
+                        {p.priceType === 'per_hour' && <span className="text-[10px] mr-1" style={{ color: 'var(--text-dim)' }}>/שעה</span>}
+                        {p.priceType === 'per_guest' && <span className="text-[10px] mr-1" style={{ color: 'var(--text-dim)' }}>/אורח</span>}
+                      </div>
                     </div>
-                    <span className={`text-lg font-light ${isActive ? 'text-evo-accent' : 'text-white'}`}>
-                      ₪{p.price.toLocaleString()}
-                    </span>
-                  </div>
-                  {p.features && p.features.length > 0 && (
-                    <ul className="space-y-1.5">
-                      {p.features.map((f, j) => (
-                        <li key={j} className="flex items-start gap-2 text-xs text-evo-muted">
-                          <Check size={11} className={`mt-0.5 shrink-0 ${isActive ? 'text-evo-accent' : 'text-evo-dim'}`} />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </motion.button>
-              )
-            })}
-          </div>
+                    {p.description && (
+                      <p className="text-xs leading-relaxed text-right" style={{ color: 'var(--text-muted)' }}>{p.description}</p>
+                    )}
+                  </motion.button>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {/* Reviews */}
@@ -207,7 +230,7 @@ export default function SupplierProfile() {
         <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
           <div>
             <p className="text-xs tracking-wide" style={{ color: 'var(--text-muted)' }}>
-              חבילת {selectedPackage?.name || 'פרימיום'}
+              {pkg ? `חבילת ${pkg.label}` : 'בחר חבילה'}
             </p>
             <p className="text-xl font-light" style={{ color: 'var(--primary)' }}>{displayPrice}</p>
           </div>
