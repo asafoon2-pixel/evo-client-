@@ -109,21 +109,22 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
                   className="overflow-hidden"
                 >
                   <div className="rounded-2xl px-4 py-4"
-                    style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
-                    <div className="flex items-start gap-3">
-                      <span className="text-xl shrink-0 mt-0.5">{s.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{s.title}</p>
-                        <p className="text-xs font-light leading-relaxed mb-3" style={{ color: 'var(--text-muted)' }}>{s.body}</p>
-                        <button className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
-                          {s.cta} →
-                        </button>
-                      </div>
+                    style={{
+                      background: 'rgba(107,95,228,0.06)',
+                      border: '1px solid rgba(107,95,228,0.15)',
+                      borderRadius: 16,
+                    }}>
+                    <div className="flex items-center gap-3">
                       <button onClick={() => setDismissed(d => [...d, s.id])}
                         className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all"
-                        style={{ background: 'var(--elevated)', color: 'var(--text-dim)' }}>
-                        <X size={12} />
+                        style={{ background: 'rgba(107,95,228,0.08)', color: 'var(--text-dim)' }}>
+                        <ChevronRight size={14} style={{ color: 'var(--primary)' }} />
                       </button>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>{s.title}</p>
+                        <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{s.body}</p>
+                      </div>
+                      <span className="text-xl shrink-0">{s.icon}</span>
                     </div>
                   </div>
                 </motion.div>

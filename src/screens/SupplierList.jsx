@@ -165,8 +165,11 @@ export default function SupplierList() {
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>אין ספקים התואמים לסינון זה</p>
+          <div className="text-center py-16 rounded-2xl"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-4xl mb-3">🔍</div>
+            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>לא נמצאו ספקים</p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>נסה לשנות את הסינון או לחזור לכל הספקים</p>
           </div>
         )}
       </div>

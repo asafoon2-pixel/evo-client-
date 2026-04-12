@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Lock, CreditCard, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import Toast from '../components/Toast'
 
 export default function Checkout() {
   const { navigate, totalBudget, generatedEvent, selectedSuppliers, createEventInDb } = useApp()
   const [saving, setSaving] = useState(false)
+  const [toast, setToast] = useState({ visible: false, message: '' })
   const [cardNumber, setCardNumber] = useState('')
   const [expiry, setExpiry] = useState('')
   const [cvv, setCvv] = useState('')
@@ -171,14 +173,17 @@ export default function Checkout() {
         <div className="h-4" />
       </div>
 
+      <Toast message={toast.message} type="success" visible={toast.visible} />
+
       {/* Sticky CTA */}
-      <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md px-6 py-4 z-30" style={{ background: 'rgba(245,240,232,0.97)', borderTop: '1px solid var(--border)' }}>
+      <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md px-6 py-4 z-30" style={{ background: 'rgba(245,240,232,0.97)', borderTop: '1px solid var(--border)', paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
         <button
           onClick={async () => {
             setSaving(true)
             await createEventInDb()
             setSaving(false)
-            navigate('confirmation')
+            setToast({ visible: true, message: 'האירוע נשמר בהצלחה! 🎉' })
+            setTimeout(() => navigate('confirmation'), 1500)
           }}
           disabled={saving}
           className="w-full max-w-lg mx-auto flex items-center justify-center gap-3 py-4 rounded-full text-sm font-medium tracking-wider uppercase transition-all active:scale-[0.98]"
