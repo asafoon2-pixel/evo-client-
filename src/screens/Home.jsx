@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2, ShoppingBag } from 'lucide-react'
+import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2, ShoppingBag, ShoppingCart } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useLanguage, LanguageToggle } from '../context/LanguageContext'
 
@@ -148,14 +148,21 @@ export default function Home() {
         style={{ background: 'rgba(245,240,232,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(44,32,22,0.06)' }}
       >
         <motion.div {...f(0)} className="flex items-center justify-between mb-4">
-          {/* Avatar + Language toggle */}
-          <div className="flex items-center gap-3">
+          {/* Avatar + Language toggle + Cart */}
+          <div className="flex items-center gap-2">
             <button
               className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
               style={{ background: 'linear-gradient(135deg, #6B5FE4, #D4607A)' }}
               onClick={() => navigate('userprofile')}
             >
               {firstName?.[0]?.toUpperCase() ?? '?'}
+            </button>
+            <button
+              className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
+              onClick={() => goAuth('dashboard', 'existing')}
+            >
+              <ShoppingCart size={15} style={{ color: 'var(--primary)' }} />
             </button>
             <LanguageToggle />
           </div>
@@ -236,7 +243,7 @@ export default function Home() {
 
           {/* AI — full width hero */}
           <button
-            onClick={() => goAuth('aiprompt', 'new')}
+            onClick={() => goAuth('brief', 'new')}
             className="w-full flex items-center gap-4 p-5 card-hover"
             style={{
               background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
@@ -280,10 +287,10 @@ export default function Home() {
                 <ShoppingBag size={18} style={{ color: '#4A9E72' }} />
               </div>
               <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {lang === 'he' ? 'ספק אחד' : 'Single vendor'}
+                {lang === 'he' ? 'הוספת מוצרים' : 'Add products'}
               </p>
               <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
-                {lang === 'he' ? 'בחר שירות אחד לאירוע' : 'Pick one service'}
+                {lang === 'he' ? 'בחר ספקים בודדים' : 'Browse individual vendors'}
               </p>
             </button>
 

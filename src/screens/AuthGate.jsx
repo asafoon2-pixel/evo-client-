@@ -34,7 +34,7 @@ export default function AuthGate() {
       // Navigate based on intent
       navigate(
         authIntent === 'single'   ? 'categories' :
-        authIntent === 'new'      ? 'aiprompt' :
+        authIntent === 'new'      ? 'brief' :
         'dashboard'
       )
     } catch (e) {

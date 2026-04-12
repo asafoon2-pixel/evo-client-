@@ -469,6 +469,8 @@ export default function Brief() {
   const [justSelected, setJustSelected] = useState(null)
   const [startTime, setStartTime]       = useState(briefAnswers.startTime || '19:00')
   const [endTime, setEndTime]           = useState(briefAnswers.endTime   || '23:00')
+  const [customBudget, setCustomBudget] = useState('')
+  const [showCustomInput, setShowCustomInput] = useState(false)
 
   const selectAndAdvance = (key, value) => {
     updateBrief(key, value)
@@ -694,7 +696,7 @@ export default function Brief() {
                   return (
                     <motion.button key={t.id}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => selectAndFinish('budgetTier', t.id)}
+                      onClick={() => { setShowCustomInput(false); selectAndFinish('budgetTier', t.id) }}
                       className="relative overflow-hidden transition-all duration-200"
                       style={{
                         height: 96,
@@ -705,10 +707,8 @@ export default function Brief() {
                           : '0 2px 8px rgba(44,32,22,0.06)',
                         background: g.gradient,
                       }}>
-                      {/* Ambient accent */}
                       <div className="absolute right-0 top-0 bottom-0 w-28 opacity-30"
                         style={{ background: `linear-gradient(to left, ${g.accent}40, transparent)` }} />
-                      {/* Content */}
                       <div className="absolute inset-0 flex items-center justify-between px-5">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
@@ -728,6 +728,70 @@ export default function Brief() {
                     </motion.button>
                   )
                 })}
+
+                {/* Custom "אחר" option */}
+                <motion.div
+                  className="relative overflow-hidden transition-all duration-200"
+                  style={{
+                    borderRadius: 'var(--radius)',
+                    border: showCustomInput ? '2px solid var(--primary)' : '1.5px solid rgba(44,32,22,0.08)',
+                    boxShadow: showCustomInput
+                      ? '0 0 0 3px rgba(107,95,228,0.12), 0 4px 12px rgba(44,32,22,0.08)'
+                      : '0 2px 8px rgba(44,32,22,0.06)',
+                    background: 'linear-gradient(150deg, #F2EFF8 0%, #E8E3F5 100%)',
+                  }}>
+                  {!showCustomInput ? (
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setShowCustomInput(true)}
+                      className="w-full flex items-center justify-between px-5"
+                      style={{ height: 96 }}>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--primary)', opacity: 0.9 }} />
+                          <p className="font-semibold" style={{ fontSize: 15, color: 'var(--text-primary)' }}>אחר</p>
+                        </div>
+                        <p className="font-light mt-0.5" style={{ color: 'var(--text-muted)', fontSize: 14 }}>הזן סכום מותאם אישית</p>
+                      </div>
+                      <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center"
+                        style={{ borderColor: 'rgba(44,32,22,0.2)' }} />
+                    </motion.button>
+                  ) : (
+                    <div className="px-5 py-4">
+                      <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--primary)' }}>הזן תקציב בשקלים</p>
+                      <div className="flex gap-3 items-center">
+                        <div className="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl"
+                          style={{ background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(107,95,228,0.3)' }}>
+                          <span style={{ color: 'var(--text-muted)', fontSize: 16 }}>₪</span>
+                          <input
+                            type="number"
+                            inputMode="numeric"
+                            placeholder="50,000"
+                            value={customBudget}
+                            onChange={e => setCustomBudget(e.target.value)}
+                            autoFocus
+                            className="flex-1 bg-transparent outline-none text-right font-semibold"
+                            style={{ fontSize: 18, color: 'var(--text-primary)', fontFamily: 'inherit' }}
+                          />
+                        </div>
+                        <motion.button
+                          whileTap={{ scale: 0.96 }}
+                          onClick={() => {
+                            if (!customBudget) return
+                            updateBrief('budgetCustomAmount', Number(customBudget))
+                            selectAndFinish('budgetTier', 'custom')
+                          }}
+                          className="px-5 py-3 rounded-xl font-semibold text-sm text-white"
+                          style={{
+                            background: customBudget ? 'var(--primary)' : 'rgba(107,95,228,0.35)',
+                            opacity: customBudget ? 1 : 0.6,
+                          }}>
+                          המשך
+                        </motion.button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
               </div>
             </motion.div>
           )}
