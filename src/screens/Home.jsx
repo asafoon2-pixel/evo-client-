@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2 } from 'lucide-react'
+import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2, ShoppingBag } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useLanguage, LanguageToggle } from '../context/LanguageContext'
 
@@ -90,6 +90,12 @@ const HOW_STEPS = [
 
 export default function Home() {
   const { navigate, currentUser, setAuthIntent, firestoreUser } = useApp()
+
+  // Navigate to destination — require auth if not logged in
+  const goAuth = (dest, intent) => {
+    if (currentUser) { navigate(dest) }
+    else { setAuthIntent(intent); navigate('authgate') }
+  }
   const { lang, t, isRTL } = useLanguage()
   const [activeCat, setActiveCat]       = useState(0)
   const [userEvents, setUserEvents]     = useState([])
@@ -225,48 +231,83 @@ export default function Home() {
 
       <div className="px-5 space-y-4">
 
-        {/* ── Quick Actions ──────────────────────────────────────────────── */}
-        <motion.div {...f(0.16)} className="grid grid-cols-2 gap-3">
-          {/* Build with AI — left, purple */}
+        {/* ── Three Paths ────────────────────────────────────────────────── */}
+        <motion.div {...f(0.16)} className="space-y-3">
+
+          {/* AI — full width hero */}
           <button
-            onClick={() => { setAuthIntent('new'); navigate('authgate') }}
-            className="flex flex-col p-5 card-hover"
+            onClick={() => goAuth('aiprompt', 'new')}
+            className="w-full flex items-center gap-4 p-5 card-hover"
             style={{
               background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
               borderRadius: 24,
               boxShadow: 'var(--shadow-accent)',
-              alignItems: isRTL ? 'flex-end' : 'flex-start',
               textAlign: isRTL ? 'right' : 'left',
             }}
           >
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3"
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
               style={{ background: 'rgba(255,255,255,0.18)' }}>
-              <Zap size={20} className="text-white" />
+              <Zap size={22} className="text-white" />
             </div>
-            <p className="text-sm font-semibold text-white">{t('home_build_ai')}</p>
-            <p className="text-xs mt-0.5 text-white/60">{t('home_build_ai_sub')}</p>
+            <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+              <p className="text-sm font-bold text-white leading-tight">
+                {lang === 'he' ? 'בנה אירוע עם AI' : 'Build event with AI'}
+              </p>
+              <p className="text-xs mt-0.5 text-white/65">
+                {lang === 'he' ? '30 שניות ו-AI בונה לך הכל' : '30 seconds — AI builds everything'}
+              </p>
+            </div>
+            <span className="text-white/50 text-lg">{isRTL ? '←' : '→'}</span>
           </button>
 
-          {/* My Events — right */}
-          <button
-            onClick={() => { setAuthIntent('existing'); navigate('authgate') }}
-            className="flex flex-col p-5 card-hover"
-            style={{
-              background: 'var(--surface)',
-              borderRadius: 24,
-              border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow-card)',
-              alignItems: isRTL ? 'flex-end' : 'flex-start',
-              textAlign: isRTL ? 'right' : 'left',
-            }}
-          >
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3"
-              style={{ background: 'rgba(107,95,228,0.10)' }}>
-              <CalendarDays size={20} style={{ color: 'var(--primary)' }} />
-            </div>
-            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('home_my_events')}</p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('home_my_events_sub')}</p>
-          </button>
+          {/* Single product + My events */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Single product */}
+            <button
+              onClick={() => goAuth('categories', 'single')}
+              className="flex flex-col p-4 card-hover"
+              style={{
+                background: 'linear-gradient(145deg, #EEF7F1 0%, #D6EFE2 100%)',
+                borderRadius: 22,
+                border: '1.5px solid rgba(74,158,114,0.2)',
+                boxShadow: 'var(--shadow-card)',
+                alignItems: isRTL ? 'flex-end' : 'flex-start',
+                textAlign: isRTL ? 'right' : 'left',
+              }}
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                style={{ background: 'rgba(74,158,114,0.15)' }}>
+                <ShoppingBag size={18} style={{ color: '#4A9E72' }} />
+              </div>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {lang === 'he' ? 'ספק אחד' : 'Single vendor'}
+              </p>
+              <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
+                {lang === 'he' ? 'בחר שירות אחד לאירוע' : 'Pick one service'}
+              </p>
+            </button>
+
+            {/* My events */}
+            <button
+              onClick={() => goAuth('dashboard', 'existing')}
+              className="flex flex-col p-4 card-hover"
+              style={{
+                background: 'var(--surface)',
+                borderRadius: 22,
+                border: '1px solid var(--border)',
+                boxShadow: 'var(--shadow-card)',
+                alignItems: isRTL ? 'flex-end' : 'flex-start',
+                textAlign: isRTL ? 'right' : 'left',
+              }}
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                style={{ background: 'rgba(107,95,228,0.10)' }}>
+                <CalendarDays size={18} style={{ color: 'var(--primary)' }} />
+              </div>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('home_my_events')}</p>
+              <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--text-muted)' }}>{t('home_my_events_sub')}</p>
+            </button>
+          </div>
         </motion.div>
 
         {/* ── How It Works ───────────────────────────────────────────────── */}
@@ -307,7 +348,7 @@ export default function Home() {
             {VENDOR_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
-                onClick={() => navigate('categories')}
+                onClick={() => goAuth('categories', 'single')}
                 className="relative rounded-2xl overflow-hidden card-hover"
                 style={{ height: 120 }}
               >

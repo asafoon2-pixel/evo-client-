@@ -32,7 +32,11 @@ export default function AuthGate() {
       if (isRegister) await registerWithEmail(email, password)
       else            await loginWithEmail(email, password)
       // Navigate based on intent
-      navigate(isNew ? 'brief' : 'dashboard')
+      navigate(
+        authIntent === 'single'   ? 'categories' :
+        authIntent === 'new'      ? 'aiprompt' :
+        'dashboard'
+      )
     } catch (e) {
       setError(
         e.code === 'auth/wrong-password'          ? 'סיסמה שגויה' :
