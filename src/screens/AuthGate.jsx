@@ -48,7 +48,7 @@ export default function AuthGate() {
         e.code === 'auth/operation-not-allowed'   ? 'התחברות במייל לא מופעלת — פנה לתמיכה' :
         e.code === 'auth/too-many-requests'       ? 'יותר מדי ניסיונות, נסה מאוחר יותר' :
         e.code === 'auth/network-request-failed'  ? 'בעיית רשת, בדוק חיבור לאינטרנט' :
-        `שגיאה: ${e.code || 'לא ידועה'}`
+        'משהו השתבש — נסה שוב'
       )
     } finally {
       setLoading(false)

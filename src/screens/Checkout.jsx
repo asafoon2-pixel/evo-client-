@@ -172,7 +172,7 @@ export default function Checkout() {
       </div>
 
       {/* Sticky CTA */}
-      <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md px-6 py-4 z-30" style={{ background: 'rgba(245,240,232,0.97)', borderTop: '1px solid var(--border)' }}>
+      <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md px-6 z-30" style={{ background: 'rgba(245,240,232,0.97)', borderTop: '1px solid var(--border)', paddingTop: 16, paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
         <button
           onClick={async () => {
             setSaving(true)

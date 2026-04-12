@@ -108,20 +108,33 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
-                  <div className="rounded-2xl px-4 py-4"
-                    style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+                  <div
+                    className="rounded-2xl px-4 py-4 card-hover"
+                    style={{
+                      background: 'rgba(107,95,228,0.06)',
+                      border: '1.5px solid rgba(107,95,228,0.14)',
+                      boxShadow: 'var(--shadow-card)',
+                    }}
+                  >
                     <div className="flex items-start gap-3">
-                      <span className="text-xl shrink-0 mt-0.5">{s.icon}</span>
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ background: 'rgba(107,95,228,0.12)', fontSize: 18 }}
+                      >
+                        {s.icon}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{s.title}</p>
                         <p className="text-xs font-light leading-relaxed mb-3" style={{ color: 'var(--text-muted)' }}>{s.body}</p>
-                        <button className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>
-                          {s.cta} →
+                        <button className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--primary)' }}>
+                          {s.cta} <ChevronRight size={12} />
                         </button>
                       </div>
-                      <button onClick={() => setDismissed(d => [...d, s.id])}
+                      <button
+                        onClick={() => setDismissed(d => [...d, s.id])}
                         className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all"
-                        style={{ background: 'var(--elevated)', color: 'var(--text-dim)' }}>
+                        style={{ background: 'rgba(107,95,228,0.10)', color: 'var(--text-muted)' }}
+                      >
                         <X size={12} />
                       </button>
                     </div>

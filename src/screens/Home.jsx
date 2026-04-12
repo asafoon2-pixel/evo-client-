@@ -493,24 +493,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* ── Bottom CTA ────────────────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
-        style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid rgba(44,32,22,0.06)' }}>
-        <motion.button
-          onClick={() => navigate('brief')}
-          whileTap={{ scale: 0.97 }}
-          className="w-full py-4 text-sm font-semibold tracking-wide flex items-center justify-center gap-2"
-          style={{
-            borderRadius: 'var(--radius-pill)',
-            background: 'var(--primary)',
-            color: '#fff',
-            boxShadow: 'var(--shadow-accent)',
-          }}
-        >
-          <Zap size={15} />
-          {lang === 'he' ? 'בוא נבנה את האירוע שלך →' : "Let's plan your event →"}
-        </motion.button>
-      </div>
+      {/* Bottom safe-area padding */}
+      <div style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }} />
     </div>
   )
 }
