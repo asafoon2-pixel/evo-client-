@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Star, Clock, Camera, Check, MessageCircle, Loader2 } from 'lucide-react'
+import { ArrowLeft, Star, Clock, Camera, Check, MessageCircle, Loader2, Phone, Send, CheckCircle2, MapPin } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 import { getVendorPackages } from '../lib/suppliersService'
+import { createLead, getExistingLead } from '../lib/leadsService'
 
 export default function SupplierProfile() {
-  const { navigate, currentSupplier, currentCategory, selectSupplier, selectedSuppliers } = useApp()
+  const { navigate, currentSupplier, currentCategory, selectSupplier, selectedSuppliers, currentUser, setAuthIntent, briefAnswers } = useApp()
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [packages, setPackages] = useState([])
   const [pkgLoading, setPkgLoading] = useState(true)
+  const [addLoading, setAddLoading] = useState(false)
+  const [leadSent, setLeadSent] = useState(false)
 
   useEffect(() => {
     if (!currentSupplier?.id) return
@@ -17,12 +20,19 @@ export default function SupplierProfile() {
     getVendorPackages(currentSupplier.id)
       .then(pkgs => {
         setPackages(pkgs)
-        // Auto-select first package
         if (pkgs.length > 0) setSelectedPackage(pkgs[0])
       })
       .catch(console.error)
       .finally(() => setPkgLoading(false))
   }, [currentSupplier?.id])
+
+  // Check if lead already sent
+  useEffect(() => {
+    if (!currentUser || !currentSupplier?.id) return
+    getExistingLead(currentUser.uid, currentSupplier.id)
+      .then(lead => { if (lead) setLeadSent(true) })
+      .catch(() => {})
+  }, [currentUser, currentSupplier?.id])
 
   if (!currentSupplier) {
     return (
@@ -37,13 +47,31 @@ export default function SupplierProfile() {
   const cat = categories.find(c => c.id === currentCategory)
   const isSelected = selectedSuppliers[currentCategory]?.id === currentSupplier.id
 
-  const handleAddToEvent = () => {
-    const supplierWithPackage = {
-      ...currentSupplier,
-      selectedPackage: selectedPackage || packages[0] || null,
+  const handleAddToEvent = async () => {
+    // Require auth
+    if (!currentUser) {
+      setAuthIntent('single')
+      navigate('authgate')
+      return
     }
-    selectSupplier(currentCategory, supplierWithPackage)
-    navigate('categories')
+    setAddLoading(true)
+    try {
+      const supplierWithPackage = {
+        ...currentSupplier,
+        selectedPackage: selectedPackage || packages[0] || null,
+      }
+      selectSupplier(currentCategory, supplierWithPackage)
+      // Create real lead in Firestore
+      const existing = await getExistingLead(currentUser.uid, currentSupplier.id)
+      if (!existing) {
+        await createLead(currentUser, currentSupplier, briefAnswers)
+      }
+      setLeadSent(true)
+    } catch (e) {
+      console.error('Failed to create lead:', e)
+    } finally {
+      setAddLoading(false)
+    }
   }
 
   const renderStars = (rating, size = 14) =>
@@ -199,47 +227,71 @@ export default function SupplierProfile() {
           )}
         </div>
 
-        {/* Reviews */}
-        {currentSupplier.reviews && currentSupplier.reviews.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>ביקורות</h2>
-          <div className="space-y-4">
-            {currentSupplier.reviews.map((r, i) => (
-              <div key={i} className="bg-evo-card rounded-2xl border border-evo-border p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-evo-elevated border border-evo-border flex items-center justify-center">
-                      <span className="text-xs text-evo-muted font-medium">{r.author[0]}</span>
-                    </div>
-                    <span className="text-white text-sm font-medium">{r.author}</span>
-                  </div>
-                  <div className="flex gap-0.5">{renderStars(r.rating, 11)}</div>
-                </div>
-                <p className="text-evo-muted text-xs leading-relaxed font-light">{r.text}</p>
-                <p className="text-evo-dim text-xs mt-2">{r.date}</p>
+        {/* Contact info */}
+        {(currentSupplier.phone || currentSupplier.whatsapp || currentSupplier.city) && (
+          <div className="mb-8 rounded-2xl p-4 space-y-3" style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+            <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>פרטי קשר</p>
+            {currentSupplier.city && (
+              <div className="flex items-center gap-2">
+                <MapPin size={14} style={{ color: 'var(--primary)' }} />
+                <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{currentSupplier.city}</span>
               </div>
-            ))}
+            )}
+            {currentSupplier.phone && (
+              <a href={`tel:${currentSupplier.phone}`} className="flex items-center gap-2">
+                <Phone size={14} style={{ color: 'var(--primary)' }} />
+                <span className="text-sm font-medium" style={{ color: 'var(--primary)' }}>{currentSupplier.phone}</span>
+              </a>
+            )}
+            {currentSupplier.whatsapp && (
+              <a href={`https://wa.me/${currentSupplier.whatsapp.replace(/\D/g,'')}`}
+                target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                <MessageCircle size={14} style={{ color: '#25D366' }} />
+                <span className="text-sm font-medium" style={{ color: '#25D366' }}>וואטסאפ</span>
+              </a>
+            )}
           </div>
-        </div>
+        )}
+
+        {/* Success state after lead sent */}
+        {leadSent && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-6 rounded-2xl p-4 flex items-start gap-3"
+            style={{ background: 'rgba(74,158,114,0.08)', border: '1.5px solid rgba(74,158,114,0.3)' }}>
+            <CheckCircle2 size={18} style={{ color: '#4A9E72', flexShrink: 0, marginTop: 1 }} />
+            <div>
+              <p className="text-sm font-semibold" style={{ color: '#4A9E72' }}>הפנייה נשלחה!</p>
+              <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                הספק יקבל את הפנייה שלך ויחזור אליך. תוכל לנהל את השיחה מהדשבורד.
+              </p>
+            </div>
+          </motion.div>
         )}
       </div>
 
       {/* Sticky bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 px-6 py-4 z-30"
         style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
-        <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
-          <div>
-            <p className="text-xs tracking-wide" style={{ color: 'var(--text-muted)' }}>
-              {pkg ? `חבילת ${pkg.label}` : 'בחר חבילה'}
-            </p>
-            <p className="text-xl font-light" style={{ color: 'var(--primary)' }}>{displayPrice}</p>
-          </div>
+        <div className="flex gap-3 max-w-lg mx-auto">
+          <button
+            onClick={() => navigate('categories')}
+            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+            <ArrowLeft size={16} style={{ color: 'var(--text-muted)' }} />
+          </button>
           <button
             onClick={handleAddToEvent}
-            className="flex-1 max-w-xs py-3.5 rounded-full text-white text-sm font-semibold tracking-wider uppercase transition-all active:scale-[0.98]"
-            style={{ background: 'var(--primary)', boxShadow: 'var(--shadow-accent)' }}
+            disabled={addLoading}
+            className="flex-1 py-3.5 rounded-full text-white text-sm font-semibold tracking-wider uppercase transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+            style={{ background: leadSent ? '#4A9E72' : 'var(--primary)', boxShadow: 'var(--shadow-accent)', opacity: addLoading ? 0.75 : 1 }}
           >
-            {isSelected ? 'עדכן בחירה' : 'הוסף לאירוע שלי'}
+            {addLoading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : leadSent ? (
+              <><CheckCircle2 size={15} /> נוסף לאירוע</>
+            ) : (
+              isSelected ? 'עדכן בחירה' : 'שלח פנייה והוסף לאירוע'
+            )}
           </button>
         </div>
       </div>

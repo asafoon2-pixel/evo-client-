@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Home, MessageCircle, Calendar, CreditCard, User,
@@ -7,6 +7,7 @@ import {
   Camera, Edit2, Instagram, Sparkles, Percent, Tag,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { listenToClientLeads, listenToMessages, sendMessage } from '../lib/leadsService'
 
 // ── utils ─────────────────────────────────────────────────────────────────────
 const fmt = n => `₪${Number(n).toLocaleString()}`
@@ -150,136 +151,150 @@ function Chip({ icon, label, color }) {
 // ── CHAT TAB ──────────────────────────────────────────────────────────────────
 const CHAT_COLORS = ['#2D1B69','#1A6940','#6B1F6B','#6B4A1A','#2C5F8A','#7A3F1A']
 
-function buildChatsFromSuppliers(selectedSuppliers) {
-  return Object.entries(selectedSuppliers).map(([catId, supplier], i) => ({
-    id: supplier.id || catId,
-    name: supplier.name,
-    cat: catId,
-    avatar: supplier.name?.[0]?.toUpperCase() || '?',
-    color: CHAT_COLORS[i % CHAT_COLORS.length],
-    unread: 0,
-    time: '',
-    last: 'לחץ להתחיל שיחה',
-    messages: [],
-  }))
-}
-
-function ChatTab() {
-  const { selectedSuppliers } = useApp()
-  const [activeId, setActiveId] = useState(null)
+function ChatThread({ lead, currentUser, onBack }) {
+  const [messages, setMessages] = useState([])
   const [msg, setMsg] = useState('')
-  const initialChats = Object.keys(selectedSuppliers).length > 0
-    ? buildChatsFromSuppliers(selectedSuppliers)
-    : []
-  const [chatData, setChatData] = useState(initialChats)
+  const bottomRef = useRef(null)
 
-  const activeChat = chatData.find(c => c.id === activeId)
+  useEffect(() => {
+    const unsub = listenToMessages(lead.id, msgs => {
+      setMessages(msgs)
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+    })
+    return unsub
+  }, [lead.id])
 
-  const sendMsg = () => {
-    if (!msg.trim() || !activeId) return
-    setChatData(prev => prev.map(c =>
-      c.id !== activeId ? c : {
-        ...c,
-        messages: [...c.messages, { from: 'user', text: msg.trim(), time: 'now' }],
-        last: msg.trim(),
-      }
-    ))
+  const doSend = async () => {
+    if (!msg.trim()) return
+    const text = msg.trim()
     setMsg('')
+    try {
+      await sendMessage(lead.id, currentUser.uid, currentUser.displayName || 'לקוח', text, 'client')
+    } catch (e) { console.error(e) }
   }
 
-  if (activeChat) {
-    return (
-      <div className="flex flex-col h-full">
-        {/* Chat header */}
-        <div className="flex items-center gap-3 px-6 pt-5 pb-4"
-          style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
-          <button onClick={() => setActiveId(null)}
-            className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ border: '1.5px solid var(--border)', color: 'var(--text-muted)' }}>
-            ←
-          </button>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base"
-            style={{ background: activeChat.color + '18', color: activeChat.color }}>
-            {activeChat.avatar}
-          </div>
-          <div>
-            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{activeChat.name}</p>
-            <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{activeChat.cat}</p>
-          </div>
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-3 px-6 pt-5 pb-4"
+        style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
+        <button onClick={onBack}
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ border: '1.5px solid var(--border)', color: 'var(--text-muted)' }}>←</button>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-base"
+          style={{ background: 'rgba(107,95,228,0.12)', color: 'var(--primary)' }}>
+          {lead.vendor_name?.[0]?.toUpperCase() || '?'}
         </div>
+        <div>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{lead.vendor_name}</p>
+          <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{lead.category}</p>
+        </div>
+      </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
-          {activeChat.messages.map((m, i) => (
-            <div key={i} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+        {messages.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>הפנייה נשלחה לספק. הוא יחזור אליך בקרוב.</p>
+          </div>
+        )}
+        {messages.map((m, i) => {
+          const isMe = m.from === 'client'
+          return (
+            <div key={m.id || i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div>
                 <div className="px-4 py-2.5 text-sm leading-relaxed max-w-[75vw]"
                   style={{
-                    background: m.from === 'user' ? 'var(--primary)' : 'var(--surface)',
-                    color: m.from === 'user' ? '#fff' : 'var(--text-primary)',
-                    borderRadius: m.from === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                    border: m.from !== 'user' ? '1px solid var(--border)' : 'none',
+                    background: isMe ? 'var(--primary)' : 'var(--surface)',
+                    color: isMe ? '#fff' : 'var(--text-primary)',
+                    borderRadius: isMe ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                    border: !isMe ? '1px solid var(--border)' : 'none',
                   }}>
                   {m.text}
                 </div>
-                <p className={`text-[10px] mt-1 ${m.from === 'user' ? 'text-right' : ''}`}
-                  style={{ color: 'var(--text-dim)' }}>{m.time}</p>
+                <p className={`text-[10px] mt-1 ${isMe ? 'text-right' : ''}`} style={{ color: 'var(--text-dim)' }}>
+                  {m.sender_name} {m.time?.toDate ? new Date(m.time.toDate()).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : ''}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Input */}
-        <div className="px-4 pb-6 pt-3 flex items-center gap-2"
-          style={{ borderTop: '1px solid var(--border)', background: 'var(--background)' }}>
-          <input
-            value={msg} onChange={e => setMsg(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && sendMsg()}
-            placeholder="הודעה..."
-            className="flex-1 px-4 py-3 text-sm rounded-full outline-none"
-            style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}
-          />
-          <motion.button whileTap={{ scale: 0.9 }} onClick={sendMsg}
-            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: msg.trim() ? 'var(--primary)' : 'var(--border)' }}>
-            <Send size={14} color={msg.trim() ? '#fff' : 'var(--text-dim)'} />
-          </motion.button>
-        </div>
+          )
+        })}
+        <div ref={bottomRef} />
       </div>
-    )
+
+      <div className="px-4 pb-6 pt-3 flex items-center gap-2"
+        style={{ borderTop: '1px solid var(--border)', background: 'var(--background)' }}>
+        <input value={msg} onChange={e => setMsg(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && doSend()}
+          placeholder="הודעה לספק..."
+          className="flex-1 px-4 py-3 text-sm rounded-full outline-none"
+          style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', color: 'var(--text-primary)', fontFamily: 'inherit' }}
+        />
+        <motion.button whileTap={{ scale: 0.9 }} onClick={doSend}
+          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+          style={{ background: msg.trim() ? 'var(--primary)' : 'var(--border)' }}>
+          <Send size={14} color={msg.trim() ? '#fff' : 'var(--text-dim)'} />
+        </motion.button>
+      </div>
+    </div>
+  )
+}
+
+function ChatTab() {
+  const { currentUser } = useApp()
+  const [leads, setLeads] = useState([])
+  const [activeLead, setActiveLead] = useState(null)
+
+  useEffect(() => {
+    if (!currentUser) return
+    const unsub = listenToClientLeads(currentUser.uid, setLeads)
+    return unsub
+  }, [currentUser])
+
+  if (activeLead) {
+    return <ChatThread lead={activeLead} currentUser={currentUser} onBack={() => setActiveLead(null)} />
   }
 
   return (
     <div className="px-6 pt-8 pb-4">
       <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>שיחות</h2>
       <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>השיחות שלך עם ספקים</p>
-      {chatData.length === 0 && (
+
+      {!currentUser && (
+        <div className="py-12 text-center rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <p className="text-3xl mb-3">🔒</p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>יש להתחבר כדי לראות שיחות</p>
+        </div>
+      )}
+
+      {currentUser && leads.length === 0 && (
         <div className="py-12 text-center rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <p className="text-3xl mb-3">💬</p>
           <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>אין שיחות עדיין</p>
-          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>בחר ספקים מהקטגוריות כדי להתחיל שיחה</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>בחר ספקים מהקטגוריות ושלח פנייה</p>
         </div>
       )}
+
       <div className="space-y-2">
-        {chatData.map(c => (
-          <motion.button key={c.id} whileTap={{ scale: 0.99 }} onClick={() => setActiveId(c.id)}
-            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left"
+        {leads.map((lead, i) => (
+          <motion.button key={lead.id} whileTap={{ scale: 0.99 }} onClick={() => setActiveLead(lead)}
+            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-right"
             style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
             <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0"
-              style={{ background: c.color + '18', color: c.color }}>{c.avatar}</div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-0.5">
-                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.name}</p>
-                <p className="text-[10px] shrink-0 ml-2" style={{ color: 'var(--text-dim)' }}>{c.time}</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{c.last}</p>
-                {c.unread > 0 && (
-                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ml-2"
-                    style={{ background: 'var(--primary)', color: '#fff' }}>{c.unread}</span>
-                )}
-              </div>
+              style={{ background: CHAT_COLORS[i % CHAT_COLORS.length] + '18', color: CHAT_COLORS[i % CHAT_COLORS.length] }}>
+              {lead.vendor_name?.[0]?.toUpperCase() || '?'}
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{lead.vendor_name}</p>
+              <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                {lead.last_message || (lead.status === 'new' ? 'פנייה נשלחה — ממתין לתגובה' : lead.status)}
+              </p>
+            </div>
+            <span className="text-[10px] px-2 py-0.5 rounded-full shrink-0"
+              style={{
+                background: lead.status === 'booked' ? 'rgba(74,158,114,0.12)' : lead.status === 'new' ? 'rgba(245,158,11,0.12)' : 'var(--elevated)',
+                color: lead.status === 'booked' ? '#4A9E72' : lead.status === 'new' ? '#d97706' : 'var(--text-dim)',
+              }}>
+              {lead.status === 'new' ? 'חדש' : lead.status === 'booked' ? 'מאושר' : lead.status}
+            </span>
           </motion.button>
         ))}
       </div>
