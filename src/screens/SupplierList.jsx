@@ -24,8 +24,8 @@ export default function SupplierList() {
   const catSuppliers = vendors
 
   const filtered = catSuppliers.filter(s => {
-    if (activeFilter === 'recommended') return s.rating >= 4.8
-    if (activeFilter === 'top-rated') return s.rating >= 4.9
+    if (activeFilter === 'recommended') return s.rating >= 4.5
+    if (activeFilter === 'top-rated') return s.rating >= 4.8
     return true
   })
 
@@ -140,8 +140,11 @@ export default function SupplierList() {
                 }}
               >
                 <div className="flex gap-4 p-4">
-                  <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
-                    <img src={supplier.image} alt={supplier.name} className="w-full h-full object-cover" />
+                  <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: 'var(--border)' }}>
+                    {supplier.image
+                      ? <img src={supplier.image} alt={supplier.name} className="w-full h-full object-cover" />
+                      : <span className="text-2xl">🏢</span>
+                    }
                   </div>
 
                   <div className="flex-1 min-w-0">

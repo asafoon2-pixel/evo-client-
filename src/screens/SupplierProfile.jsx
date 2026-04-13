@@ -1,19 +1,38 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Star, Clock, Camera, Check, MessageCircle, Loader2, Phone, Send, CheckCircle2, MapPin } from 'lucide-react'
+import {
+  ArrowLeft, Star, Clock, Camera, MessageCircle, Loader2,
+  Phone, CheckCircle2, MapPin, Globe, Instagram,
+  ChevronDown, ChevronUp,
+} from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
-import { getVendorPackages } from '../lib/suppliersService'
+import { getVendorPackages, getVendorProducts } from '../lib/suppliersService'
 import { createLead, getExistingLead } from '../lib/leadsService'
 
-export default function SupplierProfile() {
-  const { navigate, currentSupplier, currentCategory, selectSupplier, selectedSuppliers, currentUser, setAuthIntent, briefAnswers } = useApp()
-  const [selectedPackage, setSelectedPackage] = useState(null)
-  const [packages, setPackages] = useState([])
-  const [pkgLoading, setPkgLoading] = useState(true)
-  const [addLoading, setAddLoading] = useState(false)
-  const [leadSent, setLeadSent] = useState(false)
+const PRICE_TYPE_LABEL = {
+  fixed:     '',
+  per_hour:  ' / שעה',
+  per_guest: ' / אורח',
+}
 
+export default function SupplierProfile() {
+  const {
+    navigate, currentSupplier, currentCategory,
+    selectSupplier, selectedSuppliers, currentUser,
+    setAuthIntent, briefAnswers,
+  } = useApp()
+
+  const [selectedPackage, setSelectedPackage] = useState(null)
+  const [packages,        setPackages]        = useState([])
+  const [products,        setProducts]        = useState([])
+  const [pkgLoading,      setPkgLoading]      = useState(true)
+  const [prodLoading,     setProdLoading]     = useState(true)
+  const [addLoading,      setAddLoading]      = useState(false)
+  const [leadSent,        setLeadSent]        = useState(false)
+  const [showAllProducts, setShowAllProducts] = useState(false)
+
+  // Load packages
   useEffect(() => {
     if (!currentSupplier?.id) return
     setPkgLoading(true)
@@ -24,6 +43,16 @@ export default function SupplierProfile() {
       })
       .catch(console.error)
       .finally(() => setPkgLoading(false))
+  }, [currentSupplier?.id])
+
+  // Load products
+  useEffect(() => {
+    if (!currentSupplier?.id) return
+    setProdLoading(true)
+    getVendorProducts(currentSupplier.id)
+      .then(setProducts)
+      .catch(console.error)
+      .finally(() => setProdLoading(false))
   }, [currentSupplier?.id])
 
   // Check if lead already sent
@@ -48,7 +77,6 @@ export default function SupplierProfile() {
   const isSelected = selectedSuppliers[currentCategory]?.id === currentSupplier.id
 
   const handleAddToEvent = async () => {
-    // Require auth
     if (!currentUser) {
       setAuthIntent('single')
       navigate('authgate')
@@ -61,7 +89,6 @@ export default function SupplierProfile() {
         selectedPackage: selectedPackage || packages[0] || null,
       }
       selectSupplier(currentCategory, supplierWithPackage)
-      // Create real lead in Firestore
       const existing = await getExistingLead(currentUser.uid, currentSupplier.id)
       if (!existing) {
         await createLead(currentUser, currentSupplier, briefAnswers)
@@ -86,17 +113,30 @@ export default function SupplierProfile() {
     ))
 
   const pkg = selectedPackage || packages[0] || null
-  const displayPrice = pkg ? `₪${pkg.price.toLocaleString()}` : '—'
+  const displayPrice = pkg ? `₪${pkg.price.toLocaleString()}${PRICE_TYPE_LABEL[pkg.priceType] || ''}` : '—'
+
+  const visibleProducts = showAllProducts ? products : products.slice(0, 3)
+
+  const instagramHandle = currentSupplier.instagram?.replace('@', '') || ''
+  const websiteUrl = currentSupplier.website
+    ? (currentSupplier.website.startsWith('http') ? currentSupplier.website : `https://${currentSupplier.website}`)
+    : ''
 
   return (
     <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
       {/* Hero image */}
       <div className="relative h-72 shrink-0" style={{ background: 'var(--elevated)' }}>
-        <img
-          src={currentSupplier.image}
-          alt={currentSupplier.name}
-          className="w-full h-full object-cover"
-        />
+        {currentSupplier.image ? (
+          <img
+            src={currentSupplier.image}
+            alt={currentSupplier.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--surface)' }}>
+            <Camera size={40} style={{ color: 'var(--text-dim)' }} />
+          </div>
+        )}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(245,240,232,0.9) 100%)' }} />
 
         {/* Back button */}
@@ -113,7 +153,9 @@ export default function SupplierProfile() {
         {/* Name + category */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>
-            <h1 className="text-2xl font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>{currentSupplier.name}</h1>
+            <h1 className="text-2xl font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
+              {currentSupplier.name}
+            </h1>
             <span className="text-xs font-medium tracking-widest uppercase rounded-full px-3 py-1 inline-block mt-2"
               style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
               {cat?.name}
@@ -128,12 +170,16 @@ export default function SupplierProfile() {
 
         {/* Stats row */}
         <div className="flex items-center gap-4 mb-5 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <div className="flex gap-0.5">{renderStars(currentSupplier.rating)}</div>
-            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{currentSupplier.rating}</span>
-            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>({currentSupplier.reviewCount})</span>
-          </div>
-          {currentSupplier.eventsCount && (
+          {currentSupplier.rating > 0 && (
+            <div className="flex items-center gap-1.5">
+              <div className="flex gap-0.5">{renderStars(currentSupplier.rating)}</div>
+              <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{currentSupplier.rating}</span>
+              {currentSupplier.reviewCount > 0 && (
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>({currentSupplier.reviewCount})</span>
+              )}
+            </div>
+          )}
+          {currentSupplier.eventsCount > 0 && (
             <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
               <Camera size={12} />
               <span>{currentSupplier.eventsCount} אירועים</span>
@@ -145,23 +191,57 @@ export default function SupplierProfile() {
               <span>מגיב {currentSupplier.responseTime}</span>
             </div>
           )}
+          {currentSupplier.yearsExperience > 0 && (
+            <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+              <Star size={12} />
+              <span>{currentSupplier.yearsExperience}+ שנות ניסיון</span>
+            </div>
+          )}
         </div>
 
         {/* Price range */}
-        <div className="mb-6">
-          <span className="text-evo-accent text-xl font-light">{currentSupplier.priceRange}</span>
-        </div>
+        {currentSupplier.priceRange && (
+          <div className="mb-6">
+            <span className="text-evo-accent text-xl font-light">{currentSupplier.priceRange}</span>
+          </div>
+        )}
 
         {/* Gallery */}
         <div className="mb-8">
           <h2 className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>גלריה</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-            {(currentSupplier.gallery || (currentSupplier.image ? [currentSupplier.image] : [])).map((img, i) => (
+            {/* Main image */}
+            {currentSupplier.image && (
+              <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
+                <img src={currentSupplier.image} alt="" className="w-full h-full object-cover" />
+              </div>
+            )}
+            {/* Gallery images */}
+            {(currentSupplier.gallery || []).map((img, i) => (
               <div key={i} className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
                 <img src={img} alt="" className="w-full h-full object-cover" />
               </div>
             ))}
-            {!(currentSupplier.gallery || currentSupplier.image) && (
+            {/* Package images */}
+            {packages.filter(p => p.image).slice(0, 3).map(p => (
+              <div key={`pkg-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
+                <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+                  <p className="text-[9px] text-white text-center truncate">{p.label}</p>
+                </div>
+              </div>
+            ))}
+            {/* Product images */}
+            {products.filter(p => p.image).slice(0, 3).map(p => (
+              <div key={`prod-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
+                <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+                  <p className="text-[9px] text-white text-center truncate">{p.label}</p>
+                </div>
+              </div>
+            ))}
+            {/* Placeholder if nothing */}
+            {!currentSupplier.image && packages.every(p => !p.image) && products.every(p => !p.image) && (
               <div className="w-24 h-24 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <Camera size={20} style={{ color: 'var(--text-dim)' }} />
               </div>
@@ -188,38 +268,82 @@ export default function SupplierProfile() {
             <p className="text-sm text-center py-6" style={{ color: 'var(--text-muted)' }}>אין חבילות זמינות</p>
           ) : (
             <div className="space-y-3">
-              {packages.map((p, i) => {
+              {packages.map((p) => {
                 const isActive = selectedPackage?.id === p.id
                 return (
                   <motion.button
                     key={p.id}
                     onClick={() => setSelectedPackage(p)}
                     whileTap={{ scale: 0.99 }}
-                    className="w-full text-right rounded-2xl p-5 transition-all duration-200"
+                    className="w-full text-right rounded-2xl transition-all duration-200"
                     style={{
                       background: isActive ? 'rgba(107,95,228,0.07)' : 'var(--surface)',
                       border: isActive ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                      overflow: 'hidden',
                     }}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.label}</span>
-                        {p.badge === 'most_popular' && (
-                          <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
-                            style={{ color: 'var(--primary)', border: '1px solid rgba(107,95,228,0.4)' }}>פופולרי</span>
-                        )}
+                    {/* Package image */}
+                    {p.image && (
+                      <div className="w-full h-32 overflow-hidden">
+                        <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
                       </div>
-                      <div className="text-left">
-                        <span className="text-lg font-light" style={{ color: isActive ? 'var(--primary)' : 'var(--text-primary)' }}>
-                          ₪{p.price.toLocaleString()}
-                        </span>
-                        {p.priceType === 'per_hour' && <span className="text-[10px] mr-1" style={{ color: 'var(--text-dim)' }}>/שעה</span>}
-                        {p.priceType === 'per_guest' && <span className="text-[10px] mr-1" style={{ color: 'var(--text-dim)' }}>/אורח</span>}
-                      </div>
-                    </div>
-                    {p.description && (
-                      <p className="text-xs leading-relaxed text-right" style={{ color: 'var(--text-muted)' }}>{p.description}</p>
                     )}
+                    <div className="p-5">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.label}</span>
+                          {p.badge === 'most_popular' && (
+                            <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
+                              style={{ color: 'var(--primary)', border: '1px solid rgba(107,95,228,0.4)' }}>פופולרי</span>
+                          )}
+                          {p.badge === 'best_value' && (
+                            <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
+                              style={{ color: '#4A9E72', border: '1px solid rgba(74,158,114,0.4)' }}>משתלם</span>
+                          )}
+                          {p.badge === 'evo_recommended' && (
+                            <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
+                              style={{ color: '#E8884F', border: '1px solid rgba(232,136,79,0.4)' }}>מומלץ EVO</span>
+                          )}
+                        </div>
+                        <div className="text-left shrink-0">
+                          <span className="text-lg font-light" style={{ color: isActive ? 'var(--primary)' : 'var(--text-primary)' }}>
+                            ₪{p.price.toLocaleString()}
+                          </span>
+                          {PRICE_TYPE_LABEL[p.priceType] && (
+                            <span className="text-[10px] mr-1" style={{ color: 'var(--text-dim)' }}>{PRICE_TYPE_LABEL[p.priceType]}</span>
+                          )}
+                        </div>
+                      </div>
+                      {p.description && (
+                        <p className="text-xs leading-relaxed text-right mb-2" style={{ color: 'var(--text-muted)' }}>{p.description}</p>
+                      )}
+                      {/* Guest / hour info */}
+                      {(p.minGuests > 0 || p.maxGuests > 0 || p.minHours > 0) && (
+                        <div className="flex gap-3 flex-wrap mt-2">
+                          {(p.minGuests > 0 || p.maxGuests > 0) && (
+                            <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
+                              {p.minGuests}–{p.maxGuests} אורחים
+                            </span>
+                          )}
+                          {p.minHours > 0 && (
+                            <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
+                              {p.minHours}+ שעות
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {/* Add-ons */}
+                      {p.addOns && p.addOns.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {p.addOns.map((ao, i) => (
+                            <span key={i} className="text-[10px] rounded-full px-2 py-0.5"
+                              style={{ background: 'var(--elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                              + {ao}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </motion.button>
                 )
               })}
@@ -227,8 +351,70 @@ export default function SupplierProfile() {
           )}
         </div>
 
+        {/* Products */}
+        <div className="mb-8">
+          <h2 className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>מוצרים בודדים</h2>
+          {prodLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <Loader2 size={18} className="animate-spin" style={{ color: 'var(--primary)' }} />
+            </div>
+          ) : products.length === 0 ? (
+            <p className="text-sm text-center py-6" style={{ color: 'var(--text-muted)' }}>אין מוצרים בודדים זמינים</p>
+          ) : (
+            <div className="space-y-3">
+              {visibleProducts.map((p) => (
+                  <div
+                    key={p.id}
+                    className="rounded-2xl overflow-hidden"
+                    style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}
+                  >
+                    {p.image && (
+                      <div className="w-full h-28 overflow-hidden">
+                        <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.label}</p>
+                          {p.description && (
+                            <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{p.description}</p>
+                          )}
+                          {p.maxGuests > 0 && (
+                            <p className="text-[10px] mt-1" style={{ color: 'var(--text-dim)' }}>עד {p.maxGuests} אורחים</p>
+                          )}
+                        </div>
+                        <div className="text-left shrink-0 mr-3">
+                          <span className="text-base font-light" style={{ color: 'var(--text-primary)' }}>
+                            ₪{p.price.toLocaleString()}
+                          </span>
+                          {PRICE_TYPE_LABEL[p.priceType] && (
+                            <span className="text-[10px] block" style={{ color: 'var(--text-dim)' }}>{PRICE_TYPE_LABEL[p.priceType].trim()}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {products.length > 3 && (
+                  <button
+                    onClick={() => setShowAllProducts(v => !v)}
+                    className="w-full py-3 flex items-center justify-center gap-2 text-sm font-medium"
+                    style={{ color: 'var(--primary)' }}
+                  >
+                    {showAllProducts ? (
+                      <><ChevronUp size={14} /> הצג פחות</>
+                    ) : (
+                      <><ChevronDown size={14} /> הצג עוד {products.length - 3} מוצרים</>
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+        </div>
+
         {/* Contact info */}
-        {(currentSupplier.phone || currentSupplier.whatsapp || currentSupplier.city) && (
+        {(currentSupplier.phone || currentSupplier.whatsapp || currentSupplier.city || currentSupplier.instagram || currentSupplier.website) && (
           <div className="mb-8 rounded-2xl p-4 space-y-3" style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
             <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>פרטי קשר</p>
             {currentSupplier.city && (
@@ -244,10 +430,35 @@ export default function SupplierProfile() {
               </a>
             )}
             {currentSupplier.whatsapp && (
-              <a href={`https://wa.me/${currentSupplier.whatsapp.replace(/\D/g,'')}`}
-                target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+              <a
+                href={`https://wa.me/${currentSupplier.whatsapp.replace(/\D/g, '')}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
                 <MessageCircle size={14} style={{ color: '#25D366' }} />
                 <span className="text-sm font-medium" style={{ color: '#25D366' }}>וואטסאפ</span>
+              </a>
+            )}
+            {instagramHandle && (
+              <a
+                href={`https://instagram.com/${instagramHandle}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <Instagram size={14} style={{ color: '#E1306C' }} />
+                <span className="text-sm font-medium" style={{ color: '#E1306C' }}>@{instagramHandle}</span>
+              </a>
+            )}
+            {websiteUrl && (
+              <a
+                href={websiteUrl}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <Globe size={14} style={{ color: 'var(--primary)' }} />
+                <span className="text-sm font-medium" style={{ color: 'var(--primary)' }}>
+                  {currentSupplier.website.replace(/^https?:\/\//, '')}
+                </span>
               </a>
             )}
           </div>
@@ -272,6 +483,12 @@ export default function SupplierProfile() {
       {/* Sticky bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 px-6 py-4 z-30"
         style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+        {/* Selected package price */}
+        {pkg && (
+          <p className="text-center text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+            {pkg.label} · <span style={{ color: 'var(--primary)' }}>{displayPrice}</span>
+          </p>
+        )}
         <div className="flex gap-3 max-w-lg mx-auto">
           <button
             onClick={() => navigate('categories')}
@@ -283,7 +500,11 @@ export default function SupplierProfile() {
             onClick={handleAddToEvent}
             disabled={addLoading}
             className="flex-1 py-3.5 rounded-full text-white text-sm font-semibold tracking-wider uppercase transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-            style={{ background: leadSent ? '#4A9E72' : 'var(--primary)', boxShadow: 'var(--shadow-accent)', opacity: addLoading ? 0.75 : 1 }}
+            style={{
+              background: leadSent ? '#4A9E72' : 'var(--primary)',
+              boxShadow: 'var(--shadow-accent)',
+              opacity: addLoading ? 0.75 : 1,
+            }}
           >
             {addLoading ? (
               <Loader2 size={16} className="animate-spin" />

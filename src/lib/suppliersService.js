@@ -1,10 +1,9 @@
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore'
 import { db } from './firebase'
 
 // Returns the set of category strings a vendor doc may have been stored with
 function categoryVariants(categoryId) {
   const pascal = categoryId.charAt(0).toUpperCase() + categoryId.slice(1)
-  // Include lowercase in case any doc was stored that way
   const lower = categoryId.toLowerCase()
   return pascal === lower ? [pascal] : [pascal, lower]
 }
@@ -23,16 +22,24 @@ function normaliseVendor(id, data) {
     id,
     name:             data.business_name || data.owner_full_name || 'ספק',
     shortDescription: data.bio || '',
+    fullDescription:  data.bio || '',
     image:            data.cover_photo_url || data.profile_photo_url || null,
+    gallery:          data.gallery || [],
     rating:           data.avg_rating     || 0,
     reviewCount:      data.total_reviews  || 0,
+    eventsCount:      data.total_events   || 0,
+    responseTime:     data.avg_response_time_hours
+                        ? `תוך ${data.avg_response_time_hours} שע׳`
+                        : null,
     priceRange:       priceRange,
     city:             data.city           || '',
     instagram:        data.instagram_handle || '',
+    website:          data.website_url    || '',
     phone:            data.phone          || '',
     whatsapp:         data.whatsapp_number || data.phone || '',
     preferredContact: data.preferred_contact || 'whatsapp',
     category:         data.category       || '',
+    yearsExperience:  data.years_experience || 0,
     isApproved:       data.is_approved    || false,
     isActive:         data.is_active      || false,
     _raw:             data,
@@ -47,23 +54,35 @@ function normalisePackage(id, data) {
     price:       data.price       || 0,
     priceType:   data.price_type  || 'fixed',
     image:       data.image_url   || null,
-    badge:       data.badge       || null,
+    badge:       data.badge       || (data.is_popular ? 'most_popular' : null),
+    minGuests:   data.min_guests  || 0,
+    maxGuests:   data.max_guests  || 0,
+    minHours:    data.min_hours   || 0,
+    addOns:      data.add_ons     || [],
+  }
+}
+
+function normaliseProduct(id, data) {
+  return {
+    id,
+    label:       data.name        || 'מוצר',
+    description: data.description || '',
+    price:       data.price       || 0,
+    priceType:   data.price_type  || 'fixed',
+    image:       data.image_url   || null,
+    category:    data.category    || '',
+    maxGuests:   data.max_guests  || 0,
+    isAvailable: data.is_available !== false,
   }
 }
 
 /**
  * Fetch all active vendors for a given category.
- * Queries both PascalCase and lowercase category variants to handle docs that were stored
- * with either casing. Falls back to fetching all vendors in the category (ignoring is_active)
- * when none are found — useful in dev before vendors have been activated.
- * The composite-index query (category + is_active) is wrapped in try/catch so a missing
- * Firestore index degrades gracefully to the fallback instead of throwing.
  */
 export async function getVendorsByCategory(categoryId) {
   const ref = collection(db, 'vendors')
   const variants = categoryVariants(categoryId)
 
-  // Helper: fetch docs matching one category string, with optional is_active filter
   async function fetchByVariant(catValue, requireActive) {
     const conditions = [where('category', '==', catValue)]
     if (requireActive) conditions.push(where('is_active', '==', true))
@@ -71,21 +90,17 @@ export async function getVendorsByCategory(categoryId) {
     return getDocs(q)
   }
 
-  // Collect results across all category variants, de-duplicated by document id
   const seen = new Map()
 
-  // First pass: active vendors only (may require a composite index; degrade gracefully)
+  // First pass: active vendors only
   for (const variant of variants) {
     try {
       const snap = await fetchByVariant(variant, true)
       snap.docs.forEach(d => { if (!seen.has(d.id)) seen.set(d.id, d) })
-    } catch (_) {
-      // Composite index may not exist yet — fall through to the fallback pass
-    }
+    } catch (_) {}
   }
 
-  // Fallback pass: all vendors in category, regardless of is_active
-  // (covers dev environments, missing index, or vendors with is_active not yet set)
+  // Fallback: all vendors in category
   if (seen.size === 0) {
     for (const variant of variants) {
       try {
@@ -105,5 +120,17 @@ export async function getVendorPackages(vendorId) {
   const snap = await getDocs(collection(db, 'vendors', vendorId, 'packages'))
   return snap.docs
     .map(d => normalisePackage(d.id, d.data()))
+    .filter(p => p.label && p.price >= 0)
     .sort((a, b) => a.price - b.price)
+}
+
+/**
+ * Fetch products sub-collection for a vendor.
+ */
+export async function getVendorProducts(vendorId) {
+  const snap = await getDocs(collection(db, 'vendors', vendorId, 'products'))
+  return snap.docs
+    .map(d => normaliseProduct(d.id, d.data()))
+    .filter(p => p.isAvailable)
+    .sort((a, b) => (a.price || 0) - (b.price || 0))
 }
