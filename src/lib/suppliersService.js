@@ -1,9 +1,12 @@
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore'
+import { collection, query, where, getDocs } from 'firebase/firestore'
 import { db } from './firebase'
 
-// Maps client category IDs (lowercase) → Firestore category value (capitalized)
-function toFirestoreCategory(categoryId) {
-  return categoryId.charAt(0).toUpperCase() + categoryId.slice(1)
+// Returns the set of category strings a vendor doc may have been stored with
+function categoryVariants(categoryId) {
+  const pascal = categoryId.charAt(0).toUpperCase() + categoryId.slice(1)
+  // Include lowercase in case any doc was stored that way
+  const lower = categoryId.toLowerCase()
+  return pascal === lower ? [pascal] : [pascal, lower]
 }
 
 // Normalises a Firestore vendor doc → shape the UI components expect
@@ -49,24 +52,50 @@ function normalisePackage(id, data) {
 }
 
 /**
- * Fetch all active + approved vendors for a given category.
- * Falls back to returning all vendors in the category if none are approved/active yet.
+ * Fetch all active vendors for a given category.
+ * Queries both PascalCase and lowercase category variants to handle docs that were stored
+ * with either casing. Falls back to fetching all vendors in the category (ignoring is_active)
+ * when none are found — useful in dev before vendors have been activated.
+ * The composite-index query (category + is_active) is wrapped in try/catch so a missing
+ * Firestore index degrades gracefully to the fallback instead of throwing.
  */
 export async function getVendorsByCategory(categoryId) {
-  const firestoreCat = toFirestoreCategory(categoryId)
   const ref = collection(db, 'vendors')
+  const variants = categoryVariants(categoryId)
 
-  // First try: active + approved
-  let q = query(ref, where('category', '==', firestoreCat), where('is_active', '==', true))
-  let snap = await getDocs(q)
-
-  // Fallback: any vendor in this category (e.g., during dev before vendors are approved)
-  if (snap.empty) {
-    q = query(ref, where('category', '==', firestoreCat))
-    snap = await getDocs(q)
+  // Helper: fetch docs matching one category string, with optional is_active filter
+  async function fetchByVariant(catValue, requireActive) {
+    const conditions = [where('category', '==', catValue)]
+    if (requireActive) conditions.push(where('is_active', '==', true))
+    const q = query(ref, ...conditions)
+    return getDocs(q)
   }
 
-  return snap.docs.map(d => normaliseVendor(d.id, d.data()))
+  // Collect results across all category variants, de-duplicated by document id
+  const seen = new Map()
+
+  // First pass: active vendors only (may require a composite index; degrade gracefully)
+  for (const variant of variants) {
+    try {
+      const snap = await fetchByVariant(variant, true)
+      snap.docs.forEach(d => { if (!seen.has(d.id)) seen.set(d.id, d) })
+    } catch (_) {
+      // Composite index may not exist yet — fall through to the fallback pass
+    }
+  }
+
+  // Fallback pass: all vendors in category, regardless of is_active
+  // (covers dev environments, missing index, or vendors with is_active not yet set)
+  if (seen.size === 0) {
+    for (const variant of variants) {
+      try {
+        const snap = await fetchByVariant(variant, false)
+        snap.docs.forEach(d => { if (!seen.has(d.id)) seen.set(d.id, d) })
+      } catch (_) {}
+    }
+  }
+
+  return Array.from(seen.values()).map(d => normaliseVendor(d.id, d.data()))
 }
 
 /**
