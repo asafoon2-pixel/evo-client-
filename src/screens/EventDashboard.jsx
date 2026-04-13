@@ -148,58 +148,30 @@ function Chip({ icon, label, color }) {
 }
 
 // ── CHAT TAB ──────────────────────────────────────────────────────────────────
-const MOCK_CHATS = [
-  {
-    id: 'pearl',
-    name: 'The Pearl House',
-    cat: 'מקום',
-    avatar: 'P',
-    color: '#2D1B69',
-    unread: 2,
-    time: '10:42',
-    last: 'מצפים לארח את האירוע שלך! 🎉',
-    messages: [
-      { from: 'vendor', text: 'היי! כל כך מתרגש להיות חלק מהאירוע שלך 🎉', time: '10:30' },
-      { from: 'user',   text: 'תודה! אפשר לקבוע ביקור אתר?', time: '10:38' },
-      { from: 'vendor', text: 'כמובן — חמישי ב-15:00 מתאים?', time: '10:40' },
-      { from: 'vendor', text: 'מצפים לארח את האירוע שלך! 🎉', time: '10:42' },
-    ],
-  },
-  {
-    id: 'atelier',
-    name: 'Atelier Culinaire',
-    cat: 'קייטרינג',
-    avatar: 'A',
-    color: '#1A6940',
+const CHAT_COLORS = ['#2D1B69','#1A6940','#6B1F6B','#6B4A1A','#2C5F8A','#7A3F1A']
+
+function buildChatsFromSuppliers(selectedSuppliers) {
+  return Object.entries(selectedSuppliers).map(([catId, supplier], i) => ({
+    id: supplier.id || catId,
+    name: supplier.name,
+    cat: catId,
+    avatar: supplier.name?.[0]?.toUpperCase() || '?',
+    color: CHAT_COLORS[i % CHAT_COLORS.length],
     unread: 0,
-    time: '09:15',
-    last: 'טעימת תפריט אושרה ל-18/4 ✓',
-    messages: [
-      { from: 'vendor', text: 'אפשרויות התפריט שלך מוכנות לסקירה!', time: '08:50' },
-      { from: 'user',   text: 'מעולה, אפשר לעשות טעימה?', time: '09:10' },
-      { from: 'vendor', text: 'טעימת תפריט אושרה ל-18/4 ✓', time: '09:15' },
-    ],
-  },
-  {
-    id: 'noir',
-    name: 'Noir Sound',
-    cat: 'מוזיקה',
-    avatar: 'N',
-    color: '#6B1F6B',
-    unread: 1,
-    time: 'Yesterday',
-    last: 'טיוטת פלייליסט מגיעה מחר 🎶',
-    messages: [
-      { from: 'vendor', text: 'יש לנו כמה רעיונות לפלייליסט', time: 'אתמול' },
-      { from: 'vendor', text: 'טיוטת פלייליסט מגיעה מחר 🎶', time: 'אתמול' },
-    ],
-  },
-]
+    time: '',
+    last: 'לחץ להתחיל שיחה',
+    messages: [],
+  }))
+}
 
 function ChatTab() {
+  const { selectedSuppliers } = useApp()
   const [activeId, setActiveId] = useState(null)
   const [msg, setMsg] = useState('')
-  const [chatData, setChatData] = useState(MOCK_CHATS)
+  const initialChats = Object.keys(selectedSuppliers).length > 0
+    ? buildChatsFromSuppliers(selectedSuppliers)
+    : []
+  const [chatData, setChatData] = useState(initialChats)
 
   const activeChat = chatData.find(c => c.id === activeId)
 
@@ -281,6 +253,13 @@ function ChatTab() {
     <div className="px-6 pt-8 pb-4">
       <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>שיחות</h2>
       <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>השיחות שלך עם ספקים</p>
+      {chatData.length === 0 && (
+        <div className="py-12 text-center rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <p className="text-3xl mb-3">💬</p>
+          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>אין שיחות עדיין</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>בחר ספקים מהקטגוריות כדי להתחיל שיחה</p>
+        </div>
+      )}
       <div className="space-y-2">
         {chatData.map(c => (
           <motion.button key={c.id} whileTap={{ scale: 0.99 }} onClick={() => setActiveId(c.id)}
@@ -318,16 +297,31 @@ const TYPE_STYLE = {
 }
 
 // vendorStatus: 'confirmed' | 'awaiting' | 'cancelled'
-const DEFAULT_ITEMS = [
-  { id: 1,  date: 'היום',  label: 'אירוע אושר על ידי EVO',               type: 'done',    done: true,  vendorStatus: 'confirmed', vendorName: 'EVO' },
-  { id: 2,  date: '12/4',  label: 'מקדמת מקום — ₪2,800',                type: 'payment', done: false, vendorStatus: 'confirmed', vendorName: 'The Pearl House' },
-  { id: 3,  date: '18/4',  label: 'טעימת קייטרינג ב-Atelier Culinaire', type: 'meeting', done: false, vendorStatus: 'confirmed', vendorName: 'Atelier Culinaire' },
-  { id: 4,  date: '25/4',  label: 'שלח רשימת אורחים סופית למקום',       type: 'task',    done: false },
-  { id: 5,  date: '3/5',   label: 'אישורי ספקים אחרונים',                type: 'task',    done: false },
-  { id: 6,  date: '10/5',  label: 'בריף מוזיקה עם Noir Sound',           type: 'meeting', done: false, vendorStatus: 'awaiting',   vendorName: 'Noir Sound' },
-  { id: 7,  date: '20/5',  label: 'תשלום יתרת קייטרינג',                 type: 'payment', done: false, vendorStatus: 'confirmed',  vendorName: 'Atelier Culinaire' },
-  { id: 8,  date: '1/6',   label: '🎉 יום האירוע שלך!',                  type: 'event',   done: false },
-]
+function buildTimelineItems(selectedSuppliers, briefDate) {
+  const base = [
+    { id: 1, date: 'היום', label: 'אירוע נפתח ב-EVO', type: 'done', done: true, vendorStatus: 'confirmed', vendorName: 'EVO' },
+  ]
+  let id = 2
+  Object.entries(selectedSuppliers).forEach(([catId, supplier]) => {
+    base.push({
+      id: id++,
+      date: '—',
+      label: `אישור ספק — ${supplier.name}`,
+      type: 'task',
+      done: false,
+      vendorStatus: 'awaiting',
+      vendorName: supplier.name,
+    })
+  })
+  base.push({ id: id++, date: '—', label: 'שלח רשימת אורחים סופית', type: 'task', done: false })
+  base.push({ id: id++, date: '—', label: 'אישורי ספקים אחרונים', type: 'task', done: false })
+  if (briefDate && briefDate !== 'flexible') {
+    base.push({ id: id++, date: briefDate, label: '🎉 יום האירוע שלך!', type: 'event', done: false })
+  } else {
+    base.push({ id: id++, date: 'תאריך גמיש', label: '🎉 יום האירוע שלך!', type: 'event', done: false })
+  }
+  return base
+}
 
 const VENDOR_STATUS_STYLE = {
   confirmed: { label: '✅ מאושר',  bg: 'rgba(34,197,94,0.1)',   color: '#16a34a' },
@@ -336,7 +330,8 @@ const VENDOR_STATUS_STYLE = {
 }
 
 function TimelineTab() {
-  const [items, setItems] = useState(DEFAULT_ITEMS)
+  const { selectedSuppliers, briefAnswers } = useApp()
+  const [items, setItems] = useState(() => buildTimelineItems(selectedSuppliers, briefAnswers?.date))
   const [adding, setAdding] = useState(false)
   const [newItem, setNewItem] = useState({ date: '', label: '', type: 'task' })
 
@@ -445,14 +440,15 @@ function TimelineTab() {
 
 // ── PAYMENTS TAB ──────────────────────────────────────────────────────────────
 function PaymentsTab({ sections, totalPrice }) {
-  const deposit = Math.round(totalPrice * 0.2)
+  const { selectedSuppliers } = useApp()
 
-  const rows = (sections.length > 0 ? sections : [
-    { label: 'מקום',    vendor: { name: 'The Pearl House',    price: 14000 } },
-    { label: 'קייטרינג', vendor: { name: 'Atelier Culinaire',  price: 18000 } },
-    { label: 'מוזיקה',    vendor: { name: 'Noir Sound',          price: 6000  } },
-    { label: 'תאורה', vendor: { name: 'Lumière Studio',      price: 5500  } },
-  ]).map((s, i) => ({
+  // Build payment rows from selectedSuppliers (real data) or eventPackage sections
+  const supplierRows = Object.entries(selectedSuppliers).map(([catId, s]) => ({
+    label: catId,
+    vendor: { name: s.name, price: s.selectedPackage?.price || 0 },
+  }))
+
+  const rows = (supplierRows.length > 0 ? supplierRows : sections).map((s, i) => ({
     ...s,
     dep: Math.round(s.vendor.price * 0.2),
     due: ['12/4', '20/4', '28/4', '5/5'][i] || 'בהמשך',
@@ -657,7 +653,7 @@ const DEALS = [
 // ── BOTTOM NAV ────────────────────────────────────────────────────────────────
 const NAV_TABS = [
   { id: 'home',     label: 'בית',      Icon: Home },
-  { id: 'chat',     label: 'צ׳אט',     Icon: MessageCircle, badge: 3 },
+  { id: 'chat',     label: 'צ׳אט',     Icon: MessageCircle },
   { id: 'timeline', label: 'ציר זמן',  Icon: Calendar },
   { id: 'payments', label: 'תשלומים',  Icon: CreditCard },
   { id: 'profile',  label: 'פרופיל',   Icon: User },
@@ -665,7 +661,7 @@ const NAV_TABS = [
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function EventDashboard() {
-  const { eventPackage, briefAnswers, totalPrice } = useApp()
+  const { eventPackage, briefAnswers, totalPrice, selectedSuppliers } = useApp()
   const [tab, setTab] = useState('home')
   const [showDeals, setShowDeals] = useState(false)
   const dealsCount = DEALS.length

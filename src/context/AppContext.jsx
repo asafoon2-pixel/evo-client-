@@ -234,7 +234,7 @@ export function AppProvider({ children }) {
     authIntent, setAuthIntent,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,
-    eventPackage, buildPackage, buildPackageFromText,
+    eventPackage, setEventPackage, buildPackage, buildPackageFromText,
     userProfile, updateProfile,
     eventDetails, updateEventDetails,
     swapSheet, openSwapSheet, closeSwapSheet, swapVendor,

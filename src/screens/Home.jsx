@@ -150,6 +150,7 @@ export default function Home() {
         <motion.div {...f(0)} className="flex items-center justify-between mb-4">
           {/* Avatar + Language toggle + Cart */}
           <div className="flex items-center gap-2">
+            {currentUser ? (
             <button
               className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
               style={{ background: 'linear-gradient(135deg, #6B5FE4, #D4607A)' }}
@@ -157,6 +158,15 @@ export default function Home() {
             >
               {firstName?.[0]?.toUpperCase() ?? '?'}
             </button>
+          ) : (
+            <button
+              className="px-4 py-1.5 rounded-full text-xs font-semibold shrink-0"
+              style={{ background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }}
+              onClick={() => { setAuthIntent(null); navigate('authgate') }}
+            >
+              {lang === 'he' ? 'התחבר' : 'Login'}
+            </button>
+          )}
             <button
               className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
@@ -243,7 +253,7 @@ export default function Home() {
 
           {/* AI — full width hero */}
           <button
-            onClick={() => goAuth('brief', 'new')}
+            onClick={() => navigate('brief')}
             className="w-full flex items-center gap-4 p-5 card-hover"
             style={{
               background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
@@ -271,7 +281,7 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-3">
             {/* Single product */}
             <button
-              onClick={() => goAuth('categories', 'single')}
+              onClick={() => navigate('categories')}
               className="flex flex-col p-4 card-hover"
               style={{
                 background: 'linear-gradient(145deg, #EEF7F1 0%, #D6EFE2 100%)',
@@ -355,7 +365,7 @@ export default function Home() {
             {VENDOR_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
-                onClick={() => goAuth('categories', 'single')}
+                onClick={() => navigate('categories')}
                 className="relative rounded-2xl overflow-hidden card-hover"
                 style={{ height: 120 }}
               >

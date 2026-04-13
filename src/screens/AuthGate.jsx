@@ -137,7 +137,7 @@ export default function AuthGate() {
 
   // ── Main auth form ─────────────────────────────────────────────────────────
   return (
-    <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-hidden"
+    <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-y-auto"
       style={{ background: 'var(--background)' }}>
 
       {/* Ambient background */}
