@@ -4,10 +4,11 @@ import {
   Home, MessageCircle, Calendar, CreditCard, User,
   Bell, ChevronRight, Send, Plus, X, Check,
   CheckCircle2, Circle, MapPin, Users, Clock,
-  Camera, Edit2, Instagram, Sparkles, Percent, Tag,
+  Camera, Edit2, Instagram, Sparkles, Percent, Tag, ArrowLeft, Star,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { listenToClientLeads, listenToMessages, sendMessage } from '../lib/leadsService'
+import { submitReview } from '../lib/reviewsService'
 
 // ── utils ─────────────────────────────────────────────────────────────────────
 const fmt = n => `₪${Number(n).toLocaleString()}`
@@ -21,29 +22,25 @@ function daysUntil(dateStr) {
 }
 
 // ── HOME TAB ──────────────────────────────────────────────────────────────────
-const MOOD_IMAGES = [
-  'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80',
-]
-
-const INITIAL_SUGGESTIONS = [
-  { id: 1, icon: '📸', title: 'הוסף צלם', body: 'עדיין לא הזמנת צלם. תעד כל רגע.', cta: 'עיין בצלמים' },
-  { id: 2, icon: '🎂', title: 'שדרג את הקייטרינג', body: 'הוסף תחנת קינוחים או משקאות קבלת פנים לחוויה משודרגת.', cta: 'ראה שדרוגים' },
-  { id: 3, icon: '📋', title: 'קבע ספירת אורחים סופית', body: 'הספקים שלך צריכים מספר מאושר 3 שבועות לפני האירוע.', cta: 'עדכן מספר' },
-  { id: 4, icon: '🎨', title: 'שתף לוח השראה', body: 'עזור לספקים להבין את החזון שלך. העלה הפניות ותמונות.', cta: 'הוסף תמונות' },
-]
-
-function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) {
-  const [dismissed, setDismissed] = useState([])
-  const suggestions = INITIAL_SUGGESTIONS.filter(s => !dismissed.includes(s.id))
+function HomeTab({ eventName, eventDate, days, guests, leads, navigate }) {
+  const realTotal = leads.reduce((sum, l) => sum + (l.order_total || 0), 0)
+  const vendorImages = leads.map(l => l.heroImage).filter(Boolean)
 
   return (
     <div className="flex flex-col pb-4">
 
+      {/* Back button */}
+      <div className="px-6 pt-5">
+        <button onClick={() => navigate('myEvents')}
+          className="flex items-center gap-2 text-sm mb-4"
+          style={{ color: 'var(--text-muted)' }}>
+          <ArrowLeft size={16} style={{ transform: 'scaleX(-1)' }} />
+          חזרה לדף הבית
+        </button>
+      </div>
+
       {/* Event header */}
-      <div className="px-6 pt-8 pb-6">
+      <div className="px-6 pb-6">
         <p className="text-[10px] font-semibold tracking-[0.25em] uppercase mb-2" style={{ color: 'var(--primary)' }}>
           האירוע שלך
         </p>
@@ -51,86 +48,96 @@ function HomeTab({ eventName, eventDate, days, guests, totalPrice, heroImage }) 
           {eventName}
         </h1>
         <div className="flex flex-wrap gap-2">
-          {eventDate && (
-            <Chip icon={<Calendar size={11} />} label={eventDate} color="#2D1B69" />
-          )}
-          {days !== null && (
-            <Chip icon={<Clock size={11} />} label={days > 0 ? `עוד ${days} ימים` : 'היום!'} color="#ec4899" />
-          )}
-          {guests && (
-            <Chip icon={<Users size={11} />} label={`${guests} אורחים`} color="#1A6940" />
-          )}
-          {totalPrice > 0 && (
-            <Chip icon={<CreditCard size={11} />} label={fmt(totalPrice)} color="#6B4A1A" />
-          )}
+          {eventDate && <Chip icon={<Calendar size={11} />} label={eventDate} color="#2D1B69" />}
+          {days !== null && <Chip icon={<Clock size={11} />} label={days > 0 ? `עוד ${days} ימים` : 'היום!'} color="#ec4899" />}
+          {guests && <Chip icon={<Users size={11} />} label={`${guests} אורחים`} color="#1A6940" />}
+          {realTotal > 0 && <Chip icon={<CreditCard size={11} />} label={fmt(realTotal)} color="#6B4A1A" />}
         </div>
       </div>
 
-      {/* Mood gallery */}
+      {/* Suppliers gallery — real images from leads */}
       <div className="px-6 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--text-dim)' }}>
-            אווירת האירוע
-          </p>
-          <button className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: 'var(--primary)' }}>
-            <Plus size={11} /> הוסף תמונות
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {MOOD_IMAGES.map((img, i) => (
-            <div key={i} className="relative overflow-hidden rounded-2xl"
-              style={{ aspectRatio: i === 0 ? '16/10' : '1', gridColumn: i === 0 ? 'span 2' : 'span 1' }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.08)' }} />
-            </div>
-          ))}
-          <div className="rounded-2xl flex items-center justify-center"
-            style={{ aspectRatio: '1', background: 'var(--surface)', border: '1.5px dashed var(--border)' }}>
-            <div className="flex flex-col items-center gap-1">
-              <Camera size={20} style={{ color: 'var(--text-dim)' }} />
-              <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>הוסף תמונה</p>
-            </div>
+        <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
+          הספקים שלי
+        </p>
+        {leads.length === 0 ? (
+          <div className="rounded-2xl py-10 text-center"
+            style={{ background: 'var(--surface)', border: '1.5px dashed var(--border)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>עדיין לא הוספת ספקים לאירוע</p>
+            <button onClick={() => navigate('categories')}
+              className="mt-3 text-xs font-semibold px-4 py-2 rounded-full"
+              style={{ background: 'var(--primary)', color: '#fff' }}>
+              חפש ספקים
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            {leads.map((lead, i) => (
+              <div key={lead.id} className="relative overflow-hidden rounded-2xl"
+                style={{ aspectRatio: i === 0 && leads.length > 1 ? '16/10' : '1', gridColumn: i === 0 && leads.length > 1 ? 'span 2' : 'span 1' }}>
+                {lead.heroImage ? (
+                  <img src={lead.heroImage} alt={lead.vendor_name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center"
+                    style={{ background: 'rgba(107,95,228,0.1)' }}>
+                    <span className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
+                      {lead.vendor_name?.[0]?.toUpperCase() || '?'}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.25)' }} />
+                <div className="absolute bottom-2 right-2 left-2">
+                  <p className="text-white text-xs font-semibold truncate">{lead.vendor_name}</p>
+                  <p className="text-white/70 text-[10px]">{lead.category}</p>
+                </div>
+                <div className="absolute top-2 left-2">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    style={{
+                      background: lead.status === 'booked' ? 'rgba(74,158,114,0.85)' : 'rgba(245,158,11,0.85)',
+                      color: '#fff',
+                    }}>
+                    {lead.status === 'booked' ? 'מאושר' : 'ממתין'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Smart suggestions */}
-      {suggestions.length > 0 && (
-        <div className="px-6">
+      {/* Order items per supplier */}
+      {leads.some(l => l.order_items?.length > 0) && (
+        <div className="px-6 mb-6">
           <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-            הצעות
+            פירוט הזמנות
           </p>
-          <div className="space-y-3">
-            <AnimatePresence>
-              {suggestions.map(s => (
-                <motion.div key={s.id}
-                  initial={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="overflow-hidden"
-                >
-                  <div className="rounded-2xl px-4 py-4"
-                    style={{
-                      background: 'rgba(107,95,228,0.06)',
-                      border: '1px solid rgba(107,95,228,0.15)',
-                      borderRadius: 16,
-                    }}>
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => setDismissed(d => [...d, s.id])}
-                        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all"
-                        style={{ background: 'rgba(107,95,228,0.08)', color: 'var(--text-dim)' }}>
-                        <ChevronRight size={14} style={{ color: 'var(--primary)' }} />
-                      </button>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>{s.title}</p>
-                        <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{s.body}</p>
-                      </div>
-                      <span className="text-xl shrink-0">{s.icon}</span>
+          <div className="space-y-2">
+            {leads.filter(l => l.order_items?.length > 0).map(lead => (
+              <div key={lead.id} className="rounded-2xl overflow-hidden"
+                style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b"
+                  style={{ borderColor: 'var(--border)' }}>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{lead.vendor_name}</p>
+                  <p className="text-sm font-bold" style={{ color: 'var(--primary)' }}>
+                    {fmt(lead.order_total || lead.order_items.reduce((s, i) => s + (i.price||0)*(i.quantity||1), 0))}
+                  </p>
+                </div>
+                {lead.order_items.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between px-4 py-2.5">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full shrink-0"
+                        style={{ background: 'rgba(107,95,228,0.1)', color: 'var(--primary)' }}>
+                        {item.type === 'package' ? 'חבילה' : 'מוצר'}
+                      </span>
+                      <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{item.item_name}</p>
                     </div>
+                    <p className="text-xs font-semibold shrink-0 ml-2" style={{ color: 'var(--text-muted)' }}>
+                      {item.quantity > 1 ? `x${item.quantity} · ` : ''}{fmt((item.price||0)*(item.quantity||1))}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -238,10 +245,68 @@ function ChatThread({ lead, currentUser, onBack }) {
   )
 }
 
+function StarRating({ value, onChange }) {
+  return (
+    <div className="flex gap-1">
+      {[1,2,3,4,5].map(s => (
+        <button key={s} onClick={() => onChange(s)}>
+          <Star size={22} style={{ color: '#C8A96E', fill: s <= value ? '#C8A96E' : 'none', transition: 'fill 0.1s' }} />
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function ReviewModal({ lead, currentUser, onClose }) {
+  const [rating, setRating] = useState(0)
+  const [text, setText] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const submit = async () => {
+    if (!rating || saving) return
+    setSaving(true)
+    try {
+      await submitReview(lead.vendor_id, lead.id, currentUser.uid, currentUser.displayName || 'לקוח', rating, text)
+      onClose()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+      <div className="w-full max-w-md rounded-t-3xl p-6 pb-10" style={{ background: 'var(--surface)' }} onClick={e => e.stopPropagation()}>
+        <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }} />
+        <p className="text-base font-semibold mb-1 text-right" style={{ color: 'var(--text-primary)' }}>דרג את {lead.vendor_name}</p>
+        <p className="text-xs mb-5 text-right" style={{ color: 'var(--text-muted)' }}>כיצד היה השירות?</p>
+        <div className="flex justify-center mb-4">
+          <StarRating value={rating} onChange={setRating} />
+        </div>
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="שתף/י את החוויה שלך (אופציונלי)..."
+          rows={3}
+          className="w-full rounded-xl px-4 py-3 text-sm focus:outline-none mb-4"
+          style={{ background: 'var(--elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)', resize: 'none', direction: 'rtl' }}
+        />
+        <button onClick={submit} disabled={!rating || saving}
+          className="w-full py-3.5 rounded-full text-sm font-semibold text-white disabled:opacity-40"
+          style={{ background: 'var(--primary)' }}>
+          {saving ? 'שולח...' : 'שלח ביקורת'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function ChatTab() {
-  const { currentUser } = useApp()
+  const { currentUser, navigate, setCurrentCategory } = useApp()
   const [leads, setLeads] = useState([])
   const [activeLead, setActiveLead] = useState(null)
+  const [reviewLead, setReviewLead] = useState(null)
 
   useEffect(() => {
     if (!currentUser) return
@@ -255,6 +320,7 @@ function ChatTab() {
 
   return (
     <div className="px-6 pt-8 pb-4">
+      {reviewLead && <ReviewModal lead={reviewLead} currentUser={currentUser} onClose={() => setReviewLead(null)} />}
       <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>שיחות</h2>
       <p className="text-sm font-light mb-6" style={{ color: 'var(--text-muted)' }}>השיחות שלך עם ספקים</p>
 
@@ -275,27 +341,52 @@ function ChatTab() {
 
       <div className="space-y-2">
         {leads.map((lead, i) => (
-          <motion.button key={lead.id} whileTap={{ scale: 0.99 }} onClick={() => setActiveLead(lead)}
-            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-right"
-            style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
-            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0"
-              style={{ background: CHAT_COLORS[i % CHAT_COLORS.length] + '18', color: CHAT_COLORS[i % CHAT_COLORS.length] }}>
-              {lead.vendor_name?.[0]?.toUpperCase() || '?'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{lead.vendor_name}</p>
-              <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
-                {lead.last_message || (lead.status === 'new' ? 'פנייה נשלחה — ממתין לתגובה' : lead.status)}
-              </p>
-            </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-full shrink-0"
-              style={{
-                background: lead.status === 'booked' ? 'rgba(74,158,114,0.12)' : lead.status === 'new' ? 'rgba(245,158,11,0.12)' : 'var(--elevated)',
-                color: lead.status === 'booked' ? '#4A9E72' : lead.status === 'new' ? '#d97706' : 'var(--text-dim)',
-              }}>
-              {lead.status === 'new' ? 'חדש' : lead.status === 'booked' ? 'מאושר' : lead.status}
-            </span>
-          </motion.button>
+          <div key={lead.id}>
+            <motion.button whileTap={{ scale: 0.99 }} onClick={() => setActiveLead(lead)}
+              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-right"
+              style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0"
+                style={{ background: CHAT_COLORS[i % CHAT_COLORS.length] + '18', color: CHAT_COLORS[i % CHAT_COLORS.length] }}>
+                {lead.vendor_name?.[0]?.toUpperCase() || '?'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{lead.vendor_name}</p>
+                <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                  {lead.last_message || (lead.status === 'new' ? 'פנייה נשלחה — ממתין לתגובה' : lead.status)}
+                </p>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-full shrink-0"
+                style={{
+                  background: lead.status === 'booked' ? 'rgba(74,158,114,0.12)' : lead.status === 'new' ? 'rgba(245,158,11,0.12)' : lead.status === 'declined' ? 'rgba(239,68,68,0.1)' : 'var(--elevated)',
+                  color: lead.status === 'booked' ? '#4A9E72' : lead.status === 'new' ? '#d97706' : lead.status === 'declined' ? '#EF4444' : 'var(--text-dim)',
+                }}>
+                {lead.status === 'new' ? 'ממתין' : lead.status === 'booked' ? 'מאושר' : lead.status === 'declined' ? 'נדחה' : lead.status}
+              </span>
+            </motion.button>
+            {lead.status === 'booked' && !lead.reviewed && (
+              <button onClick={() => setReviewLead(lead)}
+                className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-xl mt-1"
+                style={{ background: 'rgba(200,169,110,0.1)', color: '#C8A96E', border: '1px solid rgba(200,169,110,0.2)' }}>
+                <Star size={12} style={{ fill: '#C8A96E', color: '#C8A96E' }} />
+                דרג את {lead.vendor_name}
+              </button>
+            )}
+            {lead.status === 'declined' && (
+              <div className="mt-1 rounded-xl overflow-hidden"
+                style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)' }}>
+                {lead.decline_reason && (
+                  <p className="px-3 pt-2.5 pb-1 text-xs" style={{ color: '#EF4444' }}>
+                    סיבה: {lead.decline_reason}
+                  </p>
+                )}
+                <button onClick={() => { setCurrentCategory(lead.category?.toLowerCase()); navigate('supplierList') }}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold"
+                  style={{ color: 'var(--primary)' }}>
+                  מצא ספק חלופי ←
+                </button>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>
@@ -344,17 +435,32 @@ const VENDOR_STATUS_STYLE = {
   cancelled: { label: '❌ בוטל',   bg: 'rgba(239,68,68,0.1)',   color: '#dc2626' },
 }
 
+const TIMELINE_KEY = 'evo_timeline_items'
+
 function TimelineTab() {
-  const { selectedSuppliers, briefAnswers } = useApp()
-  const [items, setItems] = useState(() => buildTimelineItems(selectedSuppliers, briefAnswers?.date))
+  const { selectedSuppliers, briefAnswers, currentEventId } = useApp()
+  const storageKey = currentEventId ? `${TIMELINE_KEY}_${currentEventId}` : TIMELINE_KEY
+
+  const [items, setItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem(storageKey)
+      if (saved) return JSON.parse(saved)
+    } catch (_) {}
+    return buildTimelineItems(selectedSuppliers, briefAnswers?.date)
+  })
   const [adding, setAdding] = useState(false)
   const [newItem, setNewItem] = useState({ date: '', label: '', type: 'task' })
 
-  const toggle = (id) => setItems(prev => prev.map(i => i.id === id ? { ...i, done: !i.done } : i))
+  const persist = (next) => {
+    try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch (_) {}
+    return next
+  }
+
+  const toggle = (id) => setItems(prev => persist(prev.map(i => i.id === id ? { ...i, done: !i.done } : i)))
 
   const addItem = () => {
     if (!newItem.label.trim() || !newItem.date.trim()) return
-    setItems(prev => [...prev, { ...newItem, id: Date.now(), done: false }])
+    setItems(prev => persist([...prev, { ...newItem, id: Date.now(), done: false }]))
     setNewItem({ date: '', label: '', type: 'task' })
     setAdding(false)
   }
@@ -671,18 +777,41 @@ const NAV_TABS = [
   { id: 'chat',     label: 'צ׳אט',     Icon: MessageCircle },
   { id: 'timeline', label: 'ציר זמן',  Icon: Calendar },
   { id: 'payments', label: 'תשלומים',  Icon: CreditCard },
-  { id: 'profile',  label: 'פרופיל',   Icon: User },
 ]
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function EventDashboard() {
-  const { eventPackage, briefAnswers, totalPrice, selectedSuppliers } = useApp()
+  const { eventPackage, briefAnswers, totalPrice, selectedSuppliers, currentUser, navigate, generatedEvent } = useApp()
   const [tab, setTab] = useState('home')
   const [showDeals, setShowDeals] = useState(false)
+  const [leads, setLeads] = useState([])
   const dealsCount = DEALS.length
 
+  // Payment modal state
+  const [payLead, setPayLead] = useState(null)
+  const [payDone, setPayDone] = useState(new Set())
+  const [paySuccess, setPaySuccess] = useState(false)
+  const prevStatuses = useRef({})
+
+  useEffect(() => {
+    if (!currentUser) return
+    const unsub = listenToClientLeads(currentUser.uid, setLeads)
+    return unsub
+  }, [currentUser])
+
+  // Detect newly booked leads and show payment modal
+  useEffect(() => {
+    leads.forEach(lead => {
+      const prev = prevStatuses.current[lead.id]
+      if (lead.status === 'booked' && prev !== undefined && prev !== 'booked' && !payDone.has(lead.id)) {
+        setPayLead(lead)
+      }
+      prevStatuses.current[lead.id] = lead.status
+    })
+  }, [leads, payDone])
+
   const sections  = eventPackage?.sections || []
-  const eventName = eventPackage?.name || 'האירוע שלך'
+  const eventName = eventPackage?.name || generatedEvent?.name || 'האירוע שלי'
   const eventDate = briefAnswers?.date !== 'flexible' ? briefAnswers?.date : null
   const days      = eventDate ? daysUntil(eventDate) : null
   const guestMap  = { intimate: '20–40', medium: '50–100', large: '100–200', grand: '200+' }
@@ -733,14 +862,14 @@ export default function EventDashboard() {
             {tab === 'home' && (
               <HomeTab
                 eventName={eventName} eventDate={eventDate}
-                days={days} guests={guests} totalPrice={totalPrice || 43500}
-                heroImage={eventPackage?.heroImage}
+                days={days} guests={guests}
+                leads={leads} navigate={navigate}
               />
             )}
             {tab === 'chat'     && <ChatTab />}
             {tab === 'timeline' && <TimelineTab />}
             {tab === 'payments' && <PaymentsTab sections={sections} totalPrice={totalPrice || 43500} />}
-            {tab === 'profile'  && <ProfileTab />}
+
           </motion.div>
         </AnimatePresence>
       </div>
@@ -852,6 +981,123 @@ export default function EventDashboard() {
           })}
         </div>
       </div>
+
+      {/* Payment / deposit modal */}
+      <AnimatePresence>
+        {payLead && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-end justify-center"
+            style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.55)' }}
+          >
+            <motion.div
+              dir="rtl"
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+              className="w-full max-w-md rounded-t-3xl overflow-hidden"
+              style={{ background: 'var(--background)', boxShadow: '0 -20px 60px rgba(0,0,0,0.25)' }}
+            >
+              {/* Handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 rounded-full" style={{ background: 'var(--border)' }} />
+              </div>
+
+              {/* Header */}
+              <div className="px-6 pt-4 pb-3" style={{ borderBottom: '1px solid var(--border)' }}>
+                <p className="text-lg font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>
+                  ✅ {payLead.vendor_name} אישר את ההזמנה!
+                </p>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+                  כדי לאשר את ההזמנה, שלם מקדמה של 20%
+                </p>
+              </div>
+
+              {/* Order items */}
+              {payLead.order_items?.length > 0 && (
+                <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-dim)' }}>
+                    פירוט הזמנה
+                  </p>
+                  <div className="space-y-2">
+                    {payLead.order_items.map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
+                            style={{ background: 'rgba(107,95,228,0.1)', color: 'var(--primary)' }}>
+                            {item.type === 'package' ? 'חבילה' : 'מוצר'}
+                          </span>
+                          <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{item.item_name}</p>
+                        </div>
+                        <p className="text-sm font-semibold shrink-0 mr-2" style={{ color: 'var(--text-muted)' }}>
+                          {item.quantity > 1 ? `x${item.quantity} · ` : ''}{fmt((item.price || 0) * (item.quantity || 1))}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Total + deposit */}
+              <div className="px-6 py-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>סה״כ הזמנה</p>
+                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{fmt(payLead.order_total || 0)}</p>
+                </div>
+                <div className="flex items-center justify-between px-4 py-3 rounded-2xl"
+                  style={{ background: 'rgba(107,95,228,0.1)', border: '1.5px solid rgba(107,95,228,0.25)' }}>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>מקדמה (20%)</p>
+                  <p className="text-base font-bold" style={{ color: 'var(--primary)' }}>
+                    {fmt(Math.round((payLead.order_total || 0) * 0.2))}
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="px-6 pb-10 pt-2 space-y-3">
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    setPayDone(prev => new Set([...prev, payLead.id]))
+                    setPayLead(null)
+                    setPaySuccess(true)
+                    setTimeout(() => setPaySuccess(false), 2000)
+                  }}
+                  className="w-full py-4 rounded-full text-base font-bold"
+                  style={{ background: 'var(--primary)', color: '#fff', boxShadow: '0 6px 20px rgba(107,95,228,0.4)' }}
+                >
+                  שלם מקדמה — {fmt(Math.round((payLead.order_total || 0) * 0.2))}
+                </motion.button>
+                <button
+                  onClick={() => setPayLead(null)}
+                  className="w-full text-sm py-2"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  אחר כך
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Payment success toast */}
+      <AnimatePresence>
+        {paySuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[110] px-5 py-3 rounded-full text-sm font-semibold"
+            style={{ background: '#16a34a', color: '#fff', boxShadow: '0 4px 20px rgba(22,163,74,0.4)', whiteSpace: 'nowrap' }}
+          >
+            ✓ מקדמה שולמה בהצלחה!
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   )
