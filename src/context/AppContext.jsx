@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { eventPackages } from '../data/index'
 import { onAuthChange, logout } from '../lib/authService'
 import { getUser } from '../lib/usersService'
 import { createEvent } from '../lib/eventsService'
+import { createLead } from '../lib/leadsService'
 
 const AppContext = createContext(null)
 
@@ -33,16 +33,6 @@ function detectVibeFromText(text) {
   return top[1] > 0 ? top[0] : 'curated'
 }
 
-function applyBudgetMultiplier(pkg, multiplier) {
-  if (multiplier === 1) return pkg
-  return {
-    ...pkg,
-    sections: pkg.sections.map(s => ({
-      ...s,
-      vendor: { ...s.vendor, price: Math.round(s.vendor.price * multiplier) },
-    })),
-  }
-}
 
 export function AppProvider({ children }) {
   const [currentScreen, setCurrentScreen]     = useState('home')
@@ -78,6 +68,8 @@ export function AppProvider({ children }) {
   const [generatedEvent, setGeneratedEvent]   = useState({ name: 'Your Curated Evening' })
   const [userProfile, setUserProfile]         = useState({ fullName: '', phone: '', preferredContact: 'whatsapp', email: '', instagramHandle: '', preferredLanguage: 'en' })
   const [eventDetails, setEventDetails]       = useState({ title: '', city: '', venueName: '', fullAddress: '', floor: '', entranceNotes: '', parkingAvailable: null, parkingNotes: '', specialRequests: '', isPrivate: false })
+  const [cart, setCart]                       = useState([])
+  const [chatLead, setChatLead]               = useState(null)
 
   const navigate = useCallback((screen) => setCurrentScreen(screen), [])
 
@@ -109,37 +101,15 @@ export function AppProvider({ children }) {
     setEventDetails(prev => ({ ...prev, [key]: value }))
   }, [])
 
+  // buildPackage / buildPackageFromText just mark intent — Building.jsx
+  // fetches real vendors from Firestore and calls setEventPackage with real data.
   const buildPackage = useCallback((results, answers) => {
-    const vibe = detectVibe(results || swipeResults)
-    const base = eventPackages[vibe] || eventPackages.curated
-    const tier = (answers || briefAnswers)?.budgetTier
-    const multiplier = tier === 'essential' ? 0.65 : tier === 'signature' ? 1.5 : 1.0
-    const pkg = applyBudgetMultiplier(base, multiplier)
-    const withTracking = {
-      ...pkg,
-      sections: pkg.sections.map(s => ({ ...s, currentVendorId: s.vendor.id })),
-    }
-    setEventPackage(withTracking)
-    return withTracking
-  }, [swipeResults, briefAnswers])
+    setEventPackage({ name: 'האירוע המיוחד שלך', sections: [] })
+  }, [])
 
   const buildPackageFromText = useCallback((text, answers) => {
-    const resolvedAnswers = answers || briefAnswers
-    const vibe = detectVibeFromText(text || '')
-    const base = eventPackages[vibe] || eventPackages.curated
-    const tier = resolvedAnswers?.budgetTier
-    const multiplier = tier === 'essential' ? 0.65 : tier === 'signature' ? 1.5 : 1.0
-    const pkg = applyBudgetMultiplier(base, multiplier)
-    const sections = resolvedAnswers?.hasVenue === true
-      ? pkg.sections.filter(s => s.id !== 'venue')
-      : pkg.sections
-    const withTracking = {
-      ...pkg,
-      sections: sections.map(s => ({ ...s, currentVendorId: s.vendor.id })),
-    }
-    setEventPackage(withTracking)
-    return withTracking
-  }, [briefAnswers])
+    setEventPackage({ name: 'האירוע המיוחד שלך', sections: [] })
+  }, [])
 
   const swapVendor = useCallback((sectionId, alternative) => {
     setEventPackage(prev => {
@@ -174,10 +144,33 @@ export function AppProvider({ children }) {
   const openSwapSheet  = useCallback((sectionId) => setSwapSheet({ open: true, sectionId }), [])
   const closeSwapSheet = useCallback(() => setSwapSheet({ open: false, sectionId: null }), [])
 
+  const addToCart = useCallback((supplierId, supplierName, type, item) => {
+    setCart(prev => {
+      const cartId = `${supplierId}_${type}_${item.id}`
+      const existing = prev.find(c => c.cartId === cartId)
+      if (existing) return prev.map(c => c.cartId === cartId ? { ...c, quantity: c.quantity + 1 } : c)
+      return [...prev, { cartId, supplierId, supplierName, type, item, quantity: 1 }]
+    })
+  }, [])
+
+  const removeFromCart = useCallback((cartId) => {
+    setCart(prev => prev.filter(c => c.cartId !== cartId))
+  }, [])
+
+  const updateCartQty = useCallback((cartId, qty) => {
+    if (qty <= 0) setCart(prev => prev.filter(c => c.cartId !== cartId))
+    else setCart(prev => prev.map(c => c.cartId === cartId ? { ...c, quantity: qty } : c))
+  }, [])
+
+  const clearCart = useCallback(() => setCart([]), [])
+
   const totalPrice = eventPackage
     ? eventPackage.sections.reduce((sum, s) => sum + (s.vendor.price || 0), 0)
     : 0
   const depositAmount = Math.round(totalPrice * 0.2)
+
+  const cartCount = cart.reduce((sum, c) => sum + c.quantity, 0)
+  const cartTotal = cart.reduce((sum, c) => sum + (c.item.price || 0) * c.quantity, 0)
 
   const totalBudget = Object.values(selectedSuppliers).reduce(
     (sum, s) => sum + (s.selectedPackage?.price || s.basePrice || 0),
@@ -190,33 +183,87 @@ export function AppProvider({ children }) {
     const guestMap = { intimate: 30, medium: 75, grand: 150 }
     try {
       const eventId = await createEvent(currentUser.uid, {
-        title:             generatedEvent?.name || 'האירוע שלי',
-        type:              briefAnswers.eventType              || '',
-        date:              briefAnswers.date !== 'flexible' ? briefAnswers.date : '',
-        start_time:        briefAnswers.startTime              || '',
-        end_time:          briefAnswers.endTime                || '',
-        indoor_outdoor:    briefAnswers.indoorOutdoor          || '',
-        guest_count:       guestMap[briefAnswers.scale]        || null,
-        budget_range:      briefAnswers.budgetTier             || '',
-        budget_exact:      totalPrice                          || 0,
-        venue_name:        eventDetails.venueName              || '',
-        full_address:      eventDetails.fullAddress            || '',
-        city:              eventDetails.city                   || '',
-        floor:             eventDetails.floor                  || '',
-        entrance_notes:    eventDetails.entranceNotes          || '',
-        parking_available: eventDetails.parkingAvailable       || false,
-        parking_notes:     eventDetails.parkingNotes           || '',
-        special_requests:  eventDetails.specialRequests        || '',
-        is_private:        eventDetails.isPrivate              || false,
-        status:            'active',
+        title:              generatedEvent?.name || 'האירוע שלי',
+        type:               briefAnswers.eventType              || '',
+        date:               briefAnswers.date !== 'flexible' ? briefAnswers.date : '',
+        start_time:         briefAnswers.startTime              || '',
+        end_time:           briefAnswers.endTime                || '',
+        indoor_outdoor:     briefAnswers.indoorOutdoor          || '',
+        guest_count:        guestMap[briefAnswers.scale]        || null,
+        budget_range:       briefAnswers.budgetTier             || '',
+        budget_exact:       totalPrice                          || 0,
+        venue_name:         eventDetails.venueName              || '',
+        full_address:       eventDetails.fullAddress            || '',
+        city:               eventDetails.city                   || '',
+        floor:              eventDetails.floor                  || '',
+        entrance_notes:     eventDetails.entranceNotes          || '',
+        parking_available:  eventDetails.parkingAvailable       || false,
+        parking_notes:      eventDetails.parkingNotes           || '',
+        special_requests:   eventDetails.specialRequests        || '',
+        is_private:         eventDetails.isPrivate              || false,
+        selected_suppliers: selectedSuppliers,
+        status:             'active',
       })
       setCurrentEventId(eventId)
+
+      // Create a lead for each selected supplier
+      const leadPromises = Object.values(selectedSuppliers).map(vendor =>
+        createLead(currentUser, vendor, briefAnswers, vendor.selectedPackage || null, cart)
+          .catch(err => console.error('createLead failed for', vendor.id, err))
+      )
+      await Promise.all(leadPromises)
+
       return eventId
     } catch (e) {
       console.error('createEventInDb failed:', e)
       return null
     }
-  }, [currentUser, briefAnswers, eventDetails, generatedEvent, totalPrice])
+  }, [currentUser, briefAnswers, eventDetails, generatedEvent, totalPrice, selectedSuppliers, cart])
+
+  // Reset all event state so the user can start a fresh event
+  const resetForNewEvent = useCallback(() => {
+    setSwipeResults([])
+    setBriefAnswers({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null, hasVenue: null })
+    setEventPackage(null)
+    setSelectedSuppliers({})
+    setCurrentEventId(null)
+    setGeneratedEvent({ name: 'Your Curated Evening' })
+    setEventDetails({ title: '', city: '', venueName: '', fullAddress: '', floor: '', entranceNotes: '', parkingAvailable: null, parkingNotes: '', specialRequests: '', isPrivate: false })
+    setCart([])
+  }, [])
+
+  // Load a saved Firestore event into app state and open the dashboard
+  const loadEvent = useCallback((event) => {
+    const guestScaleMap = { 30: 'intimate', 75: 'medium', 150: 'grand' }
+    setBriefAnswers({
+      eventType:     event.type            || null,
+      scale:         guestScaleMap[event.guest_count] || null,
+      date:          event.date            || null,
+      budgetTier:    event.budget_range    || null,
+      startTime:     event.start_time      || '19:00',
+      endTime:       event.end_time        || '23:00',
+      indoorOutdoor: event.indoor_outdoor  || null,
+      hasVenue:      event.venue_name ? true : null,
+    })
+    setEventDetails({
+      title:            event.title            || '',
+      city:             event.city             || '',
+      venueName:        event.venue_name       || '',
+      fullAddress:      event.full_address     || '',
+      floor:            event.floor            || '',
+      entranceNotes:    event.entrance_notes   || '',
+      parkingAvailable: event.parking_available || null,
+      parkingNotes:     event.parking_notes    || '',
+      specialRequests:  event.special_requests || '',
+      isPrivate:        event.is_private       || false,
+    })
+    if (event.selected_suppliers && typeof event.selected_suppliers === 'object') {
+      setSelectedSuppliers(event.selected_suppliers)
+    }
+    setGeneratedEvent({ name: event.title || 'האירוע שלי' })
+    setCurrentEventId(event.id)
+    navigate('dashboard')
+  }, [navigate])
 
   const signOut = useCallback(async () => {
     await logout()
@@ -230,7 +277,7 @@ export function AppProvider({ children }) {
     currentScreen, navigate,
     currentUser, authLoading, signOut,
     firestoreUser, setFirestoreUser,
-    currentEventId, createEventInDb,
+    currentEventId, createEventInDb, resetForNewEvent, loadEvent,
     authIntent, setAuthIntent,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,
@@ -245,6 +292,8 @@ export function AppProvider({ children }) {
     selectedSuppliers, selectSupplier, removeSupplier,
     generatedEvent, setGeneratedEvent,
     totalBudget,
+    cart, addToCart, removeFromCart, updateCartQty, clearCart, cartCount, cartTotal,
+    chatLead, setChatLead,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
