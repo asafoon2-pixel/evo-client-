@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { DiscoBall, Cocktail, Speaker, Confetti, Microphone, StarIcon } from './EvoEventIcons'
+import EvoLogo from './EvoLogo'
 
 const ICONS = [
   { Component: DiscoBall,   x: '12%', y: '20%', delay: 0.1, float: 'a' },
@@ -30,7 +31,7 @@ export default function SplashScreen({ onDone }) {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           style={{
             position: 'fixed', inset: 0, zIndex: 9999,
-            background: '#F5F0E8',
+            background: 'linear-gradient(160deg, #1A0E4F 0%, #0E0635 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
@@ -57,11 +58,8 @@ export default function SplashScreen({ onDone }) {
             transition={{ delay: 0.1, duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
             className="text-center select-none"
           >
-            <div className="animate-evo-jump" style={{
-              fontSize: 80, fontWeight: 800, letterSpacing: '0.18em',
-              color: '#2C2016', fontFamily: "'Poppins', 'Heebo', sans-serif", lineHeight: 1,
-            }}>
-              EVO
+            <div className="animate-evo-jump flex justify-center">
+              <EvoLogo height={56} />
             </div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -69,7 +67,7 @@ export default function SplashScreen({ onDone }) {
               transition={{ delay: 0.5, duration: 0.5 }}
               style={{
                 fontSize: 11, fontWeight: 500, letterSpacing: '0.28em',
-                color: 'rgba(44,32,22,0.4)', marginTop: 10, textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.4)', marginTop: 10, textTransform: 'uppercase',
               }}
             >
               Your Event. Produced.

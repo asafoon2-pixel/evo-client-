@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Clock, Loader, Send, ChevronRight, Bell } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import EvoLogo from '../components/EvoLogo'
 
 const DAYS_TO_EVENT = 47
 
@@ -31,17 +32,17 @@ const chatMessages = [
 ]
 
 const STATUS_CONFIG = {
-  confirmed:   { icon: Check,   color: 'text-green-400',    bg: 'bg-green-400/10 border-green-400/30' },
-  'in-progress': { icon: Loader, color: 'text-evo-accent animate-spin', bg: 'bg-evo-accent/10 border-evo-accent/30' },
-  pending:     { icon: Clock,   color: 'text-evo-muted',    bg: 'bg-evo-elevated border-evo-border' },
+  confirmed:   { icon: Check,   colorStyle: { color: '#22c55e' },               bgStyle: { background: 'rgba(34,197,94,0.1)',          border: '1px solid rgba(34,197,94,0.3)' } },
+  'in-progress': { icon: Loader, colorStyle: { color: 'var(--primary)' },        bgStyle: { background: 'rgba(107,95,228,0.1)',         border: '1px solid rgba(107,95,228,0.3)' }, spin: true },
+  pending:     { icon: Clock,   colorStyle: { color: 'var(--text-muted)' },      bgStyle: { background: 'var(--elevated)',              border: '1px solid var(--border)' } },
 }
 
 function StatusDot({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending
   const Icon = cfg.icon
   return (
-    <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${cfg.bg}`}>
-      <Icon size={11} className={cfg.color} />
+    <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={cfg.bgStyle}>
+      <Icon size={11} style={cfg.colorStyle} className={cfg.spin ? 'animate-spin' : ''} />
     </div>
   )
 }
@@ -83,7 +84,7 @@ export default function EventManagement() {
       <div className="px-6 pt-12 pb-4 shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: 'var(--primary)' }}>EVO</span>
+            <EvoLogo height={18} variant="light" />
             <h1 className="text-lg font-light mt-0.5 leading-tight" style={{ color: 'var(--text-primary)' }}>
               {eventPackage?.name || 'האירוע שלך'}
             </h1>
@@ -116,13 +117,13 @@ export default function EventManagement() {
                     initial={{ opacity: 0, scale: 0.92 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.06, duration: 0.35, ease: [0.22,1,0.36,1] }}
-                    className="relative aspect-square rounded-xl overflow-hidden bg-evo-card"
+                    className="relative aspect-square rounded-xl overflow-hidden" style={{ background: 'var(--card)' }}
                   >
                     <img src={section.image} alt={section.vendor.name}
                       className={`w-full h-full object-cover transition-all ${isConfirmed ? 'opacity-90' : 'opacity-25 blur-[2px]'}`} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center gap-1">
-                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isConfirmed ? 'bg-green-400' : 'bg-evo-accent'}`} />
+                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: isConfirmed ? '#22c55e' : 'var(--primary)' }} />
                       <span className="text-white text-[9px] font-medium leading-tight truncate">
                         {section.vendor.name.split(' ')[0]}
                       </span>
@@ -138,8 +139,9 @@ export default function EventManagement() {
                 )
               }
               return (
-                <div key={i} className="relative aspect-square rounded-xl bg-evo-card border border-dashed border-evo-border/50 flex items-center justify-center">
-                  <span className="text-evo-border text-xl font-light">+</span>
+                <div key={i} className="relative aspect-square rounded-xl flex items-center justify-center"
+                  style={{ background: 'var(--card)', border: '1px dashed var(--border)' }}>
+                  <span className="text-xl font-light" style={{ color: 'var(--border)' }}>+</span>
                 </div>
               )
             })}
@@ -232,7 +234,7 @@ export default function EventManagement() {
               className="px-6 py-5"
             >
               <div className="relative">
-                <div className="absolute left-3.5 top-4 bottom-4 w-px bg-evo-border" />
+                <div className="absolute left-3.5 top-4 bottom-4 w-px" style={{ background: 'var(--border)' }} />
                 <div className="space-y-6">
                   {timelineMilestones.map((m, i) => (
                     <motion.div key={i}
@@ -240,15 +242,16 @@ export default function EventManagement() {
                       transition={{ delay: i * 0.07 }}
                       className="relative flex gap-5"
                     >
-                      <div className={`relative z-10 w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
-                        m.status === 'completed'   ? 'border-green-400 bg-green-400/10' :
-                        m.status === 'in-progress' ? 'border-evo-accent bg-evo-accent/10' :
-                        'border-evo-border bg-evo-black'
-                      }`}>
-                        {m.status === 'completed'   && <Check size={12} className="text-green-400" />}
-                        {m.status === 'in-progress' && <div className="w-2 h-2 rounded-full bg-evo-accent" />}
+                      <div className="relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                        style={
+                          m.status === 'completed'   ? { border: '2px solid #22c55e',          background: 'rgba(34,197,94,0.1)' } :
+                          m.status === 'in-progress' ? { border: '2px solid var(--primary)',    background: 'rgba(107,95,228,0.1)' } :
+                                                       { border: '2px solid var(--border)',     background: 'var(--surface)' }
+                        }>
+                        {m.status === 'completed'   && <Check size={12} style={{ color: '#22c55e' }} />}
+                        {m.status === 'in-progress' && <div className="w-2 h-2 rounded-full" style={{ background: 'var(--primary)' }} />}
                         {(m.status === 'pending' || m.status === 'future') && (
-                          <div className={`w-2 h-2 rounded-full ${m.status === 'pending' ? 'bg-evo-muted' : 'bg-evo-dim'}`} />
+                          <div className="w-2 h-2 rounded-full" style={{ background: m.status === 'pending' ? 'var(--text-muted)' : 'var(--text-dim)' }} />
                         )}
                       </div>
                       <div className="flex-1 pb-2">
@@ -280,20 +283,21 @@ export default function EventManagement() {
                 {[...messages].reverse().map((msg) => (
                   <div key={msg.id} className={`flex gap-3 ${msg.from === 'user' ? 'flex-row-reverse' : ''}`}>
                     {msg.from === 'evo' && (
-                      <div className="w-7 h-7 rounded-full bg-evo-accent/10 border border-evo-accent/30 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-evo-accent text-xs font-medium">E</span>
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ background: 'rgba(107,95,228,0.1)', border: '1px solid rgba(107,95,228,0.3)' }}>
+                        <span className="text-xs font-medium" style={{ color: 'var(--primary)' }}>E</span>
                       </div>
                     )}
                     <motion.div
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                      className={`max-w-[75%] rounded-2xl px-4 py-3 ${
-                        msg.from === 'user'
-                          ? 'bg-evo-accent text-white'
-                          : 'bg-evo-card border border-evo-border text-evo-text'
-                      }`}
+                      className="max-w-[75%] rounded-2xl px-4 py-3"
+                      style={msg.from === 'user'
+                        ? { background: 'var(--primary)', color: '#fff' }
+                        : { background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }
+                      }
                     >
                       <p className="text-sm leading-relaxed font-light">{msg.text}</p>
-                      <p className={`text-xs mt-1.5 ${msg.from === 'user' ? 'text-white/50' : 'text-evo-dim'}`}>{msg.time}</p>
+                      <p className="text-xs mt-1.5" style={{ color: msg.from === 'user' ? 'rgba(255,255,255,0.5)' : 'var(--text-dim)' }}>{msg.time}</p>
                     </motion.div>
                   </div>
                 ))}

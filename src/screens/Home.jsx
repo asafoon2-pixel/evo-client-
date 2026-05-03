@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2, ShoppingBag, ShoppingCart } from 'lucide-react'
+import { Bell, Search, Zap, CalendarDays, ChevronLeft, ChevronRight, Music, Camera, Utensils, Flower2, ShoppingBag, ShoppingCart, CreditCard, Home as HomeIcon, MessageCircle, User, Bot, MapPin } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useLanguage, LanguageToggle } from '../context/LanguageContext'
+import { listenToClientLeads } from '../lib/leadsService'
+import EvoLogo from '../components/EvoLogo'
 
 const f = (delay = 0, y = 16) => ({
   initial: { opacity: 0, y },
@@ -67,8 +69,8 @@ const VENDOR_CATEGORIES = [
 const HOW_STEPS = [
   {
     num: '01',
-    he: { title: 'ספר לנו', body: 'תאר את האירוע שלך ב-30 שניות' },
-    en: { title: 'Tell us', body: 'Describe your event in 30 seconds' },
+    he: { title: 'ספר לנו', body: 'תאר את האירוע שלך' },
+    en: { title: 'Tell us', body: 'Describe your event' },
     color: 'rgba(107,95,228,0.12)',
     textColor: '#6B5FE4',
   },
@@ -89,7 +91,7 @@ const HOW_STEPS = [
 ]
 
 export default function Home() {
-  const { navigate, currentUser, setAuthIntent, firestoreUser } = useApp()
+  const { navigate, currentUser, setAuthIntent, firestoreUser, resetForNewEvent } = useApp()
 
   // Navigate to destination — require auth if not logged in
   const goAuth = (dest, intent) => {
@@ -100,6 +102,7 @@ export default function Home() {
   const [activeCat, setActiveCat]       = useState(0)
   const [userEvents, setUserEvents]     = useState([])
   const [eventsLoading, setEventsLoading] = useState(false)
+  const [leads, setLeads] = useState([])
   const firstName = firestoreUser?.full_name?.split(' ')[0]
     || currentUser?.displayName?.split(' ')[0]
     || null
@@ -119,11 +122,27 @@ export default function Home() {
     return () => { cancelled = true }
   }, [currentUser])
 
+  useEffect(() => {
+    if (!currentUser) { setLeads([]); return }
+    const unsub = listenToClientLeads(currentUser.uid, setLeads)
+    return unsub
+  }, [currentUser])
+
+  const leadsCount = leads.length
+  const unreadChats = leads.filter(l => l.status === 'new').length
+
+  const NAV = [
+    { id: 'home',      label: 'בית',       Icon: HomeIcon,      action: () => {} },
+    { id: 'event',     label: 'האירועים שלי', Icon: CalendarDays,  action: () => currentUser ? navigate('myEvents') : (setAuthIntent('existing'), navigate('authgate')) },
+    { id: 'shop',      label: 'חנות',       Icon: ShoppingBag,   action: () => navigate('categories') },
+    { id: 'chat',      label: 'צ׳אט',      Icon: MessageCircle, action: () => currentUser ? navigate('chatscreen') : (setAuthIntent('existing'), navigate('authgate')), badge: unreadChats },
+    { id: 'profile',   label: 'פרופיל',    Icon: User,          action: () => currentUser ? navigate('userprofile') : (setAuthIntent(null), navigate('authgate')) },
+  ]
+
   return (
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="relative w-full min-h-screen" style={{ background: 'var(--background)' }}>
     <div
-      dir={isRTL ? 'rtl' : 'ltr'}
-      className="w-full min-h-screen overflow-y-auto overflow-x-hidden pb-24"
-      style={{ background: 'var(--background)' }}
+      className="w-full min-h-screen overflow-y-auto overflow-x-hidden pb-32"
     >
       {/* Subtle animated background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
@@ -154,7 +173,7 @@ export default function Home() {
             <button
               className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
               style={{ background: 'linear-gradient(135deg, #6B5FE4, #D4607A)' }}
-              onClick={() => navigate('userprofile')}
+              onClick={() => firstName ? navigate('userprofile') : (setAuthIntent(null), navigate('authgate'))}
             >
               {firstName?.[0]?.toUpperCase() ?? '?'}
             </button>
@@ -170,7 +189,7 @@ export default function Home() {
             <button
               className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
-              onClick={() => goAuth('dashboard', 'existing')}
+              onClick={() => goAuth('myEvents', 'existing')}
             >
               <ShoppingCart size={15} style={{ color: 'var(--primary)' }} />
             </button>
@@ -183,12 +202,7 @@ export default function Home() {
               <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{getGreeting(t)}</p>
               <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{firstName} 👋</p>
             </div>
-            <span
-              className="text-xl font-black tracking-[0.3em] shrink-0"
-              style={{ color: '#2C2016', fontFamily: "'Poppins', sans-serif" }}
-            >
-              EVO
-            </span>
+            <EvoLogo height={20} variant="light" />
             <button
               className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
@@ -271,10 +285,67 @@ export default function Home() {
                 {lang === 'he' ? 'בנה אירוע עם AI' : 'Build event with AI'}
               </p>
               <p className="text-xs mt-0.5 text-white/65">
-                {lang === 'he' ? '30 שניות ו-AI בונה לך הכל' : '30 seconds — AI builds everything'}
+                {lang === 'he' ? 'AI בונה לך את האירוע' : 'AI builds your event'}
               </p>
             </div>
             <span className="text-white/50 text-lg">{isRTL ? '←' : '→'}</span>
+          </button>
+
+          {/* EVO AI Chat */}
+          <button
+            onClick={() => navigate('aiChat')}
+            className="w-full flex items-center gap-4 p-4 card-hover"
+            style={{
+              background: 'linear-gradient(135deg, #3D2B7A 0%, #6B5FE4 100%)',
+              borderRadius: 22,
+              boxShadow: 'var(--shadow-accent)',
+              textAlign: isRTL ? 'right' : 'left',
+            }}
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: 'rgba(255,255,255,0.15)' }}
+            >
+              <Bot size={20} className="text-white" />
+            </div>
+            <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+              <p className="text-sm font-bold text-white leading-tight">
+                {lang === 'he' ? 'שוחח עם EVO AI' : 'Chat with EVO AI'}
+              </p>
+              <p className="text-xs mt-0.5 text-white/65">
+                {lang === 'he' ? 'עוזר אישי לתכנון האירוע שלך' : 'Your personal event planning assistant'}
+              </p>
+            </div>
+            <span className="text-white/50 text-lg">{isRTL ? '←' : '→'}</span>
+          </button>
+
+          {/* Map */}
+          <button
+            onClick={() => navigate('allSuppliersMap')}
+            className="w-full flex items-center gap-4 p-4 card-hover"
+            style={{
+              background: 'linear-gradient(135deg, #EEF7F1 0%, #D6EFE2 100%)',
+              borderRadius: 22,
+              border: '1.5px solid rgba(74,158,114,0.2)',
+              boxShadow: 'var(--shadow-card)',
+              textAlign: isRTL ? 'right' : 'left',
+            }}
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: 'rgba(74,158,114,0.15)' }}
+            >
+              <MapPin size={20} style={{ color: '#4A9E72' }} />
+            </div>
+            <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
+              <p className="text-sm font-bold leading-tight" style={{ color: '#2C5F3E' }}>
+                {lang === 'he' ? 'ספקים על המפה' : 'Suppliers on the Map'}
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,95,62,0.65)' }}>
+                {lang === 'he' ? 'מצא ספקים לפי מיקום' : 'Find suppliers by location'}
+              </p>
+            </div>
+            <span className="text-lg" style={{ color: 'rgba(74,158,114,0.5)' }}>{isRTL ? '←' : '→'}</span>
           </button>
 
           {/* Single product + My events */}
@@ -306,7 +377,7 @@ export default function Home() {
 
             {/* My events */}
             <button
-              onClick={() => goAuth('dashboard', 'existing')}
+              onClick={() => goAuth('myEvents', 'existing')}
               className="flex flex-col p-4 card-hover"
               style={{
                 background: 'var(--surface)',
@@ -451,59 +522,125 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── My Events ──────────────────────────────────────────────────── */}
+        {/* ── My Event Widget ─────────────────────────────────────────────── */}
         {currentUser && (
           <motion.div {...f(0.46)} className="pb-4">
             <p className="text-xs font-semibold tracking-[0.22em] uppercase mb-3"
               style={{ color: 'var(--text-muted)', textAlign: isRTL ? 'right' : 'left' }}>
-              {lang === 'he' ? 'האירועים שלי' : 'My events'}
+              {lang === 'he' ? 'האירוע שלי' : 'My event'}
             </p>
-            {eventsLoading ? (
-              <div className="space-y-2">
-                {[1,2].map(i => (
-                  <div key={i} className="h-16 rounded-2xl animate-pulse"
-                    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }} />
-                ))}
-              </div>
-            ) : userEvents.length === 0 ? (
-              <div className="py-8 text-center rounded-2xl"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                  {lang === 'he' ? 'עדיין אין אירועים — בוא נתחיל!' : 'No events yet — let\'s start!'}
+
+            {leads.length === 0 ? (
+              /* No active event */
+              <div className="rounded-2xl px-5 py-8 text-center"
+                style={{ background: 'var(--surface)', border: '1.5px dashed var(--border)' }}>
+                <p className="text-2xl mb-3">🎪</p>
+                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+                  {lang === 'he' ? 'אין אירוע פעיל' : 'No active event'}
                 </p>
+                <p className="text-xs leading-relaxed mb-4" style={{ color: 'var(--text-muted)' }}>
+                  {lang === 'he'
+                    ? 'ברגע שתקים אחד תוכל לראות פה את כל הספקים, ההזמנות והסטטוס'
+                    : 'Once you create one, you\'ll see all your vendors, orders and status here'}
+                </p>
+                <button onClick={() => { resetForNewEvent(); navigate('brief') }}
+                  className="text-xs font-semibold px-5 py-2.5 rounded-full"
+                  style={{ background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }}>
+                  {lang === 'he' ? 'התחל עכשיו' : 'Start now'}
+                </button>
               </div>
             ) : (
-              <div className="space-y-2">
-                {userEvents.map(ev => (
-                  <div key={ev.id}
-                    className="flex items-center gap-3 px-4 py-3 rounded-2xl"
-                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: 'rgba(107,95,228,0.1)' }}>
-                      <span style={{ fontSize: 18 }}>🎉</span>
-                    </div>
-                    <div className="flex-1 min-w-0" style={{ textAlign: isRTL ? 'right' : 'left' }}>
-                      <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
-                        {ev.title || (lang === 'he' ? 'האירוע שלי' : 'My Event')}
-                      </p>
-                      <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                        {ev.type || ''}{ev.date ? ` · ${ev.date}` : ''}
-                      </p>
-                    </div>
-                    {ev.budget_exact > 0 && (
-                      <span className="text-sm font-bold shrink-0" style={{ color: 'var(--primary)' }}>
-                        ₪{ev.budget_exact.toLocaleString()}
-                      </span>
-                    )}
+              /* Active event — show suppliers */
+              <button onClick={() => navigate('myEvents')}
+                className="w-full text-right rounded-2xl overflow-hidden"
+                style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
+
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b"
+                  style={{ borderColor: 'var(--border)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+                      style={{ background: 'rgba(74,158,114,0.12)', color: '#4A9E72' }}>
+                      {leads.length} ספקים
+                    </span>
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-center gap-1.5">
+                    <CreditCard size={12} style={{ color: 'var(--primary)' }} />
+                    <span className="text-sm font-bold" style={{ color: 'var(--primary)' }}>
+                      ₪{leads.reduce((s, l) => s + (l.order_total || 0), 0).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Supplier images row */}
+                <div className="flex gap-2 p-3 overflow-x-auto no-scrollbar">
+                  {leads.map((lead, i) => (
+                    <div key={lead.id} className="relative shrink-0 rounded-xl overflow-hidden"
+                      style={{ width: 80, height: 80 }}>
+                      {lead.heroImage ? (
+                        <img src={lead.heroImage} alt={lead.vendor_name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-lg font-bold"
+                          style={{ background: 'rgba(107,95,228,0.1)', color: 'var(--primary)' }}>
+                          {lead.vendor_name?.[0]?.toUpperCase() || '?'}
+                        </div>
+                      )}
+                      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.2)' }} />
+                      <div className="absolute bottom-1 right-0 left-0 px-1">
+                        <p className="text-white text-[9px] font-semibold truncate text-center">{lead.vendor_name}</p>
+                      </div>
+                      <div className="absolute top-1 left-1">
+                        <div className="w-2 h-2 rounded-full"
+                          style={{ background: lead.status === 'booked' ? '#4A9E72' : '#f59e0b' }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="px-4 pb-3 text-left">
+                  <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                    {lang === 'he' ? 'לחץ לצפייה מלאה באירוע ←' : 'Tap to view full event →'}
+                  </p>
+                </div>
+              </button>
             )}
           </motion.div>
         )}
       </div>
 
-      <div className="h-24" />
+      <div className="h-8" />
+    </div>
+
+    {/* Bottom Navigation */}
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-30"
+      style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+      <div className="flex items-center justify-around px-2 py-2 pb-safe">
+        {NAV.map(({ id, label, Icon, action, badge }) => {
+          const active = id === 'home'
+          return (
+            <button key={id} onClick={action}
+              className="flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl transition-all relative"
+              style={{ minWidth: 56 }}>
+              <div className="relative">
+                <Icon size={22} style={{ color: active ? 'var(--primary)' : 'var(--text-dim)', strokeWidth: active ? 2.2 : 1.8 }} />
+                {badge > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
+                    style={{ background: '#ef4444' }}>{badge}</span>
+                )}
+              </div>
+              <span className="text-[10px] font-semibold"
+                style={{ color: active ? 'var(--primary)' : 'var(--text-dim)' }}>
+                {label}
+              </span>
+              {active && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full"
+                  style={{ background: 'var(--primary)' }} />
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
     </div>
   )
 }

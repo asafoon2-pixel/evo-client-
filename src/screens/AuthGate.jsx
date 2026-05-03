@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, Send } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { loginWithEmail, registerWithEmail, loginWithGoogle, resendVerificationEmail } from '../lib/authService'
+import EvoLogo from '../components/EvoLogo'
 
 const f = (delay = 0, y = 16) => ({
   initial: { opacity: 0, y },
@@ -27,7 +28,7 @@ export default function AuthGate() {
   const destAfterAuth =
     authIntent === 'single'   ? 'categories' :
     authIntent === 'new'      ? 'brief' :
-    'dashboard'
+    'myEvents'
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) {
@@ -69,7 +70,13 @@ export default function AuthGate() {
       await loginWithGoogle()
       navigate(destAfterAuth)
     } catch (e) {
-      setError('ההתחברות עם Google נכשלה — נסה שוב')
+      setError(
+        e.code === 'auth/unauthorized-domain' ? 'הדומיין לא מורשה — יש להוסיפו ב-Firebase Console' :
+        e.code === 'auth/popup-blocked'        ? 'החלון נחסם — אפשר חלונות קופצים בדפדפן' :
+        e.code === 'auth/popup-closed-by-user' ? 'החלון נסגר לפני השלמת הכניסה' :
+        e.code === 'auth/network-request-failed' ? 'בעיית רשת — בדוק חיבור לאינטרנט' :
+        `ההתחברות עם Google נכשלה (${e.code || 'שגיאה לא ידועה'})`
+      )
     } finally {
       setGoogleLoading(false)
     }
@@ -160,9 +167,8 @@ export default function AuthGate() {
 
         {/* Logo */}
         <motion.div {...f(0.05)} className="mb-8 text-center">
-          <div className="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: 'linear-gradient(135deg, #6B5FE4, #D4607A)', boxShadow: '0 8px 24px rgba(107,95,228,0.35)' }}>
-            <span className="text-white font-black text-xl tracking-wider">EVO</span>
+          <div className="flex justify-center mb-4">
+            <EvoLogo height={28} variant="light" />
           </div>
           <h1 className="text-2xl font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
             {isRegister ? 'יצירת חשבון' : 'ברוך הבא בחזרה'}
