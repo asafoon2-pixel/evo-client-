@@ -5,24 +5,50 @@ import {
 import { db } from './firebase'
 
 // ── Create a lead when client requests a supplier ──────────────────────────
-export async function createLead(clientUser, vendor, briefAnswers) {
+export async function createLead(clientUser, vendor, briefAnswers, selectedPackage, cartItems) {
   const guestMap = { intimate: '20–40', medium: '50–100', large: '100–200', grand: '200+' }
+
+  // Build ordered items: cart items for this supplier + selected package
+  const supplierCartItems = (cartItems || []).filter(c => c.supplierId === vendor.id)
+  const orderItems = supplierCartItems.map(c => ({
+    item_id:   c.item.id,
+    item_name: c.item.label,
+    type:      c.type,
+    price:     c.item.price || 0,
+    quantity:  c.quantity,
+  }))
+
+  // If no cart items but a package was selected, include it
+  const hasCartItems = orderItems.length > 0
+  const packageForLead = (!hasCartItems && selectedPackage) ? {
+    item_id:   selectedPackage.id,
+    item_name: selectedPackage.label,
+    type:      'package',
+    price:     selectedPackage.price || 0,
+    quantity:  1,
+  } : null
+  const finalItems = packageForLead ? [packageForLead] : orderItems
+  const orderTotal = finalItems.reduce((s, i) => s + i.price * i.quantity, 0)
+
   const ref = await addDoc(collection(db, 'leads'), {
     vendor_id:     vendor.id,
     vendor_name:   vendor.name,
     client_id:     clientUser.uid,
-    client_name:   clientUser.displayName || '',
-    client_email:  clientUser.email       || '',
+    client_name:      clientUser.displayName || '',
+    client_email:     clientUser.email       || '',
+    client_photo_url: clientUser.photoURL    || '',
     status:        'new',
     category:      vendor.category        || '',
     eventName:     'האירוע שלי',
     eventType:     briefAnswers?.eventType || '',
     date:          briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : 'גמיש',
-    guestCount:    guestMap[briefAnswers?.scale] || '',
+    guestCount:    guestMap[briefAnswers?.scale] || briefAnswers?.guestCount || '',
     budgetRange:   briefAnswers?.budgetTier      || '',
     location:      briefAnswers?.city            || '',
     matchScore:    92,
     heroImage:     vendor.image || '',
+    order_items:   finalItems,
+    order_total:   orderTotal,
     receivedAt:    serverTimestamp(),
     created_at:    serverTimestamp(),
     updated_at:    serverTimestamp(),
@@ -73,6 +99,26 @@ export function listenToMessages(leadId, callback) {
 // ── Listen to all client leads in real-time ────────────────────────────────
 export function listenToClientLeads(clientId, callback) {
   const q = query(collection(db, 'leads'), where('client_id', '==', clientId))
+  return onSnapshot(q, snap => {
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+  })
+}
+
+// ── Mark all messages from the other side as read ─────────────────────────
+export async function markMessagesAsRead(leadId, viewerRole) {
+  const otherRole = viewerRole === 'client' ? 'vendor' : 'client'
+  const q = query(
+    collection(db, 'leads', leadId, 'messages'),
+    where('from', '==', otherRole),
+    where('read', '==', false)
+  )
+  const snap = await getDocs(q)
+  await Promise.all(snap.docs.map(d => updateDoc(d.ref, { read: true })))
+}
+
+// ── Listen to all vendor leads in real-time (for supplier app) ─────────────
+export function listenToVendorLeads(vendorId, callback) {
+  const q = query(collection(db, 'leads'), where('vendor_id', '==', vendorId))
   return onSnapshot(q, snap => {
     callback(snap.docs.map(d => ({ id: d.id, ...d.data() })))
   })

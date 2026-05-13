@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Palette } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 const stagger = (i) => ({
@@ -19,7 +20,7 @@ export default function AIResult() {
   }
 
   return (
-    <div dir="rtl" className="relative w-full h-full min-h-screen flex flex-col items-center justify-center bg-evo-black overflow-hidden">
+    <div dir="rtl" className="relative w-full h-full min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: 'var(--background)' }}>
       {/* Background image */}
       {event.backgroundImage && (
         <div className="absolute inset-0 overflow-hidden">
@@ -29,7 +30,7 @@ export default function AIResult() {
             className="w-full h-full object-cover blur-lg opacity-10"
             draggable={false}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-evo-black via-evo-black/70 to-evo-black" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, var(--background) 0%, rgba(245,240,232,0.7) 50%, var(--background) 100%)' }} />
         </div>
       )}
 
@@ -45,7 +46,8 @@ export default function AIResult() {
         {/* Event name */}
         <motion.h1
           {...stagger(1)}
-          className="text-4xl sm:text-5xl font-light text-white leading-tight tracking-tight"
+          className="text-4xl sm:text-5xl font-light leading-tight tracking-tight"
+          style={{ color: 'var(--text-primary)' }}
         >
           {event.name}
         </motion.h1>
@@ -55,7 +57,8 @@ export default function AIResult() {
           initial={{ width: 0, opacity: 0 }}
           animate={{ width: 64, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.65 }}
-          className="h-px bg-evo-accent mt-8 mb-8"
+          className="h-px mt-8 mb-8"
+          style={{ background: 'var(--primary)' }}
         />
 
         {/* Tags */}
@@ -90,7 +93,15 @@ export default function AIResult() {
             בנה את האירוע הזה
           </button>
           <button
-            onClick={() => navigate('discover')}
+            onClick={() => navigate('eventVisualizer')}
+            className="w-full max-w-xs py-4 rounded-full text-sm font-medium tracking-[0.12em] uppercase transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+            style={{ background: 'rgba(107,95,228,0.15)', color: 'var(--primary)', border: '1px solid rgba(107,95,228,0.3)' }}
+          >
+            <Palette size={15} />
+            צור תמונה לאירוע
+          </button>
+          <button
+            onClick={() => navigate('brief')}
             className="text-sm tracking-wide transition-colors py-2" style={{ color: 'var(--text-muted)' }}
           >
             כוונן את הטעם שלי

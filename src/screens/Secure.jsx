@@ -62,7 +62,7 @@ export default function Secure() {
             {eventPackage?.name || 'הערב המיוחד שלך'}
           </h2>
           <p className="text-sm mt-2 font-light" style={{ color: 'var(--text-muted)' }}>
-            {eventPackage?.sections.length} ספקים · תיאום מנוהל על ידי EVO
+            {eventPackage?.sections?.length} ספקים · תיאום מנוהל על ידי EVO
           </p>
         </motion.div>
 

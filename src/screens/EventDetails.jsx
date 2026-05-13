@@ -77,7 +77,7 @@ export default function EventDetails() {
   const canContinue = eventDetails.venueName.trim().length > 1 || eventDetails.fullAddress.trim().length > 5
 
   return (
-    <div className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div dir="rtl" className="w-full min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
 
       {/* Header */}
       <div className="sticky top-0 z-20 px-6 pt-5 pb-4" style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>

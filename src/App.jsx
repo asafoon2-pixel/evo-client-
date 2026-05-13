@@ -49,6 +49,16 @@ import VenueQuestions    from './screens/VenueQuestions'
 import PersonalQuestions from './screens/PersonalQuestions'
 import ClientOnboarding  from './screens/ClientOnboarding'
 import AuthGate          from './screens/AuthGate'
+import Cart              from './screens/Cart'
+import ChatScreen      from './screens/ChatScreen'
+import ChatDetail      from './screens/ChatDetail'
+import AIChat          from './screens/AIChat'
+import { getVendorById, getVendorBySlug } from './lib/suppliersService'
+import EventVisualizer from './screens/EventVisualizer'
+import AllSuppliersMap from './screens/AllSuppliersMap'
+import Discover        from './screens/Discover'
+import MyEvents        from './screens/MyEvents'
+import QuickOrderInfo  from './screens/QuickOrderInfo'
 
 const screenMap = {
   home:            Home,
@@ -75,6 +85,15 @@ const screenMap = {
   personalquestions: PersonalQuestions,
   onboarding:       ClientOnboarding,
   authgate:         AuthGate,
+  cart:             Cart,
+  quickOrderInfo:   QuickOrderInfo,
+  chatscreen:       ChatScreen,
+  chatdetail:       ChatDetail,
+  aiChat:           AIChat,
+  eventVisualizer:  EventVisualizer,
+  allSuppliersMap:  AllSuppliersMap,
+  discover:         Discover,
+  myEvents:         MyEvents,
 }
 
 // Screens that skip the icon splash (loading/building screens)
@@ -84,11 +103,11 @@ const SKIP_SPLASH_SCREENS = new Set(['building', 'result'])
 const PROTECTED_SCREENS = new Set([
   'dashboard', 'userprofile', 'management',
   'checkout', 'summary', 'personalquestions',
-  'eventdetails', 'confirmation',
+  'eventdetails', 'confirmation', 'myEvents',
 ])
 
 function AppContent() {
-  const { currentScreen, currentUser, authLoading, navigate } = useApp()
+  const { currentScreen, currentUser, authLoading, navigate, setCurrentSupplier } = useApp()
 
   // Redirect unauthenticated users away from protected screens
   useEffect(() => {
@@ -96,6 +115,22 @@ function AppContent() {
       navigate('authgate')
     }
   }, [currentScreen, currentUser, authLoading])
+
+  // Deep-link: ?s=slug or ?vendor=UID → open supplier profile directly
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const slug = params.get('s')
+    const vendorId = params.get('vendor')
+    if (!slug && !vendorId) return
+    const lookup = slug ? getVendorBySlug(slug) : getVendorById(vendorId)
+    lookup.then(vendor => {
+      if (vendor) {
+        setCurrentSupplier(vendor)
+        navigate('supplierProfile')
+        window.history.replaceState({}, '', window.location.pathname)
+      }
+    }).catch(() => {})
+  }, [])
 
   const Screen = screenMap[currentScreen] || Home
 

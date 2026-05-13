@@ -65,18 +65,17 @@ export default function Discover() {
           {swipeCards.map((_, i) => (
             <div
               key={i}
-              className={`rounded-full transition-all duration-300 ${
-                i < swipedCount
-                  ? 'w-2 h-2 bg-evo-accent'
-                  : i === swipedCount
-                  ? 'w-2.5 h-2.5 bg-white'
-                  : 'w-1.5 h-1.5 bg-evo-dim'
-              }`}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width:  i === swipedCount ? 10 : i < swipedCount ? 8 : 6,
+                height: i === swipedCount ? 10 : i < swipedCount ? 8 : 6,
+                background: i < swipedCount ? 'var(--primary)' : i === swipedCount ? 'var(--text-primary)' : 'var(--text-dim)',
+              }}
             />
           ))}
         </div>
 
-        <span className="text-sm text-evo-muted tabular-nums">
+        <span className="text-sm tabular-nums" style={{ color: 'var(--text-muted)' }}>
           {Math.min(swipedCount + 1, swipeCards.length)} / {swipeCards.length}
         </span>
       </div>
@@ -165,34 +164,37 @@ export default function Discover() {
             disabled={showInsight || isDone}
             className="w-16 h-16 rounded-full flex items-center justify-center transition-all disabled:opacity-30" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
           >
-            <X size={22} className="text-white" />
+            <X size={22} style={{ color: 'var(--text-primary)' }} />
           </motion.button>
 
           <motion.button
             whileTap={{ scale: 0.9 }}
-            className="w-10 h-10 rounded-full border border-evo-border/50 bg-evo-surface flex items-center justify-center opacity-40"
+            className="w-10 h-10 rounded-full flex items-center justify-center opacity-40"
+            style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
             disabled
           >
-            <RotateCcw size={14} className="text-evo-muted" />
+            <RotateCcw size={14} style={{ color: 'var(--text-muted)' }} />
           </motion.button>
 
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => handleButtonSwipe('right')}
             disabled={showInsight || isDone}
-            className="w-16 h-16 rounded-full border border-evo-accent bg-evo-card flex items-center justify-center hover:bg-evo-accent/10 transition-all disabled:opacity-30"
+            className="w-16 h-16 rounded-full flex items-center justify-center transition-all disabled:opacity-30"
+            style={{ border: '1px solid var(--primary)', background: 'var(--card)' }}
           >
-            <Heart size={22} className="text-evo-accent" />
+            <Heart size={22} style={{ color: 'var(--primary)' }} />
           </motion.button>
         </div>
 
-        <p className="mt-5 text-evo-dim text-xs tracking-widest uppercase">
+        <p className="mt-5 text-xs tracking-widest uppercase" style={{ color: 'var(--text-dim)' }}>
           Swipe or tap
         </p>
 
         <button
           onClick={() => navigate('categories')}
-          className="mt-4 text-evo-muted text-xs tracking-widest uppercase underline underline-offset-4 opacity-50 hover:opacity-80 transition-opacity"
+          className="mt-4 text-xs tracking-widest uppercase underline underline-offset-4 opacity-50 hover:opacity-80 transition-opacity"
+          style={{ color: 'var(--text-muted)' }}
         >
           Skip
         </button>

@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Star, Clock, Camera, MessageCircle, Loader2,
   Phone, CheckCircle2, MapPin, Globe, Instagram,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, ShoppingCart, Plus, Check as CheckIcon,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 import { getVendorPackages, getVendorProducts } from '../lib/suppliersService'
 import { createLead, getExistingLead } from '../lib/leadsService'
+import { track } from '../lib/analyticsService'
 
 const PRICE_TYPE_LABEL = {
   fixed:     '',
@@ -21,6 +22,7 @@ export default function SupplierProfile() {
     navigate, currentSupplier, currentCategory,
     selectSupplier, selectedSuppliers, currentUser,
     setAuthIntent, briefAnswers,
+    addToCart, cart, cartCount,
   } = useApp()
 
   const [selectedPackage, setSelectedPackage] = useState(null)
@@ -31,6 +33,12 @@ export default function SupplierProfile() {
   const [addLoading,      setAddLoading]      = useState(false)
   const [leadSent,        setLeadSent]        = useState(false)
   const [showAllProducts, setShowAllProducts] = useState(false)
+
+  // Track supplier view on mount
+  useEffect(() => {
+    if (!currentSupplier?.id) return
+    track.viewSupplier(currentSupplier.id, currentSupplier.category)
+  }, [currentSupplier?.id])
 
   // Load packages
   useEffect(() => {
@@ -91,7 +99,9 @@ export default function SupplierProfile() {
       selectSupplier(currentCategory, supplierWithPackage)
       const existing = await getExistingLead(currentUser.uid, currentSupplier.id)
       if (!existing) {
-        await createLead(currentUser, currentSupplier, briefAnswers)
+        const pkg = selectedPackage || packages[0] || null
+        const supplierCart = cart.filter(c => c.supplierId === currentSupplier.id)
+        await createLead(currentUser, currentSupplier, briefAnswers, pkg, supplierCart)
       }
       setLeadSent(true)
     } catch (e) {
@@ -141,11 +151,26 @@ export default function SupplierProfile() {
 
         {/* Back button */}
         <button
-          onClick={() => navigate('supplierList')}
+          onClick={() => navigate(currentCategory ? 'supplierList' : 'allSuppliersMap')}
           className="absolute top-12 right-5 w-10 h-10 rounded-full flex items-center justify-center"
           style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
         >
           <ArrowLeft size={18} className="text-white" style={{ transform: 'scaleX(-1)' }} />
+        </button>
+
+        {/* Cart button */}
+        <button
+          onClick={() => navigate('cart')}
+          className="absolute top-12 left-5 w-10 h-10 rounded-full flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
+        >
+          <ShoppingCart size={17} className="text-white" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+              style={{ background: 'var(--primary)' }}>
+              {cartCount}
+            </span>
+          )}
         </button>
       </div>
 
@@ -343,6 +368,22 @@ export default function SupplierProfile() {
                           ))}
                         </div>
                       )}
+                      {/* Add to cart */}
+                      {(() => {
+                        const inCart = cart.some(c => c.cartId === `${currentSupplier.id}_package_${p.id}`)
+                        return (
+                          <button
+                            onClick={e => { e.stopPropagation(); addToCart(currentSupplier.id, currentSupplier.name, 'package', p) }}
+                            className="mt-3 w-full py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                            style={inCart
+                              ? { background: 'rgba(74,158,114,0.1)', color: '#4A9E72', border: '1.5px solid rgba(74,158,114,0.35)' }
+                              : { background: 'rgba(107,95,228,0.07)', color: 'var(--primary)', border: '1.5px solid rgba(107,95,228,0.25)' }
+                            }
+                          >
+                            {inCart ? <><CheckIcon size={12} /> בסל</> : <><Plus size={12} /> הוסף לסל</>}
+                          </button>
+                        )
+                      })()}
                     </div>
                   </motion.button>
                 )
@@ -374,7 +415,7 @@ export default function SupplierProfile() {
                       </div>
                     )}
                     <div className="p-4">
-                      <div className="flex justify-between items-start">
+                      <div className="flex justify-between items-start mb-3">
                         <div className="flex-1">
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.label}</p>
                           {p.description && (
@@ -393,6 +434,24 @@ export default function SupplierProfile() {
                           )}
                         </div>
                       </div>
+                      {(() => {
+                        const inCart = cart.some(c => c.cartId === `${currentSupplier.id}_product_${p.id}`)
+                        return (
+                          <button
+                            onClick={() => addToCart(currentSupplier.id, currentSupplier.name, 'product', p)}
+                            className="w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                            style={inCart
+                              ? { background: 'rgba(74,158,114,0.1)', color: '#4A9E72', border: '1.5px solid rgba(74,158,114,0.35)' }
+                              : { background: 'var(--primary)', color: '#fff', boxShadow: '0 2px 8px rgba(107,95,228,0.3)' }
+                            }
+                          >
+                            {inCart
+                              ? <><CheckIcon size={12} /> נוסף לסל</>
+                              : <><ShoppingCart size={12} /> הוסף לסל · ₪{(p.price || 0).toLocaleString()}</>
+                            }
+                          </button>
+                        )
+                      })()}
                     </div>
                   </div>
                 ))}
@@ -511,7 +570,20 @@ export default function SupplierProfile() {
             ) : leadSent ? (
               <><CheckCircle2 size={15} /> נוסף לאירוע</>
             ) : (
-              isSelected ? 'עדכן בחירה' : 'שלח פנייה והוסף לאירוע'
+              isSelected ? 'עדכן בחירה' : 'שלח פנייה'
+            )}
+          </button>
+          {/* Cart button */}
+          <button
+            onClick={() => navigate('cart')}
+            className="relative w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: cartCount > 0 ? 'var(--primary)' : 'var(--surface)', border: cartCount > 0 ? 'none' : '1.5px solid var(--border)' }}>
+            <ShoppingCart size={16} style={{ color: cartCount > 0 ? '#fff' : 'var(--text-muted)' }} />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+                style={{ background: '#4A9E72' }}>
+                {cartCount}
+              </span>
             )}
           </button>
         </div>

@@ -2,15 +2,15 @@ import {
   collection, doc, addDoc, updateDoc, getDoc, getDocs,
   query, where, orderBy, serverTimestamp,
 } from 'firebase/firestore'
-import { db } from './firebase'
+import { db, auth } from './firebase'
 
 // ── Events ─────────────────────────────────────────────────────────────────
 
 export async function createEvent(userId, eventData) {
   const ref = await addDoc(collection(db, 'events'), {
     userId,
-    ...eventData,
     status:    'draft',
+    ...eventData,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
@@ -30,13 +30,39 @@ export async function getEvent(eventId) {
 }
 
 export async function getUserEvents(userId) {
-  const q = query(
-    collection(db, 'events'),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc')
-  )
-  const snap = await getDocs(q)
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+  try {
+    // Try with orderBy (requires composite index)
+    const q = query(
+      collection(db, 'events'),
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
+    )
+    const snap = await getDocs(q)
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+  } catch {
+    // Fallback: query without orderBy, sort client-side
+    const q = query(collection(db, 'events'), where('userId', '==', userId))
+    const snap = await getDocs(q)
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
+  }
+}
+
+// Auth-aware convenience wrappers (userId derived from auth.currentUser)
+
+// Create a new event for the currently signed-in user
+export async function createEventForCurrentUser(eventData) {
+  const uid = auth.currentUser?.uid
+  if (!uid) throw new Error('User not authenticated')
+  return createEvent(uid, eventData)
+}
+
+// Get all events for the currently signed-in user
+export async function getMyEvents() {
+  const uid = auth.currentUser?.uid
+  if (!uid) throw new Error('User not authenticated')
+  return getUserEvents(uid)
 }
 
 // ── Orders ──────────────────────────────────────────────────────────────────

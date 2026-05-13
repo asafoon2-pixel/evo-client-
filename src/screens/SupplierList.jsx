@@ -1,23 +1,31 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowLeft, Star, ChevronLeft, Zap, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowLeft, Star, ChevronLeft, Zap, Loader2, MapPin, List } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 import { getVendorsByCategory } from '../lib/suppliersService'
+import SupplierMap from '../components/SupplierMap'
 
 export default function SupplierList() {
   const { navigate, currentCategory, setCurrentSupplier, selectedSuppliers } = useApp()
   const [activeFilter, setActiveFilter] = useState('all')
   const [vendors, setVendors] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(null)
+  const [mapView, setMapView] = useState(false)
 
   useEffect(() => {
-    if (!currentCategory) return
+    if (!currentCategory) { setLoading(false); return }
     setLoading(true)
+    setFetchError(null)
+    let settled = false
+    const timeout = setTimeout(() => {
+      if (!settled) { settled = true; setFetchError('timeout: Firestore לא הגיב תוך 8 שניות'); setVendors([]); setLoading(false) }
+    }, 8000)
     getVendorsByCategory(currentCategory)
-      .then(setVendors)
-      .catch(console.error)
-      .finally(() => setLoading(false))
+      .then(data => { if (!settled) { settled = true; setVendors(data) } })
+      .catch(err => { if (!settled) { settled = true; setFetchError(err?.message || String(err)); setVendors([]) } })
+      .finally(() => { clearTimeout(timeout); setLoading(false) })
   }, [currentCategory])
 
   const cat = categories.find(c => c.id === currentCategory)
@@ -59,7 +67,7 @@ export default function SupplierList() {
           <button onClick={() => navigate('categories')} style={{ color: 'var(--text-muted)' }}>
             <ArrowLeft size={20} style={{ transform: 'scaleX(-1)' }} />
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
               {cat?.name || 'ספקים'}
             </h1>
@@ -67,6 +75,18 @@ export default function SupplierList() {
               {loading ? 'טוען...' : `${catSuppliers.length} ספקים זמינים`}
             </p>
           </div>
+          {/* Map / List view toggle */}
+          <button
+            onClick={() => setMapView(v => !v)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+            style={mapView
+              ? { background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }
+              : { border: '1.5px solid var(--border)', color: 'var(--text-muted)', background: 'var(--surface)' }}
+            aria-label={mapView ? 'מעבר לתצוגת רשימה' : 'מעבר לתצוגת מפה'}
+          >
+            {mapView ? <List size={14} /> : <MapPin size={14} />}
+            {mapView ? 'רשימה' : 'מפה'}
+          </button>
         </div>
       </div>
 
@@ -116,8 +136,29 @@ export default function SupplierList() {
           </div>
         )}
 
+        {/* Map view */}
+        <AnimatePresence>
+          {!loading && mapView && (
+            <motion.div
+              key="map-view"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.3 }}
+            >
+              <SupplierMap
+                suppliers={filtered}
+                onSelectSupplier={supplier => {
+                  setCurrentSupplier(supplier)
+                  navigate('supplierProfile')
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Supplier list */}
-        {!loading && <div className="space-y-3">
+        {!loading && !mapView && <div className="space-y-3">
           {filtered.map((supplier, i) => {
             const isEVOPick = supplier.id === recommended?.id
             const isSelected = currentSelected?.id === supplier.id
@@ -187,7 +228,7 @@ export default function SupplierList() {
           })}
         </div>}
 
-        {!loading && filtered.length === 0 && (
+        {!loading && !mapView && filtered.length === 0 && (
           <div className="text-center py-16 rounded-2xl"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <div className="text-4xl mb-3">{vendors.length === 0 ? '🚧' : '🔍'}</div>
@@ -197,7 +238,13 @@ export default function SupplierList() {
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
               {vendors.length === 0
                 ? 'אנחנו מוסיפים ספקים לקטגוריה זו. חזור בקרוב!'
-                : 'נסה לשנות את הסינון או לחזור לכל הספקים'}</p>
+                : 'נסה לשנות את הסינון או לחזור לכל הספקים'}
+            </p>
+            {fetchError && (
+              <p className="text-[10px] mt-3 px-4 break-all" style={{ color: 'var(--text-dim)' }}>
+                שגיאה: {fetchError}
+              </p>
+            )}
           </div>
         )}
       </div>

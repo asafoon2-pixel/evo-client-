@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, X, Plus, Zap, Star, RefreshCw, MapPin, ShieldCheck, ChevronDown, ChevronRight, Image } from 'lucide-react'
+import { ArrowLeft, X, Plus, Zap, Star, RefreshCw, MapPin, ShieldCheck, ChevronDown, ChevronRight, Image, Sparkles } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
+import { getVendorReviews } from '../lib/reviewsService'
 
 const CATEGORY_META = {
   venue:         { label: 'החלל',      tagline: 'היכן מתחיל הערב' },
@@ -127,20 +128,16 @@ function VendorCard({ section, index, openSwapSheet, openProfile }) {
 // ── Vendor Profile Sheet ─────────────────────────────────────────────────────
 function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
   const scrollRef = useRef(null)
+  const [reviews, setReviews] = useState([])
 
-  // Fake portfolio images — use the vendor image + color placeholders
-  const portfolioImages = [
-    vendor.image,
-    vendor.image,
-    vendor.image,
-    vendor.image,
-  ]
+  const portfolioImages = [vendor.image, vendor.image, vendor.image, vendor.image]
 
-  const fakeReviews = [
-    { name: 'נועה כ.',   rating: 5, text: 'הכנה מדהימה — כל פרט היה מושלם.', date: 'מרץ 2025' },
-    { name: 'אורן מ.',   rating: 5, text: 'מקצועי, קשוב, והתוצאה עברה את כל הציפיות.', date: 'ינואר 2025' },
-    { name: 'שירה ל.',   rating: 4, text: 'תקשורת מעולה לאורך כל הדרך. ממליצה בחום.', date: 'דצמבר 2024' },
-  ]
+  useEffect(() => {
+    if (!vendor?.id) return
+    getVendorReviews(vendor.id)
+      .then(setReviews)
+      .catch(() => setReviews([]))
+  }, [vendor?.id])
 
   return (
     <AnimatePresence>
@@ -292,28 +289,34 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
             <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
               חוות דעת לקוחות
             </p>
-            <div className="space-y-3">
-              {fakeReviews.map((r, i) => (
-                <div key={i} className="p-4 rounded-2xl" style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                        style={{ background: 'var(--primary-dim)', color: 'var(--primary)' }}>
-                        {r.name[0]}
+            {reviews.length === 0 ? (
+              <p className="text-xs py-4 text-center" style={{ color: 'var(--text-dim)' }}>אין ביקורות עדיין</p>
+            ) : (
+              <div className="space-y-3">
+                {reviews.map((r, i) => (
+                  <div key={r.id || i} className="p-4 rounded-2xl" style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                          style={{ background: 'var(--primary-dim)', color: 'var(--primary)' }}>
+                          {r.client_name?.[0] || '?'}
+                        </div>
+                        <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{r.client_name}</span>
                       </div>
-                      <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{r.name}</span>
+                      <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                        {r.created_at?.toDate ? r.created_at.toDate().toLocaleDateString('he-IL', { month: 'short', year: 'numeric' }) : ''}
+                      </span>
                     </div>
-                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{r.date}</span>
+                    <div className="flex gap-0.5 mb-2">
+                      {[1,2,3,4,5].map(s => (
+                        <Star key={s} size={9} style={{ color: '#C8A96E', fill: s <= r.rating ? '#C8A96E' : 'none' }} />
+                      ))}
+                    </div>
+                    <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{r.text}</p>
                   </div>
-                  <div className="flex gap-0.5 mb-2">
-                    {[1,2,3,4,5].map(s => (
-                      <Star key={s} size={9} style={{ color: '#C8A96E', fill: s <= r.rating ? '#C8A96E' : 'none' }} />
-                    ))}
-                  </div>
-                  <p className="text-xs font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{r.text}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -424,7 +427,7 @@ export default function EventSummary() {
           </h2>
           {isAIFlow && (
             <div className="flex flex-wrap gap-2 mt-3">
-              {eventPackage.tags.map(tag => (
+              {(eventPackage.tags || []).map(tag => (
                 <span key={tag} className="text-xs px-3 py-1 rounded-full"
                   style={{ background: 'rgba(45,27,105,0.12)', color: 'var(--primary)', border: '1px solid rgba(45,27,105,0.2)' }}>
                   {tag}
@@ -470,7 +473,7 @@ export default function EventSummary() {
               לחץ על כרטיס לראות מה כלול
             </p>
             <div className="space-y-3">
-              {eventPackage.sections.map((section, i) => (
+              {(eventPackage?.sections || []).map((section, i) => (
                 <VendorCard
                   key={section.id}
                   section={section}
@@ -569,7 +572,7 @@ export default function EventSummary() {
             <p className="text-xs tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--text-muted)' }}>
               סיכום תשלום
             </p>
-            {isAIFlow && eventPackage.sections.map(s => (
+            {isAIFlow && (eventPackage.sections || []).map(s => (
               <div key={s.id} className="flex justify-between py-2.5"
                 style={{ borderBottom: '1px solid var(--border)' }}>
                 <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.vendor.name}</span>
@@ -610,16 +613,22 @@ export default function EventSummary() {
       </div>
 
       {/* Sticky CTA */}
-      {effectiveTotal > 0 && (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
-          style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-6 py-4 z-30"
+        style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
+        <div className="flex gap-3">
+          <motion.button onClick={() => navigate('eventVisualizer')} whileTap={{ scale: 0.97 }}
+            className="flex items-center justify-center gap-2 py-4 px-5 text-sm font-semibold shrink-0 transition-all"
+            style={{ borderRadius: 'var(--radius-pill)', background: 'rgba(107,95,228,0.12)', color: 'var(--primary)', border: '1px solid rgba(107,95,228,0.25)' }}>
+            <Sparkles size={15} />
+            דמיין
+          </motion.button>
           <motion.button onClick={handleContinue} whileTap={{ scale: 0.98 }}
-            className="w-full py-4 text-sm font-semibold tracking-wider uppercase transition-all"
+            className="flex-1 py-4 text-sm font-semibold tracking-wider uppercase transition-all"
             style={{ borderRadius: 'var(--radius-pill)', background: 'var(--primary)', color: '#FFFFFF', boxShadow: 'var(--shadow-accent)' }}>
             המשך לאירוע שלי ←
           </motion.button>
         </div>
-      )}
+      </div>
 
       {/* Vendor Profile Sheet */}
       {profileSection && (

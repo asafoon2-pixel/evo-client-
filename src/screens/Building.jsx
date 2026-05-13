@@ -19,11 +19,14 @@ const BG_IMAGES = [
 ]
 
 const CATS = [
-  { id: 'entertainment', label: 'הבידור',  tagline: 'מוזיקה שמניעה את החדר' },
-  { id: 'catering',      label: 'השולחן',  tagline: 'אוכל שמחמם את הלב' },
-  { id: 'lighting',      label: 'האווירה', tagline: 'אור שמעצב את הרגע' },
-  { id: 'decor',         label: 'העיצוב',  tagline: 'פרטים שמספרים את הסיפור' },
-  { id: 'sound',         label: 'הסאונד',  tagline: 'כל צליל נשמר' },
+  { id: 'entertainment', label: 'הבידור',   tagline: 'מוזיקה שמניעה את החדר' },
+  { id: 'catering',      label: 'השולחן',   tagline: 'אוכל שמחמם את הלב' },
+  { id: 'lighting',      label: 'האווירה',  tagline: 'אור שמעצב את הרגע' },
+  { id: 'decor',         label: 'העיצוב',   tagline: 'פרטים שמספרים את הסיפור' },
+  { id: 'sound',         label: 'הסאונד',   tagline: 'כל צליל נשמר' },
+  { id: 'photography',   label: 'הצילום',   tagline: 'רגעים שנשמרים לנצח' },
+  { id: 'bar',           label: 'הבר',      tagline: 'שתייה שמשלימה את האירוע' },
+  { id: 'transport',     label: 'התחבורה',  tagline: 'הגעה חלקה לכל האורחים' },
 ]
 
 export default function Building() {

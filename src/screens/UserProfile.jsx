@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle, PhoneCall, Zap } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle, PhoneCall, Zap, LogOut } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { updateUser } from '../lib/usersService'
 
@@ -71,7 +71,7 @@ function Divider() {
 
 export default function UserProfile() {
   const { navigate, userProfile, updateProfile, depositAmount, eventPackage,
-          currentUser, firestoreUser, setFirestoreUser } = useApp()
+          currentUser, firestoreUser, setFirestoreUser, signOut } = useApp()
   const isAIFlow = !!eventPackage
   const fileRef = useRef(null)
 
@@ -155,7 +155,7 @@ export default function UserProfile() {
         console.error('updateUser failed:', e)
       }
     }
-    navigate('checkout')
+    navigate(isAIFlow ? 'checkout' : 'home')
   }
 
   const formatPrice = n => `₪${n.toLocaleString()}`
@@ -174,13 +174,13 @@ export default function UserProfile() {
       <div className="sticky top-0 z-20 px-6 pt-5 pb-4 backdrop-blur-md"
         style={{ background: 'rgba(245,240,232,0.95)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(isAIFlow ? 'summary' : 'eventdetails')}
+          <button onClick={() => navigate(isAIFlow ? 'summary' : 'home')}
             style={{ color: 'var(--text-muted)' }}>
             <ArrowLeft size={20} style={{ transform: 'scaleX(-1)' }} />
           </button>
           <div className="flex-1">
             <p className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--primary)' }}>
-              {isAIFlow ? 'שלב אחרון' : 'אודותיך'}
+              {isAIFlow ? 'שלב אחרון' : 'הפרופיל שלי'}
             </p>
             <h1 className="text-lg font-light" style={{ color: 'var(--text-primary)' }}>הפרופיל שלך</h1>
           </div>
@@ -518,6 +518,18 @@ export default function UserProfile() {
         </motion.div>
 
         <div className="h-4" />
+
+        {/* Logout */}
+        {currentUser && (
+          <motion.button
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+            onClick={async () => { await signOut(); navigate('home') }}
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl mb-6 transition-all active:scale-[0.98]"
+            style={{ border: '1.5px solid var(--border)', color: 'var(--text-muted)', background: 'var(--surface)' }}>
+            <LogOut size={14} />
+            <span className="text-sm font-medium">התנתקות</span>
+          </motion.button>
+        )}
       </div>
 
       {/* Sticky CTA */}
@@ -536,9 +548,13 @@ export default function UserProfile() {
             boxShadow: canContinue ? 'var(--shadow-accent)' : 'none',
             opacity: canContinue ? 1 : 0.55,
           }}>
-          {canContinue
-            ? <>אבטח את האירוע שלי{depositAmount ? ` — ${formatPrice(depositAmount)}` : ''} <ArrowRight size={14} style={{ transform: 'scaleX(-1)' }} /></>
-            : 'הזן שם וטלפון להמשך'
+          {isAIFlow
+            ? canContinue
+              ? <>אבטח את האירוע שלי{depositAmount ? ` — ${formatPrice(depositAmount)}` : ''} <ArrowRight size={14} style={{ transform: 'scaleX(-1)' }} /></>
+              : 'הזן שם וטלפון להמשך'
+            : canContinue
+              ? 'שמור פרופיל'
+              : 'הזן שם וטלפון לשמירה'
           }
         </motion.button>
       </div>

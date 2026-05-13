@@ -112,7 +112,7 @@ export default function Confirmation() {
           className="flex flex-col gap-4 mt-10 w-full"
         >
           <motion.button
-            onClick={() => navigate('management')}
+            onClick={() => navigate('myEvents')}
             whileTap={{ scale: 0.97 }}
             className="w-full py-4 rounded-full text-white text-sm font-semibold tracking-[0.12em] uppercase transition-all duration-200"
           style={{ background: 'var(--primary)', boxShadow: 'var(--shadow-accent)' }}

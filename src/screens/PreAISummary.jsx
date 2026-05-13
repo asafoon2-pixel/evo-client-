@@ -12,9 +12,9 @@ const f = (delay = 0) => ({
 export default function PreAISummary() {
   const { navigate, briefAnswers } = useApp()
 
-  const eventType = briefEventTypes.find(t => t.id === briefAnswers.eventType)
-  const scale     = briefScales.find(s => s.id === briefAnswers.scale)
-  const budget    = briefBudgetTiers.find(b => b.id === briefAnswers.budgetTier)
+  const eventType = briefAnswers?.eventType ? briefEventTypes.find(t => t.id === briefAnswers.eventType) : null
+  const scale     = briefAnswers?.scale     ? briefScales.find(s => s.id === briefAnswers.scale)         : null
+  const budget    = briefAnswers?.budgetTier ? briefBudgetTiers.find(b => b.id === briefAnswers.budgetTier) : null
 
   const rows = [
     {
@@ -31,7 +31,7 @@ export default function PreAISummary() {
     {
       icon: Calendar,
       label: 'תאריך',
-      value: briefAnswers.date === 'flexible' ? 'גמיש' : briefAnswers.date || '—',
+      value: briefAnswers?.date === 'flexible' ? 'גמיש' : briefAnswers?.date || '—',
     },
     {
       icon: Wallet,
