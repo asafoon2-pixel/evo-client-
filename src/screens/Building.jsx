@@ -57,17 +57,20 @@ export default function Building() {
             vendor: {
               id: best.id,
               name: best.name,
+              email: best.email || '',
+              phone: best.phone || best.whatsapp || '',
               description: best.shortDescription,
-              price: 0,
+              price: best._raw?._minPrice || 0,
               rating: best.rating,
               reviewCount: best.reviewCount,
+              category: cat.id,
             },
             alternatives: vendors.slice(1, 3).map(v => ({
               id: v.id,
               name: v.name,
               description: v.shortDescription,
               image: v.image,
-              price: 0,
+              price: v._raw?._minPrice || 0,
               evoNote: '',
             })),
           })

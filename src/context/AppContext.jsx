@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { onAuthChange, logout } from '../lib/authService'
 import { getUser } from '../lib/usersService'
-import { createEvent } from '../lib/eventsService'
+import { createEvent, updateEvent } from '../lib/eventsService'
 import { createLead } from '../lib/leadsService'
+import { sendClientConfirmationEmail } from '../lib/emailService'
 
 const AppContext = createContext(null)
 
@@ -177,48 +178,93 @@ export function AppProvider({ children }) {
     0
   )
 
+  // Auto-save event draft when AI finishes building the package
+  useEffect(() => {
+    if (!eventPackage?.sections?.length || !currentUser || currentEventId) return
+    const guestMap = { intimate: 30, medium: 75, grand: 150 }
+    createEvent(currentUser.uid, {
+      title:       eventPackage.name || 'האירוע שלי',
+      type:        briefAnswers?.eventType || '',
+      date:        briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : '',
+      guest_count: guestMap[briefAnswers?.scale] || null,
+      budget_range: briefAnswers?.budgetTier || '',
+      status:      'draft',
+    }).then(id => {
+      setCurrentEventId(id)
+      console.log('Event draft saved:', id)
+    }).catch(e => console.error('Auto-save draft failed:', e))
+  }, [eventPackage, currentUser])
+
   // Save event to Firestore when user confirms at checkout
   const createEventInDb = useCallback(async () => {
     if (!currentUser) return null
     const guestMap = { intimate: 30, medium: 75, grand: 150 }
+    const fullData = {
+      title:              eventPackage?.name || generatedEvent?.name || 'האירוע שלי',
+      type:               briefAnswers.eventType              || '',
+      date:               briefAnswers.date !== 'flexible' ? briefAnswers.date : '',
+      start_time:         briefAnswers.startTime              || '',
+      end_time:           briefAnswers.endTime                || '',
+      indoor_outdoor:     briefAnswers.indoorOutdoor          || '',
+      guest_count:        guestMap[briefAnswers.scale]        || null,
+      budget_range:       briefAnswers.budgetTier             || '',
+      budget_exact:       totalPrice                          || 0,
+      venue_name:         eventDetails.venueName              || '',
+      full_address:       eventDetails.fullAddress            || '',
+      city:               eventDetails.city                   || '',
+      floor:              eventDetails.floor                  || '',
+      entrance_notes:     eventDetails.entranceNotes          || '',
+      parking_available:  eventDetails.parkingAvailable       || false,
+      parking_notes:      eventDetails.parkingNotes           || '',
+      special_requests:   eventDetails.specialRequests        || '',
+      is_private:         eventDetails.isPrivate              || false,
+      selected_suppliers: selectedSuppliers,
+      status:             'active',
+    }
     try {
-      const eventId = await createEvent(currentUser.uid, {
-        title:              generatedEvent?.name || 'האירוע שלי',
-        type:               briefAnswers.eventType              || '',
-        date:               briefAnswers.date !== 'flexible' ? briefAnswers.date : '',
-        start_time:         briefAnswers.startTime              || '',
-        end_time:           briefAnswers.endTime                || '',
-        indoor_outdoor:     briefAnswers.indoorOutdoor          || '',
-        guest_count:        guestMap[briefAnswers.scale]        || null,
-        budget_range:       briefAnswers.budgetTier             || '',
-        budget_exact:       totalPrice                          || 0,
-        venue_name:         eventDetails.venueName              || '',
-        full_address:       eventDetails.fullAddress            || '',
-        city:               eventDetails.city                   || '',
-        floor:              eventDetails.floor                  || '',
-        entrance_notes:     eventDetails.entranceNotes          || '',
-        parking_available:  eventDetails.parkingAvailable       || false,
-        parking_notes:      eventDetails.parkingNotes           || '',
-        special_requests:   eventDetails.specialRequests        || '',
-        is_private:         eventDetails.isPrivate              || false,
-        selected_suppliers: selectedSuppliers,
-        status:             'active',
-      })
-      setCurrentEventId(eventId)
+      let eventId = currentEventId
+      if (eventId) {
+        await updateEvent(eventId, fullData)
+      } else {
+        eventId = await createEvent(currentUser.uid, fullData)
+        setCurrentEventId(eventId)
+      }
 
-      // Create a lead for each selected supplier
-      const leadPromises = Object.values(selectedSuppliers).map(vendor =>
+      // AI flow: create a lead for each section vendor
+      const aiVendors = (eventPackage?.sections || []).map(s => ({
+        id:       s.vendor.id,
+        name:     s.vendor.name,
+        email:    s.vendor.email || '',
+        category: s.vendor.category || s.id,
+        image:    s.image || '',
+      }))
+
+      // Manual flow: create a lead for each selected supplier
+      const manualVendors = Object.values(selectedSuppliers)
+
+      const vendorsToLead = aiVendors.length > 0 ? aiVendors : manualVendors
+
+      const leadPromises = vendorsToLead.map(vendor =>
         createLead(currentUser, vendor, briefAnswers, vendor.selectedPackage || null, cart)
           .catch(err => console.error('createLead failed for', vendor.id, err))
       )
       await Promise.all(leadPromises)
+
+      // Send confirmation email to client (fire-and-forget)
+      sendClientConfirmationEmail({
+        clientEmail: briefAnswers?.clientDetails?.email || currentUser.email,
+        clientName:  briefAnswers?.clientDetails?.full_name || currentUser.displayName || '',
+        eventName:   eventPackage?.name || generatedEvent?.name || 'האירוע שלי',
+        totalPrice,
+        depositAmount,
+      })
 
       return eventId
     } catch (e) {
       console.error('createEventInDb failed:', e)
       return null
     }
-  }, [currentUser, briefAnswers, eventDetails, generatedEvent, totalPrice, selectedSuppliers, cart])
+  }, [currentUser, briefAnswers, eventDetails, generatedEvent, totalPrice, selectedSuppliers, cart, eventPackage])
 
   // Reset all event state so the user can start a fresh event
   const resetForNewEvent = useCallback(() => {

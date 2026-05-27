@@ -3,6 +3,7 @@ import {
   query, where, orderBy, onSnapshot, serverTimestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { sendLeadEmail } from './emailService'
 
 // ── Create a lead when client requests a supplier ──────────────────────────
 export async function createLead(clientUser, vendor, briefAnswers, selectedPackage, cartItems) {
@@ -33,6 +34,7 @@ export async function createLead(clientUser, vendor, briefAnswers, selectedPacka
   const ref = await addDoc(collection(db, 'leads'), {
     vendor_id:     vendor.id,
     vendor_name:   vendor.name,
+    vendor_email:  vendor.email || '',
     client_id:     clientUser.uid,
     client_name:      clientUser.displayName || '',
     client_email:     clientUser.email       || '',
@@ -53,6 +55,18 @@ export async function createLead(clientUser, vendor, briefAnswers, selectedPacka
     created_at:    serverTimestamp(),
     updated_at:    serverTimestamp(),
   })
+  // Send email notification to vendor (fire-and-forget)
+  sendLeadEmail({
+    vendor,
+    lead: {
+      client_name: clientUser.displayName || '',
+      eventType:   briefAnswers?.eventType || '',
+      date:        briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : 'גמיש',
+      guestCount:  guestMap[briefAnswers?.scale] || briefAnswers?.guestCount || '',
+      budgetRange: briefAnswers?.budgetTier || '',
+    },
+  })
+
   return ref.id
 }
 

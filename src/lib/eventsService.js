@@ -1,6 +1,6 @@
 import {
   collection, doc, addDoc, updateDoc, getDoc, getDocs,
-  query, where, orderBy, serverTimestamp,
+  query, where, orderBy, serverTimestamp, onSnapshot,
 } from 'firebase/firestore'
 import { db, auth } from './firebase'
 
@@ -47,6 +47,16 @@ export async function getUserEvents(userId) {
       .map(d => ({ id: d.id, ...d.data() }))
       .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
   }
+}
+
+export function listenToUserEvents(userId, callback) {
+  const q = query(collection(db, 'events'), where('userId', '==', userId))
+  return onSnapshot(q, snap => {
+    const events = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
+    callback(events)
+  }, err => console.error('listenToUserEvents error:', err))
 }
 
 // Auth-aware convenience wrappers (userId derived from auth.currentUser)

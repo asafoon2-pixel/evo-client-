@@ -4,23 +4,11 @@ import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle } 
 import { useApp } from '../context/AppContext'
 import { updateUser } from '../lib/usersService'
 
-const GENDER_OPTIONS = [
-  { id: 'female', label: 'נקבה' },
-  { id: 'male',   label: 'זכר' },
-  { id: 'other',  label: 'אחר' },
-]
-
 const CONTACT_OPTIONS = [
   { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
   { id: 'call',     label: 'שיחה',     Icon: Phone },
   { id: 'sms',      label: 'SMS',      Icon: Phone },
   { id: 'email',    label: 'מייל',     Icon: Mail },
-]
-
-const LANGUAGE_OPTIONS = [
-  { id: 'he', label: 'עברית' },
-  { id: 'en', label: 'English' },
-  { id: 'ar', label: 'عربي' },
 ]
 
 
@@ -29,18 +17,13 @@ export default function PersonalQuestions() {
   const fileRef = useRef(null)
 
   const [form, setForm] = useState({
-    full_name:          '',
-    email:              '',
-    phone:              '',
-    whatsapp_number:    '',
-    alternate_phone:    '',
-    age:                '',
-    gender:             null,
-    city:               '',
-    instagram_handle:   '',
-    preferred_language: null,
-    preferred_contact:  null,
-    profile_photo_url:  null,
+    full_name:         '',
+    email:             '',
+    phone:             '',
+    city:              '',
+    instagram_handle:  '',
+    preferred_contact: null,
+    profile_photo_url: null,
   })
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
@@ -57,17 +40,13 @@ export default function PersonalQuestions() {
     if (currentUser) {
       try {
         const data = {
-          full_name:          form.full_name,
-          email:              form.email,
-          phone:              form.phone,
-          whatsapp_number:    form.whatsapp_number,
-          alternate_phone:    form.alternate_phone,
-          age:                form.age ? Number(form.age) : null,
-          gender:             form.gender             || '',
-          city:               form.city,
-          instagram_handle:   form.instagram_handle,
-          preferred_language: form.preferred_language || 'he',
-          preferred_contact:  form.preferred_contact  || '',
+          full_name:         form.full_name,
+          email:             form.email,
+          phone:             form.phone,
+          whatsapp_number:   form.phone,
+          city:              form.city,
+          instagram_handle:  form.instagram_handle,
+          preferred_contact: form.preferred_contact || '',
         }
         await updateUser(currentUser.uid, data)
         setFirestoreUser(prev => ({ ...prev, ...data }))
@@ -138,44 +117,13 @@ export default function PersonalQuestions() {
             style={field('full_name')} />
         </motion.div>
 
-        {/* Gender */}
+        {/* City */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
-          {label('מגדר')}
-          <div className="flex gap-2">
-            {GENDER_OPTIONS.map(g => {
-              const active = form.gender === g.id
-              return (
-                <motion.button key={g.id} whileTap={{ scale: 0.97 }} onClick={() => set('gender', g.id)}
-                  className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
-                  style={{
-                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
-                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                    color: active ? 'var(--primary)' : 'var(--text-muted)',
-                  }}>
-                  {g.label}
-                </motion.button>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Age + City */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
-          className="grid grid-cols-2 gap-3">
-          <div>
-            {label('גיל')}
-            <input type="number" value={form.age} onChange={e => set('age', e.target.value)}
-              placeholder="—"
-              className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-              style={field('age')} />
-          </div>
-          <div>
-            {label('עיר')}
-            <input value={form.city} onChange={e => set('city', e.target.value)}
-              placeholder="תל אביב…"
-              className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-              style={field('city')} />
-          </div>
+          {label('עיר')}
+          <input value={form.city} onChange={e => set('city', e.target.value)}
+            placeholder="תל אביב…"
+            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+            style={field('city')} />
         </motion.div>
 
         {/* Divider */}
@@ -199,24 +147,6 @@ export default function PersonalQuestions() {
             style={field('phone')} />
         </motion.div>
 
-        {/* WhatsApp */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }}>
-          {label('וואטסאפ', true)}
-          <input type="tel" value={form.whatsapp_number} onChange={e => set('whatsapp_number', e.target.value)}
-            placeholder="+972 5x xxx xxxx"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-            style={field('whatsapp_number')} />
-        </motion.div>
-
-        {/* Alternate phone */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
-          {label('טלפון נוסף', true)}
-          <input type="tel" value={form.alternate_phone} onChange={e => set('alternate_phone', e.target.value)}
-            placeholder="+972 5x xxx xxxx"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-            style={field('alternate_phone')} />
-        </motion.div>
-
         {/* Preferred contact */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           {label('הדרך הטובה ביותר להגיע אליך')}
@@ -232,27 +162,6 @@ export default function PersonalQuestions() {
                   }}>
                   <Icon size={13} style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }} />
                   <span className="text-sm" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>{l}</span>
-                </motion.button>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Language */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
-          {label('שפה מועדפת')}
-          <div className="flex gap-2">
-            {LANGUAGE_OPTIONS.map(l => {
-              const active = form.preferred_language === l.id
-              return (
-                <motion.button key={l.id} whileTap={{ scale: 0.97 }} onClick={() => set('preferred_language', l.id)}
-                  className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
-                  style={{
-                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
-                    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                    color: active ? 'var(--primary)' : 'var(--text-muted)',
-                  }}>
-                  {l.label}
                 </motion.button>
               )
             })}

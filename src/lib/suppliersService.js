@@ -59,6 +59,7 @@ function normaliseVendor(id, data) {
     city:             data.city           || '',
     instagram:        data.instagram_handle || '',
     website:          data.website_url    || '',
+    email:            data.email || data.contact_email || '',
     phone:            data.phone          || '',
     whatsapp:         data.whatsapp_number || data.phone || '',
     preferredContact: data.preferred_contact || 'whatsapp',

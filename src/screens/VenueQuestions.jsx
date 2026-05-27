@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, MapPin, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, MapPin } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-
-const INDOOR_OUTDOOR = [
-  { id: 'indoor',  label: 'פנים',     icon: '🏛️' },
-  { id: 'outdoor', label: 'חוץ',      icon: '🌿' },
-  { id: 'mixed',   label: 'היברידי',  icon: '✨' },
-]
 
 const AMENITIES = [
   { id: 'kitchen',    label: 'מטבח מלא' },
@@ -22,12 +16,11 @@ export default function VenueQuestions() {
   const { navigate, updateBrief } = useApp()
 
   const [form, setForm] = useState({
-    venueName:        '',
-    venueAddress:     '',
-    venueType:        null,        // 'indoor' | 'outdoor' | 'mixed'
-    capacity:         '',
-    amenities:        [],          // array of ids
-    notes:            '',
+    venueName:    '',
+    venueAddress: '',
+    capacity:     '',
+    amenities:    [],
+    notes:        '',
   })
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
@@ -41,8 +34,7 @@ export default function VenueQuestions() {
 
   const canContinue =
     form.venueName.trim().length > 1 &&
-    form.venueAddress.trim().length > 2 &&
-    form.venueType !== null
+    form.venueAddress.trim().length > 2
 
   const handleContinue = () => {
     updateBrief('venueDetails', form)
@@ -116,31 +108,6 @@ export default function VenueQuestions() {
               color: 'var(--text-primary)',
             }}
           />
-        </motion.div>
-
-        {/* Indoor / Outdoor / Mixed */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }}>
-          <label className="block text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
-            סוג המרחב
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            {INDOOR_OUTDOOR.map(opt => {
-              const active = form.venueType === opt.id
-              return (
-                <motion.button key={opt.id} onClick={() => set('venueType', opt.id)} whileTap={{ scale: 0.96 }}
-                  className="py-4 rounded-2xl flex flex-col items-center gap-2 transition-all"
-                  style={{
-                    background: active ? 'var(--primary-dim)' : 'var(--surface)',
-                    border: `1.5px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
-                  }}>
-                  <span className="text-xl">{opt.icon}</span>
-                  <span className="text-xs font-medium" style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
-                    {opt.label}
-                  </span>
-                </motion.button>
-              )
-            })}
-          </div>
         </motion.div>
 
         {/* Estimated capacity */}

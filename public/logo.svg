@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="75 10 1150 445" width="87" height="30" role="img" aria-label="EVO">
+  <path fill="#FFFFFF" d="M 80 70 L 320 70 L 320 145 L 160 145 L 160 212 L 280 212 L 280 288 L 160 288 L 160 355 L 320 355 L 320 430 L 80 430 Z"/>
+  <path fill="#FFFFFF" d="M 420 70 L 507 70 L 570 222 L 633 70 L 720 70 L 570 430 Z"/>
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="square">
+    <line x1="1020" y1="14" x2="1020" y2="50" stroke-width="6"/>
+    <rect x="820" y="50" width="400" height="400" stroke-width="6"/>
+    <g stroke-width="3.5">
+      <line x1="870" y1="50" x2="870" y2="450"/>
+      <line x1="920" y1="50" x2="920" y2="450"/>
+      <line x1="970" y1="50" x2="970" y2="450"/>
+      <line x1="1020" y1="50" x2="1020" y2="450"/>
+      <line x1="1070" y1="50" x2="1070" y2="450"/>
+      <line x1="1120" y1="50" x2="1120" y2="450"/>
+      <line x1="1170" y1="50" x2="1170" y2="450"/>
+      <line x1="820" y1="100" x2="1220" y2="100"/>
+      <line x1="820" y1="150" x2="1220" y2="150"/>
+      <line x1="820" y1="200" x2="1220" y2="200"/>
+      <line x1="820" y1="250" x2="1220" y2="250"/>
+      <line x1="820" y1="300" x2="1220" y2="300"/>
+      <line x1="820" y1="350" x2="1220" y2="350"/>
+      <line x1="820" y1="400" x2="1220" y2="400"/>
+    </g>
+    <circle cx="1020" cy="250" r="200" stroke-width="6"/>
+  </g>
+</svg>

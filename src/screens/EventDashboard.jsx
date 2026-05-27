@@ -560,22 +560,40 @@ function TimelineTab() {
 }
 
 // ── PAYMENTS TAB ──────────────────────────────────────────────────────────────
-function PaymentsTab({ sections, totalPrice }) {
+function PaymentsTab({ sections, totalPrice, leads }) {
   const { selectedSuppliers } = useApp()
 
-  // Build payment rows from selectedSuppliers (real data) or eventPackage sections
-  const supplierRows = Object.entries(selectedSuppliers).map(([catId, s]) => ({
+  // Prefer real leads from Firestore
+  const leadRows = (leads || []).map((l, i) => ({
+    label: l.category || l.vendor_name,
+    vendor: { name: l.vendor_name, price: l.order_total || 0 },
+    dep: Math.round((l.order_total || 0) * 0.2),
+    due: ['12/4', '20/4', '28/4', '5/5'][i] || 'בהמשך',
+    paid: l.status === 'booked',
+  }))
+
+  const supplierRows = Object.entries(selectedSuppliers).map(([catId, s], i) => ({
     label: catId,
     vendor: { name: s.name, price: s.selectedPackage?.price || 0 },
+    dep: Math.round((s.selectedPackage?.price || 0) * 0.2),
+    due: 'בהמשך',
+    paid: false,
   }))
 
-  const rows = (supplierRows.length > 0 ? supplierRows : sections).map((s, i) => ({
-    ...s,
-    dep: Math.round(s.vendor.price * 0.2),
-    due: ['12/4', '20/4', '28/4', '5/5'][i] || 'בהמשך',
-    paid: i === 2,
-  }))
+  const rows = leadRows.length > 0
+    ? leadRows
+    : supplierRows.length > 0
+    ? supplierRows
+    : sections.map((s, i) => ({
+        ...s,
+        dep: Math.round((s.vendor?.price || 0) * 0.2),
+        due: ['12/4', '20/4', '28/4', '5/5'][i] || 'בהמשך',
+        paid: false,
+      }))
 
+  const realTotal  = leadRows.length > 0
+    ? leadRows.reduce((s, r) => s + r.vendor.price, 0)
+    : (totalPrice || 0)
   const totalDep   = rows.reduce((s, r) => s + r.dep, 0)
   const paidAmount = rows.filter(r => r.paid).reduce((s, r) => s + r.dep, 0)
   const pending    = totalDep - paidAmount
@@ -588,9 +606,9 @@ function PaymentsTab({ sections, totalPrice }) {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-2 mb-6">
         {[
-          { label: 'סה״כ אירוע', value: fmt(totalPrice || 43500), sub: '' },
-          { label: 'שולם',       value: fmt(paidAmount),           sub: 'מקדמות' },
-          { label: 'ממתין',      value: fmt(pending),              sub: 'מקדמות' },
+          { label: 'פר"ך אירוע', value: fmt(realTotal), sub: '' },
+          { label: 'שולם',      value: fmt(paidAmount), sub: 'מקדמות' },
+          { label: 'ממתין',     value: fmt(pending),    sub: 'מקדמות' },
         ].map(c => (
           <div key={c.label} className="rounded-2xl px-3 py-3 text-center"
             style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
@@ -868,7 +886,7 @@ export default function EventDashboard() {
             )}
             {tab === 'chat'     && <ChatTab />}
             {tab === 'timeline' && <TimelineTab />}
-            {tab === 'payments' && <PaymentsTab sections={sections} totalPrice={totalPrice || 43500} />}
+            {tab === 'payments' && <PaymentsTab sections={sections} totalPrice={totalPrice || 0} leads={leads} />}
 
           </motion.div>
         </AnimatePresence>

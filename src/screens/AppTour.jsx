@@ -533,7 +533,7 @@ export default function AppTour() {
     setStep(next)
   }
 
-  const next = () => isLast ? navigate('dashboard') : go(step + 1)
+  const next = () => isLast ? navigate('secure') : go(step + 1)
   const back = () => step > 0 && go(step - 1)
 
   return (
@@ -546,7 +546,7 @@ export default function AppTour() {
           style={{ color: current.color }}>
           {step + 1} / {STEPS.length}
         </motion.p>
-        <button onClick={() => navigate('dashboard')}
+        <button onClick={() => navigate('secure')}
           className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full"
           style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
           <X size={11} /> דלג על הסיור
@@ -639,7 +639,7 @@ export default function AppTour() {
             <motion.span key={step}
               initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.2 }}>
-              {isLast ? 'עבור ללוח הבקרה שלי' : `הבא: ${STEPS[step + 1].label}`}
+              {isLast ? 'אבטח את האירוע שלי' : `הבא: ${STEPS[step + 1].label}`}
             </motion.span>
           </AnimatePresence>
           {!isLast && <ArrowRight size={15} />}

@@ -26,8 +26,9 @@ export default function AuthGate() {
   const [resendDone,    setResendDone]    = useState(false)
 
   const destAfterAuth =
-    authIntent === 'single'   ? 'categories' :
-    authIntent === 'new'      ? 'brief' :
+    authIntent === 'single' ? 'categories' :
+    authIntent === 'new'    ? 'brief' :
+    authIntent              ? authIntent :
     'myEvents'
 
   async function handleSubmit() {

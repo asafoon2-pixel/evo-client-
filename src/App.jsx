@@ -103,15 +103,16 @@ const SKIP_SPLASH_SCREENS = new Set(['building', 'result'])
 const PROTECTED_SCREENS = new Set([
   'dashboard', 'userprofile', 'management',
   'checkout', 'summary', 'personalquestions',
-  'eventdetails', 'confirmation', 'myEvents',
+  'eventdetails', 'confirmation', 'myEvents', 'secure',
 ])
 
 function AppContent() {
-  const { currentScreen, currentUser, authLoading, navigate, setCurrentSupplier } = useApp()
+  const { currentScreen, currentUser, authLoading, navigate, setCurrentSupplier, setAuthIntent } = useApp()
 
   // Redirect unauthenticated users away from protected screens
   useEffect(() => {
     if (!authLoading && !currentUser && PROTECTED_SCREENS.has(currentScreen)) {
+      setAuthIntent(currentScreen)
       navigate('authgate')
     }
   }, [currentScreen, currentUser, authLoading])

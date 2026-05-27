@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Plus, CalendarDays, Users, ChevronLeft, RefreshCw } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { getUserEvents } from '../lib/eventsService'
+import { listenToUserEvents } from '../lib/eventsService'
 
 const f = (delay = 0) => ({
   initial: { opacity: 0, y: 14 },
@@ -28,16 +28,18 @@ export default function MyEvents() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const load = () => {
+  useEffect(() => {
     if (!currentUser) return
     setLoading(true)
     setError(null)
-    getUserEvents(currentUser.uid)
-      .then(evts => { setEvents(evts); setLoading(false) })
-      .catch(() => { setError('שגיאה בטעינה'); setLoading(false) })
-  }
+    const unsub = listenToUserEvents(currentUser.uid, evts => {
+      setEvents(evts)
+      setLoading(false)
+    })
+    return unsub
+  }, [currentUser])
 
-  useEffect(load, [currentUser])
+  const load = () => {} // kept for refresh button compatibility
 
   const startNew = () => {
     resetForNewEvent()
