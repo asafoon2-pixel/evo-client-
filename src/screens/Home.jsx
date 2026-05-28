@@ -193,6 +193,13 @@ export default function Home() {
             >
               <ShoppingCart size={15} style={{ color: 'var(--primary)' }} />
             </button>
+            <button
+              className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
+              onClick={() => navigate('allSuppliersMap')}
+            >
+              <MapPin size={15} style={{ color: 'var(--success)' }} />
+            </button>
             <LanguageToggle />
           </div>
 
@@ -262,13 +269,13 @@ export default function Home() {
 
       <div className="px-5 space-y-4">
 
-        {/* ── Three Paths ────────────────────────────────────────────────── */}
+        {/* ── Two Main Paths ─────────────────────────────────────────────── */}
         <motion.div {...f(0.16)} className="space-y-3">
 
-          {/* AI — full width hero */}
+          {/* AI — primary CTA */}
           <button
             onClick={() => navigate('brief')}
-            className="w-full flex items-start gap-4 p-5 card-hover"
+            className="w-full flex items-center gap-4 p-6 card-hover"
             style={{
               background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
               borderRadius: 24,
@@ -276,138 +283,54 @@ export default function Home() {
               textAlign: isRTL ? 'right' : 'left',
             }}
           >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
               style={{ background: 'rgba(255,255,255,0.18)' }}>
-              <Zap size={22} className="text-white" />
+              <Zap size={26} className="text-white" />
             </div>
             <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
-              <p className="text-sm font-bold text-white leading-tight">
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/55 mb-1">
+                {lang === 'he' ? 'הדרך המהירה' : 'FASTEST WAY'}
+              </p>
+              <p className="text-base font-bold text-white leading-tight">
                 {lang === 'he' ? 'בנה אירוע עם AI' : 'Build event with AI'}
               </p>
-              <p className="text-xs mt-0.5 text-white/65">
-                {lang === 'he' ? 'AI בונה לך חבילה מושלמת תוך 3 דקות' : 'AI builds your perfect package in 3 min'}
+              <p className="text-xs mt-1 text-white/65">
+                {lang === 'he' ? 'AI בוחר ספקים ומרכיב חבילה תוך 3 דקות' : 'AI picks vendors & builds a package in 3 min'}
               </p>
-              {/* Social proof */}
-              <div className="flex items-center gap-1.5 mt-2.5">
-                <div className="flex -space-x-1">
-                  {['#E8B86D','#D4607A','#4A9E72'].map((c, i) => (
-                    <div key={i} className="w-4 h-4 rounded-full border border-white/30 shrink-0"
-                      style={{ background: c }} />
-                  ))}
-                </div>
-                <p className="text-[10px] text-white/70">
-                  {lang === 'he' ? '+1,200 אירועים נבנו' : '+1,200 events built'}
-                </p>
-              </div>
             </div>
-            <span className="text-white/50 text-lg mt-1">{isRTL ? '←' : '→'}</span>
+            <span className="text-white/40 text-xl">{isRTL ? '←' : '→'}</span>
           </button>
 
-          {/* EVO AI Chat */}
+          {/* Manual — build yourself */}
           <button
-            onClick={() => navigate('aiChat')}
-            className="w-full flex items-center gap-4 p-4 card-hover"
+            onClick={() => navigate('categories')}
+            className="w-full flex items-center gap-4 p-6 card-hover"
             style={{
-              background: 'linear-gradient(135deg, #3D2B7A 0%, #6B5FE4 100%)',
-              borderRadius: 22,
-              boxShadow: 'var(--shadow-accent)',
-              textAlign: isRTL ? 'right' : 'left',
-            }}
-          >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
-            >
-              <Bot size={20} className="text-white" />
-            </div>
-            <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
-              <p className="text-sm font-bold text-white leading-tight">
-                {lang === 'he' ? 'שוחח עם EVO AI' : 'Chat with EVO AI'}
-              </p>
-              <p className="text-xs mt-0.5 text-white/65">
-                {lang === 'he' ? 'עוזר אישי לתכנון האירוע שלך' : 'Your personal event planning assistant'}
-              </p>
-            </div>
-            <span className="text-white/50 text-lg">{isRTL ? '←' : '→'}</span>
-          </button>
-
-          {/* Map */}
-          <button
-            onClick={() => navigate('allSuppliersMap')}
-            className="w-full flex items-center gap-4 p-4 card-hover"
-            style={{
-              background: 'linear-gradient(135deg, #EEF7F1 0%, #D6EFE2 100%)',
-              borderRadius: 22,
-              border: '1.5px solid rgba(74,158,114,0.2)',
+              background: 'var(--surface)',
+              borderRadius: 24,
+              border: '1.5px solid var(--border)',
               boxShadow: 'var(--shadow-card)',
               textAlign: isRTL ? 'right' : 'left',
             }}
           >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: 'rgba(74,158,114,0.15)' }}
-            >
-              <MapPin size={20} style={{ color: 'var(--success)' }} />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+              style={{ background: 'rgba(107,95,228,0.08)' }}>
+              <ShoppingBag size={24} style={{ color: 'var(--primary)' }} />
             </div>
             <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
-              <p className="text-sm font-bold leading-tight" style={{ color: '#2C5F3E' }}>
-                {lang === 'he' ? 'ספקים על המפה' : 'Suppliers on the Map'}
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1"
+                style={{ color: 'var(--text-dim)' }}>
+                {lang === 'he' ? 'שליטה מלאה' : 'FULL CONTROL'}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(44,95,62,0.65)' }}>
-                {lang === 'he' ? 'מצא ספקים לפי מיקום' : 'Find suppliers by location'}
+              <p className="text-base font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
+                {lang === 'he' ? 'בנה בעצמך' : 'Build yourself'}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                {lang === 'he' ? 'בחר ספקים לפי קטגוריה ותקציב' : 'Browse vendors by category & budget'}
               </p>
             </div>
-            <span className="text-lg" style={{ color: 'rgba(74,158,114,0.5)' }}>{isRTL ? '←' : '→'}</span>
+            <span className="text-xl" style={{ color: 'var(--text-dim)', opacity: 0.5 }}>{isRTL ? '←' : '→'}</span>
           </button>
-
-          {/* Single product + My events */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* Single product */}
-            <button
-              onClick={() => navigate('categories')}
-              className="flex flex-col p-4 card-hover"
-              style={{
-                background: 'linear-gradient(145deg, #EEF7F1 0%, #D6EFE2 100%)',
-                borderRadius: 22,
-                border: '1.5px solid rgba(74,158,114,0.2)',
-                boxShadow: 'var(--shadow-card)',
-                alignItems: isRTL ? 'flex-end' : 'flex-start',
-                textAlign: isRTL ? 'right' : 'left',
-              }}
-            >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                style={{ background: 'rgba(74,158,114,0.15)' }}>
-                <ShoppingBag size={18} style={{ color: 'var(--success)' }} />
-              </div>
-              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {lang === 'he' ? 'הוספת מוצרים' : 'Add products'}
-              </p>
-              <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
-                {lang === 'he' ? 'בחר ספקים בודדים' : 'Browse individual vendors'}
-              </p>
-            </button>
-
-            {/* My events */}
-            <button
-              onClick={() => goAuth('myEvents', 'existing')}
-              className="flex flex-col p-4 card-hover"
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 22,
-                border: '1px solid var(--border)',
-                boxShadow: 'var(--shadow-card)',
-                alignItems: isRTL ? 'flex-end' : 'flex-start',
-                textAlign: isRTL ? 'right' : 'left',
-              }}
-            >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                style={{ background: 'rgba(107,95,228,0.10)' }}>
-                <CalendarDays size={18} style={{ color: 'var(--primary)' }} />
-              </div>
-              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('home_my_events')}</p>
-              <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--text-muted)' }}>{t('home_my_events_sub')}</p>
-            </button>
-          </div>
         </motion.div>
 
         {/* ── How It Works ───────────────────────────────────────────────── */}
@@ -621,6 +544,27 @@ export default function Home() {
       </div>
 
       <div className="h-8" />
+    </div>
+
+    {/* Floating AI Chat bubble — bottom-left, inside phone frame */}
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md pointer-events-none z-40">
+      <div className="pb-[76px] px-4 flex justify-start">
+        <motion.button
+          onClick={() => navigate('aiChat')}
+          whileTap={{ scale: 0.93 }}
+          className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-2xl"
+          style={{
+            background: 'linear-gradient(135deg, #3D2B7A 0%, #6B5FE4 100%)',
+            boxShadow: '0 4px 20px rgba(107,95,228,0.35)',
+          }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+        >
+          <Bot size={15} className="text-white" />
+          <span className="text-[11px] font-semibold text-white">EVO AI</span>
+        </motion.button>
+      </div>
     </div>
 
     {/* Bottom Navigation */}
