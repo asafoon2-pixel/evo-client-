@@ -129,7 +129,7 @@ export default function AuthGate() {
               onClick={handleResend}
               disabled={resendLoading || resendDone}
               className="w-full py-3 rounded-full text-sm flex items-center justify-center gap-2"
-              style={{ color: resendDone ? '#4A9E72' : 'var(--text-muted)', border: '1px solid var(--border)' }}>
+              style={{ color: resendDone ? 'var(--success)' : 'var(--text-muted)', border: '1px solid var(--border)' }}>
               {resendLoading
                 ? <Loader2 size={14} className="animate-spin" />
                 : resendDone

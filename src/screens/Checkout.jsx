@@ -113,7 +113,7 @@ export default function Checkout() {
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: 'rgba(74,158,114,0.1)' }}>
-              <ShieldCheck size={18} style={{ color: '#4A9E72' }} />
+              <ShieldCheck size={18} style={{ color: 'var(--success)' }} />
             </div>
             <div>
               <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>

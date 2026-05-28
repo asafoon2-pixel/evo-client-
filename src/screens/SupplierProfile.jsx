@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowLeft, Star, Clock, Camera, MessageCircle, Loader2,
-  Phone, CheckCircle2, MapPin, Globe, Instagram,
+  ArrowLeft, Star, Clock, Camera, MessageCircle,
+  Phone, MapPin, Globe, Instagram,
   ChevronDown, ChevronUp, ShoppingCart, Plus, Check as CheckIcon,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 import { getVendorPackages, getVendorProducts } from '../lib/suppliersService'
-import { createLead, getExistingLead } from '../lib/leadsService'
 import { track } from '../lib/analyticsService'
 
 const PRICE_TYPE_LABEL = {
@@ -20,8 +19,6 @@ const PRICE_TYPE_LABEL = {
 export default function SupplierProfile() {
   const {
     navigate, currentSupplier, currentCategory,
-    selectSupplier, selectedSuppliers, currentUser,
-    setAuthIntent, briefAnswers,
     addToCart, cart, cartCount,
   } = useApp()
 
@@ -30,8 +27,6 @@ export default function SupplierProfile() {
   const [products,        setProducts]        = useState([])
   const [pkgLoading,      setPkgLoading]      = useState(true)
   const [prodLoading,     setProdLoading]     = useState(true)
-  const [addLoading,      setAddLoading]      = useState(false)
-  const [leadSent,        setLeadSent]        = useState(false)
   const [showAllProducts, setShowAllProducts] = useState(false)
 
   // Track supplier view on mount
@@ -63,14 +58,6 @@ export default function SupplierProfile() {
       .finally(() => setProdLoading(false))
   }, [currentSupplier?.id])
 
-  // Check if lead already sent
-  useEffect(() => {
-    if (!currentUser || !currentSupplier?.id) return
-    getExistingLead(currentUser.uid, currentSupplier.id)
-      .then(lead => { if (lead) setLeadSent(true) })
-      .catch(() => {})
-  }, [currentUser, currentSupplier?.id])
-
   if (!currentSupplier) {
     return (
       <div className="w-full h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
@@ -82,34 +69,6 @@ export default function SupplierProfile() {
   }
 
   const cat = categories.find(c => c.id === currentCategory)
-  const isSelected = selectedSuppliers[currentCategory]?.id === currentSupplier.id
-
-  const handleAddToEvent = async () => {
-    if (!currentUser) {
-      setAuthIntent('single')
-      navigate('authgate')
-      return
-    }
-    setAddLoading(true)
-    try {
-      const supplierWithPackage = {
-        ...currentSupplier,
-        selectedPackage: selectedPackage || packages[0] || null,
-      }
-      selectSupplier(currentCategory, supplierWithPackage)
-      const existing = await getExistingLead(currentUser.uid, currentSupplier.id)
-      if (!existing) {
-        const pkg = selectedPackage || packages[0] || null
-        const supplierCart = cart.filter(c => c.supplierId === currentSupplier.id)
-        await createLead(currentUser, currentSupplier, briefAnswers, pkg, supplierCart)
-      }
-      setLeadSent(true)
-    } catch (e) {
-      console.error('Failed to create lead:', e)
-    } finally {
-      setAddLoading(false)
-    }
-  }
 
   const renderStars = (rating, size = 14) =>
     Array.from({ length: 5 }, (_, i) => (
@@ -135,7 +94,7 @@ export default function SupplierProfile() {
   return (
     <div dir="rtl" className="w-full min-h-screen flex flex-col overflow-y-auto pb-28" style={{ background: 'var(--background)' }}>
       {/* Hero image */}
-      <div className="relative h-72 shrink-0" style={{ background: 'var(--elevated)' }}>
+      <div className="relative h-[52vw] min-h-[200px] max-h-72 shrink-0" style={{ background: 'var(--elevated)' }}>
         {currentSupplier.image ? (
           <img
             src={currentSupplier.image}
@@ -158,20 +117,17 @@ export default function SupplierProfile() {
           <ArrowLeft size={18} className="text-white" style={{ transform: 'scaleX(-1)' }} />
         </button>
 
-        {/* Cart button */}
-        <button
-          onClick={() => navigate('cart')}
-          className="absolute top-12 left-5 w-10 h-10 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
-        >
-          <ShoppingCart size={17} className="text-white" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
-              style={{ background: 'var(--primary)' }}>
-              {cartCount}
-            </span>
-          )}
-        </button>
+        {/* Cart count badge — shown in hero only when cart has items, navigates to cart */}
+        {cartCount > 0 && (
+          <button
+            onClick={() => navigate('cart')}
+            className="absolute top-12 left-5 h-10 px-3 rounded-full flex items-center gap-1.5"
+            style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
+          >
+            <ShoppingCart size={15} className="text-white" />
+            <span className="text-white text-xs font-bold">{cartCount}</span>
+          </button>
+        )}
       </div>
 
       <div className="px-6 -mt-6 relative z-10">
@@ -231,52 +187,9 @@ export default function SupplierProfile() {
           </div>
         )}
 
-        {/* Gallery */}
-        <div className="mb-8">
-          <h2 className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>גלריה</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-            {/* Main image */}
-            {currentSupplier.image && (
-              <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
-                <img src={currentSupplier.image} alt="" className="w-full h-full object-cover" />
-              </div>
-            )}
-            {/* Gallery images */}
-            {(currentSupplier.gallery || []).map((img, i) => (
-              <div key={i} className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
-                <img src={img} alt="" className="w-full h-full object-cover" />
-              </div>
-            ))}
-            {/* Package images */}
-            {packages.filter(p => p.image).slice(0, 3).map(p => (
-              <div key={`pkg-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
-                <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
-                  <p className="text-[9px] text-white text-center truncate">{p.label}</p>
-                </div>
-              </div>
-            ))}
-            {/* Product images */}
-            {products.filter(p => p.image).slice(0, 3).map(p => (
-              <div key={`prod-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
-                <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
-                  <p className="text-[9px] text-white text-center truncate">{p.label}</p>
-                </div>
-              </div>
-            ))}
-            {/* Placeholder if nothing */}
-            {!currentSupplier.image && packages.every(p => !p.image) && products.every(p => !p.image) && (
-              <div className="w-24 h-24 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <Camera size={20} style={{ color: 'var(--text-dim)' }} />
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* About */}
         <div className="mb-8">
-          <h2 className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>אודות</h2>
+          <h2 className="section-title mb-3">אודות</h2>
           <p className="text-sm leading-relaxed font-light" style={{ color: 'var(--text-muted)' }}>
             {currentSupplier.fullDescription || currentSupplier.shortDescription}
           </p>
@@ -284,10 +197,10 @@ export default function SupplierProfile() {
 
         {/* Packages */}
         <div className="mb-8">
-          <h2 className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>חבילות</h2>
+          <h2 className="section-title mb-4">חבילות</h2>
           {pkgLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 size={20} className="animate-spin" style={{ color: 'var(--primary)' }} />
+              <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />
             </div>
           ) : packages.length === 0 ? (
             <p className="text-sm text-center py-6" style={{ color: 'var(--text-muted)' }}>אין חבילות זמינות</p>
@@ -300,7 +213,7 @@ export default function SupplierProfile() {
                     key={p.id}
                     onClick={() => setSelectedPackage(p)}
                     whileTap={{ scale: 0.99 }}
-                    className="w-full text-right rounded-2xl transition-all duration-200"
+                    className="w-full text-right rounded-evo transition-all duration-200"
                     style={{
                       background: isActive ? 'rgba(107,95,228,0.07)' : 'var(--surface)',
                       border: isActive ? '2px solid var(--primary)' : '1.5px solid var(--border)',
@@ -323,7 +236,7 @@ export default function SupplierProfile() {
                           )}
                           {p.badge === 'best_value' && (
                             <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
-                              style={{ color: '#4A9E72', border: '1px solid rgba(74,158,114,0.4)' }}>משתלם</span>
+                              style={{ color: 'var(--success)', border: '1px solid var(--success-border)' }}>משתלם</span>
                           )}
                           {p.badge === 'evo_recommended' && (
                             <span className="text-[10px] tracking-widest uppercase rounded-full px-2 py-0.5"
@@ -374,9 +287,9 @@ export default function SupplierProfile() {
                         return (
                           <button
                             onClick={e => { e.stopPropagation(); addToCart(currentSupplier.id, currentSupplier.name, 'package', p) }}
-                            className="mt-3 w-full py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                            className="mt-3 w-full py-2 rounded-evo-sm text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                             style={inCart
-                              ? { background: 'rgba(74,158,114,0.1)', color: '#4A9E72', border: '1.5px solid rgba(74,158,114,0.35)' }
+                              ? { background: 'var(--success-dim)', color: 'var(--success)', border: '1.5px solid var(--success-border)' }
                               : { background: 'rgba(107,95,228,0.07)', color: 'var(--primary)', border: '1.5px solid rgba(107,95,228,0.25)' }
                             }
                           >
@@ -392,12 +305,50 @@ export default function SupplierProfile() {
           )}
         </div>
 
+        {/* Gallery — moved after packages so the commercial decision comes first */}
+        <div className="mb-8">
+          <h2 className="section-title mb-3">גלריה</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+            {currentSupplier.image && (
+              <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
+                <img src={currentSupplier.image} alt="" className="w-full h-full object-cover" />
+              </div>
+            )}
+            {(currentSupplier.gallery || []).map((img, i) => (
+              <div key={i} className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
+                <img src={img} alt="" className="w-full h-full object-cover" />
+              </div>
+            ))}
+            {packages.filter(p => p.image).slice(0, 3).map(p => (
+              <div key={`pkg-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
+                <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+                  <p className="text-[10px] text-white text-center truncate leading-tight">{p.label}</p>
+                </div>
+              </div>
+            ))}
+            {products.filter(p => p.image).slice(0, 3).map(p => (
+              <div key={`prod-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
+                <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+                  <p className="text-[10px] text-white text-center truncate leading-tight">{p.label}</p>
+                </div>
+              </div>
+            ))}
+            {!currentSupplier.image && packages.every(p => !p.image) && products.every(p => !p.image) && (
+              <div className="w-24 h-24 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <Camera size={20} style={{ color: 'var(--text-dim)' }} />
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Products */}
         <div className="mb-8">
-          <h2 className="text-sm font-medium tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>מוצרים בודדים</h2>
+          <h2 className="section-title mb-4">מוצרים בודדים</h2>
           {prodLoading ? (
             <div className="flex items-center justify-center py-6">
-              <Loader2 size={18} className="animate-spin" style={{ color: 'var(--primary)' }} />
+              <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />
             </div>
           ) : products.length === 0 ? (
             <p className="text-sm text-center py-6" style={{ color: 'var(--text-muted)' }}>אין מוצרים בודדים זמינים</p>
@@ -406,7 +357,7 @@ export default function SupplierProfile() {
               {visibleProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="rounded-2xl overflow-hidden"
+                    className="rounded-evo overflow-hidden"
                     style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}
                   >
                     {p.image && (
@@ -414,7 +365,7 @@ export default function SupplierProfile() {
                         <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
                       </div>
                     )}
-                    <div className="p-4">
+                    <div className="p-5">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex-1">
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.label}</p>
@@ -439,15 +390,15 @@ export default function SupplierProfile() {
                         return (
                           <button
                             onClick={() => addToCart(currentSupplier.id, currentSupplier.name, 'product', p)}
-                            className="w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                            className="w-full py-2.5 rounded-evo-sm text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
                             style={inCart
-                              ? { background: 'rgba(74,158,114,0.1)', color: '#4A9E72', border: '1.5px solid rgba(74,158,114,0.35)' }
-                              : { background: 'var(--primary)', color: '#fff', boxShadow: '0 2px 8px rgba(107,95,228,0.3)' }
+                              ? { background: 'var(--success-dim)', color: 'var(--success)', border: '1.5px solid var(--success-border)' }
+                              : { background: 'transparent', color: 'var(--primary)', border: '1.5px solid rgba(107,95,228,0.35)' }
                             }
                           >
                             {inCart
                               ? <><CheckIcon size={12} /> נוסף לסל</>
-                              : <><ShoppingCart size={12} /> הוסף לסל · ₪{(p.price || 0).toLocaleString()}</>
+                              : <><Plus size={12} /> הוסף לסל · ₪{(p.price || 0).toLocaleString()}</>
                             }
                           </button>
                         )
@@ -474,7 +425,7 @@ export default function SupplierProfile() {
 
         {/* Contact info */}
         {(currentSupplier.phone || currentSupplier.whatsapp || currentSupplier.city || currentSupplier.instagram || currentSupplier.website) && (
-          <div className="mb-8 rounded-2xl p-4 space-y-3" style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+          <div className="mb-8 rounded-evo p-4 space-y-3" style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
             <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>פרטי קשר</p>
             {currentSupplier.city && (
               <div className="flex items-center gap-2">
@@ -523,26 +474,11 @@ export default function SupplierProfile() {
           </div>
         )}
 
-        {/* Success state after lead sent */}
-        {leadSent && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            className="mb-6 rounded-2xl p-4 flex items-start gap-3"
-            style={{ background: 'rgba(74,158,114,0.08)', border: '1.5px solid rgba(74,158,114,0.3)' }}>
-            <CheckCircle2 size={18} style={{ color: '#4A9E72', flexShrink: 0, marginTop: 1 }} />
-            <div>
-              <p className="text-sm font-semibold" style={{ color: '#4A9E72' }}>הפנייה נשלחה!</p>
-              <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                הספק יקבל את הפנייה שלך ויחזור אליך. תוכל לנהל את השיחה מהדשבורד.
-              </p>
-            </div>
-          </motion.div>
-        )}
       </div>
 
       {/* Sticky bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 px-6 py-4 z-30"
         style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(16px)', borderTop: '1px solid var(--border)' }}>
-        {/* Selected package price */}
         {pkg && (
           <p className="text-center text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
             {pkg.label} · <span style={{ color: 'var(--primary)' }}>{displayPrice}</span>
@@ -550,30 +486,37 @@ export default function SupplierProfile() {
         )}
         <div className="flex gap-3 max-w-lg mx-auto">
           <button
-            onClick={() => navigate('categories')}
+            onClick={() => navigate(currentCategory ? 'supplierList' : 'categories')}
             className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
             style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
             <ArrowLeft size={16} style={{ color: 'var(--text-muted)' }} />
           </button>
-          <button
-            onClick={handleAddToEvent}
-            disabled={addLoading}
-            className="flex-1 py-3.5 rounded-full text-white text-sm font-semibold tracking-wider uppercase transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-            style={{
-              background: leadSent ? '#4A9E72' : 'var(--primary)',
-              boxShadow: 'var(--shadow-accent)',
-              opacity: addLoading ? 0.75 : 1,
-            }}
-          >
-            {addLoading ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : leadSent ? (
-              <><CheckCircle2 size={15} /> נוסף לאירוע</>
-            ) : (
-              isSelected ? 'עדכן בחירה' : 'שלח פנייה'
-            )}
-          </button>
-          {/* Cart button */}
+          {/* Add selected package to cart, or go to cart if already added */}
+          {(() => {
+            const pkgInCart = pkg && cart.some(c => c.cartId === `${currentSupplier.id}_package_${pkg.id}`)
+            return (
+              <button
+                onClick={() => {
+                  if (pkgInCart) navigate('cart')
+                  else if (pkg) addToCart(currentSupplier.id, currentSupplier.name, 'package', pkg)
+                }}
+                className="flex-1 py-3.5 rounded-full text-sm font-semibold tracking-wider uppercase transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                style={{
+                  background: pkgInCart ? 'var(--success)' : pkg ? 'var(--primary)' : 'var(--surface)',
+                  color: pkgInCart || pkg ? '#fff' : 'var(--text-muted)',
+                  border: pkg ? 'none' : '1.5px solid var(--border)',
+                  boxShadow: pkg ? 'var(--shadow-accent)' : 'none',
+                }}
+              >
+                {pkgInCart
+                  ? <><CheckIcon size={15} /> עבור לסל</>
+                  : pkg
+                    ? <><ShoppingCart size={15} /> הוסף לסל · {displayPrice}</>
+                    : 'בחר חבילה'
+                }
+              </button>
+            )
+          })()}
           <button
             onClick={() => navigate('cart')}
             className="relative w-11 h-11 rounded-full flex items-center justify-center shrink-0"
@@ -581,7 +524,7 @@ export default function SupplierProfile() {
             <ShoppingCart size={16} style={{ color: cartCount > 0 ? '#fff' : 'var(--text-muted)' }} />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
-                style={{ background: '#4A9E72' }}>
+                style={{ background: 'var(--success)' }}>
                 {cartCount}
               </span>
             )}

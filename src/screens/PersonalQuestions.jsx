@@ -13,17 +13,19 @@ const CONTACT_OPTIONS = [
 
 
 export default function PersonalQuestions() {
-  const { navigate, updateBrief, briefAnswers, currentUser, setFirestoreUser } = useApp()
+  const { navigate, updateBrief, briefAnswers, currentUser, firestoreUser, setFirestoreUser } = useApp()
   const fileRef = useRef(null)
 
+  const isLoggedIn = !!currentUser
+
   const [form, setForm] = useState({
-    full_name:         '',
-    email:             '',
-    phone:             '',
-    city:              '',
-    instagram_handle:  '',
-    preferred_contact: null,
-    profile_photo_url: null,
+    full_name:         firestoreUser?.full_name        || currentUser?.displayName || '',
+    email:             firestoreUser?.email            || currentUser?.email       || '',
+    phone:             firestoreUser?.phone            || '',
+    city:              firestoreUser?.city             || '',
+    instagram_handle:  firestoreUser?.instagram_handle || '',
+    preferred_contact: firestoreUser?.preferred_contact || null,
+    profile_photo_url: currentUser?.photoURL           || null,
   })
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
@@ -33,15 +35,19 @@ export default function PersonalQuestions() {
     if (file) set('profile_photo_url', URL.createObjectURL(file))
   }
 
-  const canContinue = form.full_name.trim().length > 1 && form.phone.trim().length > 5
+  // Logged-in users: only preferred_contact required (name/email already from Google)
+  // Guests: name + phone required
+  const canContinue = isLoggedIn
+    ? !!form.preferred_contact
+    : form.full_name.trim().length > 1 && form.phone.trim().length > 5
 
   const handleContinue = async () => {
     updateBrief('clientDetails', form)
     if (currentUser) {
       try {
         const data = {
-          full_name:         form.full_name,
-          email:             form.email,
+          full_name:         form.full_name  || currentUser.displayName || '',
+          email:             form.email      || currentUser.email       || '',
           phone:             form.phone,
           whatsapp_number:   form.phone,
           city:              form.city,
@@ -93,61 +99,82 @@ export default function PersonalQuestions() {
 
         {/* Avatar */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center pt-2">
-          <button onClick={() => fileRef.current?.click()}
-            className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden transition-all"
-            style={{
-              background: form.profile_photo_url ? 'transparent' : 'var(--surface)',
-              border: `2px dashed ${form.profile_photo_url ? 'var(--primary)' : 'var(--border)'}`,
-            }}>
-            {form.profile_photo_url
-              ? <img src={form.profile_photo_url} alt="" className="w-full h-full object-cover" />
-              : <Camera size={18} style={{ color: 'var(--text-muted)' }} />
-            }
-          </button>
-          <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>הוסף תמונה</p>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
+          {isLoggedIn ? (
+            /* Google profile photo — read-only */
+            <div className="w-20 h-20 rounded-full overflow-hidden"
+              style={{ border: '2px solid var(--primary)', background: 'var(--surface)' }}>
+              {form.profile_photo_url
+                ? <img src={form.profile_photo_url} alt="" className="w-full h-full object-cover" />
+                : <div className="w-full h-full flex items-center justify-center">
+                    <Camera size={18} style={{ color: 'var(--text-muted)' }} />
+                  </div>
+              }
+            </div>
+          ) : (
+            /* Guest — allow upload */
+            <>
+              <button onClick={() => fileRef.current?.click()}
+                className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden transition-all"
+                style={{
+                  background: form.profile_photo_url ? 'transparent' : 'var(--surface)',
+                  border: `2px dashed ${form.profile_photo_url ? 'var(--primary)' : 'var(--border)'}`,
+                }}>
+                {form.profile_photo_url
+                  ? <img src={form.profile_photo_url} alt="" className="w-full h-full object-cover" />
+                  : <Camera size={18} style={{ color: 'var(--text-muted)' }} />
+                }
+              </button>
+              <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>הוסף תמונה</p>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
+            </>
+          )}
+          {isLoggedIn && (
+            <p className="text-sm font-medium mt-3" style={{ color: 'var(--text-primary)' }}>
+              {form.full_name}
+            </p>
+          )}
         </motion.div>
 
-        {/* Name */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-          {label('שם מלא')}
-          <input value={form.full_name} onChange={e => set('full_name', e.target.value)}
-            placeholder="השם שלך"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-            style={field('full_name')} />
-        </motion.div>
+        {/* Fields shown only for guests (not logged in via Google) */}
+        {!isLoggedIn && (
+          <>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+              {label('שם מלא')}
+              <input value={form.full_name} onChange={e => set('full_name', e.target.value)}
+                placeholder="השם שלך"
+                className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+                style={field('full_name')} />
+            </motion.div>
 
-        {/* City */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
-          {label('עיר')}
-          <input value={form.city} onChange={e => set('city', e.target.value)}
-            placeholder="תל אביב…"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-            style={field('city')} />
-        </motion.div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
+              {label('עיר')}
+              <input value={form.city} onChange={e => set('city', e.target.value)}
+                placeholder="תל אביב…"
+                className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+                style={field('city')} />
+            </motion.div>
 
-        {/* Divider */}
-        <div className="h-px" style={{ background: 'var(--border)' }} />
+            <div className="h-px" style={{ background: 'var(--border)' }} />
 
-        {/* Email */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          {label('אימייל')}
-          <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
-            placeholder="your@email.com"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-            style={field('email')} />
-        </motion.div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              {label('אימייל')}
+              <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
+                placeholder="your@email.com"
+                className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+                style={field('email')} />
+            </motion.div>
 
-        {/* Phone */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-          {label('טלפון')}
-          <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
-            placeholder="+972 5x xxx xxxx"
-            className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
-            style={field('phone')} />
-        </motion.div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+              {label('טלפון')}
+              <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
+                placeholder="+972 5x xxx xxxx"
+                className="w-full px-4 py-3.5 rounded-xl text-sm font-light transition-all"
+                style={field('phone')} />
+            </motion.div>
+          </>
+        )}
 
-        {/* Preferred contact */}
+        {/* Preferred contact — always shown */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           {label('הדרך הטובה ביותר להגיע אליך')}
           <div className="grid grid-cols-2 gap-2">
@@ -157,7 +184,7 @@ export default function PersonalQuestions() {
                 <motion.button key={id} whileTap={{ scale: 0.97 }} onClick={() => set('preferred_contact', id)}
                   className="flex items-center gap-2.5 px-4 py-3 rounded-xl transition-all"
                   style={{
-                    background: active ? 'rgba(45,27,105,0.08)' : 'var(--surface)',
+                    background: active ? 'var(--primary-dim)' : 'var(--surface)',
                     border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
                   }}>
                   <Icon size={13} style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }} />
@@ -168,18 +195,20 @@ export default function PersonalQuestions() {
           </div>
         </motion.div>
 
-        {/* Instagram */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
-          {label('אינסטגרם', true)}
-          <div className="relative">
-            <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-              style={{ color: form.instagram_handle ? 'var(--primary)' : 'var(--text-muted)' }} />
-            <input value={form.instagram_handle} onChange={e => set('instagram_handle', e.target.value)}
-              placeholder="@handle"
-              className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm font-light transition-all"
-              style={field('instagram_handle')} />
-          </div>
-        </motion.div>
+        {/* Instagram — only for guests */}
+        {!isLoggedIn && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
+            {label('אינסטגרם', true)}
+            <div className="relative">
+              <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ color: form.instagram_handle ? 'var(--primary)' : 'var(--text-muted)' }} />
+              <input value={form.instagram_handle} onChange={e => set('instagram_handle', e.target.value)}
+                placeholder="@handle"
+                className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm font-light transition-all"
+                style={field('instagram_handle')} />
+            </div>
+          </motion.div>
+        )}
 
         <div className="h-2" />
       </div>

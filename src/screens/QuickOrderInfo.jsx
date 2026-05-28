@@ -71,7 +71,7 @@ export default function QuickOrderInfo() {
       <div dir="rtl" className="w-full min-h-screen flex flex-col items-center justify-center px-8 text-center"
         style={{ background: 'var(--background)' }}>
         <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
-          <CheckCircle2 size={64} style={{ color: '#4A9E72', margin: '0 auto 24px' }} />
+          <CheckCircle2 size={64} style={{ color: 'var(--success)', margin: '0 auto 24px' }} />
         </motion.div>
         <h1 className="text-2xl font-light mb-3" style={{ color: 'var(--text-primary)' }}>הפנייה נשלחה!</h1>
         <p className="text-sm leading-relaxed mb-8" style={{ color: 'var(--text-muted)' }}>

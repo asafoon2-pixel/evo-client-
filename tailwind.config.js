@@ -23,10 +23,19 @@ export default {
         display: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
       fontSize: {
+        /* Display */
         'display-xl': ['52px', { lineHeight: '1.1', letterSpacing: '-1.5px', fontWeight: '300' }],
         'display-md': ['32px', { lineHeight: '1.2', letterSpacing: '-0.8px', fontWeight: '400' }],
         'display-sm': ['24px', { lineHeight: '1.3', letterSpacing: '-0.4px', fontWeight: '400' }],
-        'label-xs':   ['10px', { lineHeight: '1', letterSpacing: '1.2px', fontWeight: '600' }],
+        /* Semantic heading scale */
+        'h1':         ['24px', { lineHeight: '1.3', letterSpacing: '-0.3px', fontWeight: '600' }],
+        'h2':         ['20px', { lineHeight: '1.4', letterSpacing: '-0.2px', fontWeight: '600' }],
+        'h3':         ['16px', { lineHeight: '1.5', letterSpacing: '0px',    fontWeight: '600' }],
+        /* Semantic body scale */
+        'body':       ['14px', { lineHeight: '1.6', letterSpacing: '0px',    fontWeight: '400' }],
+        'body-sm':    ['12px', { lineHeight: '1.5', letterSpacing: '0px',    fontWeight: '400' }],
+        /* Labels */
+        'label-xs':   ['10px', { lineHeight: '1',   letterSpacing: '1.2px',  fontWeight: '600' }],
       },
       borderRadius: {
         'evo':    '20px',

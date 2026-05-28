@@ -62,7 +62,7 @@ export default function Cart() {
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{c.item.label}</p>
                           <span className="text-[10px] rounded-full px-2 py-0.5 shrink-0"
-                            style={{ background: c.type === 'package' ? 'rgba(107,95,228,0.08)' : 'rgba(74,158,114,0.08)', color: c.type === 'package' ? 'var(--primary)' : '#4A9E72', border: `1px solid ${c.type === 'package' ? 'rgba(107,95,228,0.3)' : 'rgba(74,158,114,0.3)'}` }}>
+                            style={{ background: c.type === 'package' ? 'rgba(107,95,228,0.08)' : 'var(--success-dim)', color: c.type === 'package' ? 'var(--primary)' : 'var(--success)', border: `1px solid ${c.type === 'package' ? 'rgba(107,95,228,0.3)' : 'rgba(74,158,114,0.3)'}` }}>
                             {c.type === 'package' ? 'חבילה' : 'מוצר'}
                           </span>
                         </div>

@@ -13,7 +13,7 @@ const f = (delay = 0) => ({
 const STATUS_STYLE = {
   active:     { label: 'פעיל',   bg: 'rgba(107,95,228,0.12)', color: '#6B5FE4' },
   draft:      { label: 'טיוטה',  bg: 'rgba(232,160,48,0.12)', color: '#E8A030' },
-  completed:  { label: 'הסתיים', bg: 'rgba(74,158,114,0.12)', color: '#4A9E72' },
+  completed:  { label: 'הסתיים', bg: 'var(--success-dim)', color: 'var(--success)' },
   cancelled:  { label: 'בוטל',   bg: 'rgba(212,96,122,0.12)', color: '#D4607A' },
 }
 

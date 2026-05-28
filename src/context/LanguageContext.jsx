@@ -118,7 +118,7 @@ export function LanguageToggle({ className = '' }) {
           style={lang === l ? {
             background: 'var(--primary)',
             color: '#fff',
-            boxShadow: '0 2px 8px rgba(107,95,228,0.25)',
+            boxShadow: 'var(--shadow-accent)',
           } : {
             color: 'var(--text-muted)',
           }}

@@ -13,10 +13,10 @@ class ErrorBoundary extends Component {
     if (this.state.error) {
       return (
         <div className="w-full min-h-screen flex flex-col items-center justify-center px-8 text-center" style={{ background: '#F5F0E8' }}>
-          <p style={{ color: '#6B5FE4', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>Something went wrong</p>
+          <p style={{ color: '#6B5FE4', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>משהו השתבש</p>
           <p style={{ color: '#2C2016', fontSize: 13, marginBottom: 8 }}>{this.state.error.message}</p>
           <button onClick={() => this.setState({ error: null })} style={{ marginTop: 24, color: '#6B5FE4', fontSize: 12, border: '1px solid rgba(107,95,228,0.3)', borderRadius: 9999, padding: '8px 20px' }}>
-            Try again
+            נסה שוב
           </button>
         </div>
       )

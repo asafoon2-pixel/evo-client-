@@ -61,7 +61,7 @@ const VENDOR_CATEGORIES = [
     label_en: 'Decor & Flowers',
     image: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=400&q=80',
     Icon: Flower2,
-    color: '#4A9E72',
+    color: 'var(--success)',
   },
 ]
 
@@ -78,8 +78,8 @@ const HOW_STEPS = [
     num: '02',
     he: { title: 'AI בונה', body: 'אנחנו בוחרים ספקים ומתאמים' },
     en: { title: 'AI builds', body: 'We pick vendors & coordinate' },
-    color: 'rgba(74,158,114,0.12)',
-    textColor: '#4A9E72',
+    color: 'var(--success-dim)',
+    textColor: 'var(--success)',
   },
   {
     num: '03',
@@ -335,7 +335,7 @@ export default function Home() {
               className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: 'rgba(74,158,114,0.15)' }}
             >
-              <MapPin size={20} style={{ color: '#4A9E72' }} />
+              <MapPin size={20} style={{ color: 'var(--success)' }} />
             </div>
             <div className="flex-1" style={{ textAlign: isRTL ? 'right' : 'left' }}>
               <p className="text-sm font-bold leading-tight" style={{ color: '#2C5F3E' }}>
@@ -365,7 +365,7 @@ export default function Home() {
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
                 style={{ background: 'rgba(74,158,114,0.15)' }}>
-                <ShoppingBag size={18} style={{ color: '#4A9E72' }} />
+                <ShoppingBag size={18} style={{ color: 'var(--success)' }} />
               </div>
               <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {lang === 'he' ? 'הוספת מוצרים' : 'Add products'}
@@ -560,7 +560,7 @@ export default function Home() {
                   style={{ borderColor: 'var(--border)' }}>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(74,158,114,0.12)', color: '#4A9E72' }}>
+                      style={{ background: 'var(--success-dim)', color: 'var(--success)' }}>
                       {leads.length} ספקים
                     </span>
                   </div>
@@ -591,7 +591,7 @@ export default function Home() {
                       </div>
                       <div className="absolute top-1 left-1">
                         <div className="w-2 h-2 rounded-full"
-                          style={{ background: lead.status === 'booked' ? '#4A9E72' : '#f59e0b' }} />
+                          style={{ background: lead.status === 'booked' ? 'var(--success)' : '#f59e0b' }} />
                       </div>
                     </div>
                   ))}

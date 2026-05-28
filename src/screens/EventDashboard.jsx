@@ -357,8 +357,8 @@ function ChatTab() {
               </div>
               <span className="text-[10px] px-2 py-0.5 rounded-full shrink-0"
                 style={{
-                  background: lead.status === 'booked' ? 'rgba(74,158,114,0.12)' : lead.status === 'new' ? 'rgba(245,158,11,0.12)' : lead.status === 'declined' ? 'rgba(239,68,68,0.1)' : 'var(--elevated)',
-                  color: lead.status === 'booked' ? '#4A9E72' : lead.status === 'new' ? '#d97706' : lead.status === 'declined' ? '#EF4444' : 'var(--text-dim)',
+                  background: lead.status === 'booked' ? 'var(--success-dim)' : lead.status === 'new' ? 'rgba(245,158,11,0.12)' : lead.status === 'declined' ? 'rgba(239,68,68,0.1)' : 'var(--elevated)',
+                  color: lead.status === 'booked' ? 'var(--success)' : lead.status === 'new' ? '#d97706' : lead.status === 'declined' ? '#EF4444' : 'var(--text-dim)',
                 }}>
                 {lead.status === 'new' ? 'ממתין' : lead.status === 'booked' ? 'מאושר' : lead.status === 'declined' ? 'נדחה' : lead.status}
               </span>
@@ -776,7 +776,7 @@ const DEALS = [
     discount: '12%',
     description: 'חבילת פרמיום כולל ציוד ואנשי צוות',
     emoji: '🍹',
-    color: '#4A9E72',
+    color: 'var(--success)',
   },
   {
     id: 4,

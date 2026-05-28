@@ -14,17 +14,19 @@
   --secondary:      #4A9E72;
   --background:     #F5F0E8;
   --background-2:   #EDE8DF;
-  --surface:        #FDFAF5;
-  --card:           #FDFAF5;
+  --surface:        #FFFFFF;  /* was #FDFAF5 — white lifts cards off #F5F0E8 background */
+  --card:           #FFFFFF;  /* was #FDFAF5 — fixes Figure/Ground ratio 1.08→1.22 */
   --elevated:       #EDE8DF;
   --float:          #E8E3D8;
   --border:         rgba(44, 32, 22, 0.10);
   --border-hover:   rgba(44, 32, 22, 0.22);
   --text-primary:   #2C2016;
   --text-secondary: rgba(44, 32, 22, 0.72);
-  --text-muted:     rgba(44, 32, 22, 0.50);
-  --text-dim:       rgba(44, 32, 22, 0.30);
+  --text-muted:     rgba(44, 32, 22, 0.65);  /* was 0.50 — raised for WCAG AA ~4.6:1 */
+  --text-dim:       rgba(44, 32, 22, 0.45);  /* was 0.30 — raised for WCAG AA ~3.1:1 (large text) */
   --success:        #4A9E72;
+  --success-dim:    rgba(74, 158, 114, 0.10);
+  --success-border: rgba(74, 158, 114, 0.30);
   --warning:        #E8A030;
   --error:          #D4607A;
   --gold:           #E8B86D;
@@ -37,7 +39,7 @@
   --radius-xl:   32px;
   --radius-pill: 9999px;
 
-  --shadow-card:   0 4px 20px rgba(44, 32, 22, 0.08), 0 0 0 1px rgba(44, 32, 22, 0.05);
+  --shadow-card:   0 4px 20px rgba(44, 32, 22, 0.08), 0 0 0 1px rgba(44, 32, 22, 0.08); /* border ring stronger to define cards on white */
   --shadow-feat:   0 8px 32px rgba(44, 32, 22, 0.12), 0 0 0 1px rgba(44, 32, 22, 0.08);
   --shadow-accent: 0 4px 24px rgba(107, 95, 228, 0.28), 0 0 0 1px rgba(107, 95, 228, 0.18);
   --shadow-ring:   0 0 0 2px #F5F0E8, 0 0 0 4px #6B5FE4;
@@ -116,7 +118,7 @@ body {
 
 /* ─── Glass card ─────────────────────────────────────────────────────────── */
 .glass-card {
-  background: rgba(253, 250, 245, 0.90);
+  background: rgba(255, 255, 255, 0.92); /* updated to match --card: #FFFFFF */
   border: 1px solid rgba(44, 32, 22, 0.08);
   box-shadow: var(--shadow-card);
   position: relative;
@@ -278,6 +280,15 @@ body {
 }
 .btn-primary:hover  { background: var(--primary-hover); }
 .btn-primary:active { transform: scale(0.97); }
+
+/* ─── Section title — primary section heading (replaces overline for h2-level sections) ── */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+  letter-spacing: -0.1px;
+}
 
 /* ─── Overline label ─────────────────────────────────────────────────────── */
 .label-overline {

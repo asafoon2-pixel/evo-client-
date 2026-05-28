@@ -134,7 +134,7 @@ export default function AIChat() {
 
         <span
           className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
-          style={{ background: 'rgba(74,158,114,0.12)', color: '#4A9E72' }}
+          style={{ background: 'var(--success-dim)', color: 'var(--success)' }}
         >
           מחובר
         </span>
