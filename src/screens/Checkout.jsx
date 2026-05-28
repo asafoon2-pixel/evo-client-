@@ -126,6 +126,33 @@ export default function Checkout() {
           </div>
         </motion.div>
 
+        {/* What happens next */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-2xl p-5"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
+          <p className="text-[10px] font-bold tracking-[0.22em] uppercase mb-4" style={{ color: 'var(--primary)' }}>
+            מה קורה אחרי האישור?
+          </p>
+          {[
+            { time: 'מיד',         icon: '📤', text: 'הפנייה נשלחת לכל הספקים שבחרת' },
+            { time: 'תוך 24 שעות', icon: '📞', text: 'הספקים מאשרים ויוצרים איתך קשר' },
+            { time: 'תוך 48 שעות', icon: '✅', text: 'תקבל חבילה מאושרת ומוכנה' },
+          ].map((step, i) => (
+            <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
+              <span className="text-base leading-none mt-0.5">{step.icon}</span>
+              <div className="flex-1">
+                <p className="text-[10px] font-semibold tracking-wider uppercase mb-0.5"
+                  style={{ color: 'var(--primary)', opacity: 0.7 }}>{step.time}</p>
+                <p className="text-sm font-light" style={{ color: 'var(--text-primary)' }}>{step.text}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
         {/* Terms */}
         <p className="text-xs leading-relaxed text-center" style={{ color: 'var(--text-dim)' }}>
           בהשלמת המקדמה אתה מסכים ל

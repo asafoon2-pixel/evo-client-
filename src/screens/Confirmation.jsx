@@ -77,8 +77,34 @@ export default function Confirmation() {
           className="text-sm leading-relaxed font-light mt-6"
           style={{ color: 'var(--text-muted)' }}
         >
-          EVO הודיע לכל הספקים והחל בתיאום. תקבל בריף מלא תוך 24 שעות.
+          EVO הודיע לכל הספקים והחל בתיאום.
         </motion.p>
+
+        {/* What happens next — timeline */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.5 }}
+          className="w-full mt-6 rounded-2xl p-5 text-right"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
+          <p className="text-[10px] font-bold tracking-[0.22em] uppercase mb-4" style={{ color: 'var(--primary)' }}>
+            מה קורה עכשיו?
+          </p>
+          {[
+            { time: 'עכשיו',       icon: '✅', text: 'הפנייה נשלחה לכל הספקים' },
+            { time: 'תוך 24 שעות', icon: '📞', text: 'הספקים מאשרים ויוצרים קשר' },
+            { time: 'תוך 48 שעות', icon: '🎉', text: 'תקבל חבילה מאושרת ומלאה' },
+          ].map((step, i) => (
+            <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
+              <span className="text-base leading-none mt-0.5">{step.icon}</span>
+              <div className="flex-1">
+                <p className="text-[10px] font-semibold tracking-wider uppercase mb-0.5" style={{ color: 'var(--primary)', opacity: 0.7 }}>{step.time}</p>
+                <p className="text-sm font-light" style={{ color: 'var(--text-primary)' }}>{step.text}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
 
         {/* Details */}
         <motion.div

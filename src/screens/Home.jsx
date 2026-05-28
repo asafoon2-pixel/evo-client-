@@ -268,7 +268,7 @@ export default function Home() {
           {/* AI — full width hero */}
           <button
             onClick={() => navigate('brief')}
-            className="w-full flex items-center gap-4 p-5 card-hover"
+            className="w-full flex items-start gap-4 p-5 card-hover"
             style={{
               background: 'linear-gradient(135deg, #6B5FE4 0%, #5A4FD4 100%)',
               borderRadius: 24,
@@ -285,10 +285,22 @@ export default function Home() {
                 {lang === 'he' ? 'בנה אירוע עם AI' : 'Build event with AI'}
               </p>
               <p className="text-xs mt-0.5 text-white/65">
-                {lang === 'he' ? 'AI בונה לך את האירוע' : 'AI builds your event'}
+                {lang === 'he' ? 'AI בונה לך חבילה מושלמת תוך 3 דקות' : 'AI builds your perfect package in 3 min'}
               </p>
+              {/* Social proof */}
+              <div className="flex items-center gap-1.5 mt-2.5">
+                <div className="flex -space-x-1">
+                  {['#E8B86D','#D4607A','#4A9E72'].map((c, i) => (
+                    <div key={i} className="w-4 h-4 rounded-full border border-white/30 shrink-0"
+                      style={{ background: c }} />
+                  ))}
+                </div>
+                <p className="text-[10px] text-white/70">
+                  {lang === 'he' ? '+1,200 אירועים נבנו' : '+1,200 events built'}
+                </p>
+              </div>
             </div>
-            <span className="text-white/50 text-lg">{isRTL ? '←' : '→'}</span>
+            <span className="text-white/50 text-lg mt-1">{isRTL ? '←' : '→'}</span>
           </button>
 
           {/* EVO AI Chat */}

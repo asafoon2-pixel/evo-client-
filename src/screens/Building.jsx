@@ -128,14 +128,17 @@ export default function Building() {
         style={{ background: 'linear-gradient(to bottom, rgba(245,240,232,0.7) 0%, transparent 40%, rgba(245,240,232,0.7) 100%)' }} />
 
       {/* Progress bar */}
-      <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--border)' }}>
+      <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: 'var(--border)' }}>
         <motion.div className="h-full rounded-full" style={{ background: 'var(--primary)' }}
           animate={{ width: `${budgetPct}%` }} transition={{ duration: 0.2, ease: 'linear' }} />
       </div>
 
-      <div className="absolute top-4 right-6 z-10">
+      <div className="absolute top-5 right-6 z-10 flex items-center gap-2">
+        <p className="text-xs tabular-nums font-semibold" style={{ color: 'var(--primary)' }}>
+          {budgetPct}%
+        </p>
         <p className="text-xs tabular-nums" style={{ color: 'var(--text-dim)' }}>
-          {Math.min(stepIndex + 1, BUILD_STEPS.length)} / {BUILD_STEPS.length}
+          שלב {Math.min(stepIndex + 1, BUILD_STEPS.length)}/{BUILD_STEPS.length}
         </p>
       </div>
 
