@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Star, Clock, Camera, MessageCircle,
   Phone, MapPin, Globe, Instagram,
-  ChevronDown, ChevronUp, ShoppingCart, Plus, Check as CheckIcon,
+  ChevronDown, ChevronUp, ShoppingCart, Plus, Check as CheckIcon, X,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
@@ -20,7 +20,10 @@ export default function SupplierProfile() {
   const {
     navigate, currentSupplier, currentCategory,
     addToCart, cart, cartCount,
+    selectedSuppliers,
   } = useApp()
+
+  const isSelected = selectedSuppliers?.[currentCategory]?.id === currentSupplier?.id
 
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [packages,        setPackages]        = useState([])
@@ -28,6 +31,7 @@ export default function SupplierProfile() {
   const [pkgLoading,      setPkgLoading]      = useState(true)
   const [prodLoading,     setProdLoading]     = useState(true)
   const [showAllProducts, setShowAllProducts] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState(null)
 
   // Track supplier view on mount
   useEffect(() => {
@@ -222,7 +226,10 @@ export default function SupplierProfile() {
                   >
                     {/* Package image */}
                     {p.image && (
-                      <div className="w-full h-32 overflow-hidden">
+                      <div
+                        className="w-full h-32 overflow-hidden"
+                        onClick={e => { e.stopPropagation(); setLightboxUrl(p.image) }}
+                      >
                         <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
                       </div>
                     )}
@@ -310,30 +317,30 @@ export default function SupplierProfile() {
           <h2 className="section-title mb-3">גלריה</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
             {currentSupplier.image && (
-              <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
+              <button onClick={() => setLightboxUrl(currentSupplier.image)} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 active:scale-95 transition-transform" style={{ background: 'var(--border)' }}>
                 <img src={currentSupplier.image} alt="" className="w-full h-full object-cover" />
-              </div>
+              </button>
             )}
             {(currentSupplier.gallery || []).map((img, i) => (
-              <div key={i} className="w-24 h-24 rounded-xl overflow-hidden shrink-0" style={{ background: 'var(--border)' }}>
+              <button key={i} onClick={() => setLightboxUrl(img)} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 active:scale-95 transition-transform" style={{ background: 'var(--border)' }}>
                 <img src={img} alt="" className="w-full h-full object-cover" />
-              </div>
+              </button>
             ))}
             {packages.filter(p => p.image).slice(0, 3).map(p => (
-              <div key={`pkg-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
+              <button key={`pkg-${p.id}`} onClick={() => setLightboxUrl(p.image)} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative active:scale-95 transition-transform" style={{ background: 'var(--border)' }}>
                 <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
                   <p className="text-[10px] text-white text-center truncate leading-tight">{p.label}</p>
                 </div>
-              </div>
+              </button>
             ))}
             {products.filter(p => p.image).slice(0, 3).map(p => (
-              <div key={`prod-${p.id}`} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--border)' }}>
+              <button key={`prod-${p.id}`} onClick={() => setLightboxUrl(p.image)} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative active:scale-95 transition-transform" style={{ background: 'var(--border)' }}>
                 <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
                   <p className="text-[10px] text-white text-center truncate leading-tight">{p.label}</p>
                 </div>
-              </div>
+              </button>
             ))}
             {!currentSupplier.image && packages.every(p => !p.image) && products.every(p => !p.image) && (
               <div className="w-24 h-24 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
@@ -361,9 +368,9 @@ export default function SupplierProfile() {
                     style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}
                   >
                     {p.image && (
-                      <div className="w-full h-28 overflow-hidden">
+                      <button onClick={() => setLightboxUrl(p.image)} className="w-full h-28 overflow-hidden block">
                         <img src={p.image} alt={p.label} className="w-full h-full object-cover" />
-                      </div>
+                      </button>
                     )}
                     <div className="p-5">
                       <div className="flex justify-between items-start mb-3">
@@ -475,6 +482,38 @@ export default function SupplierProfile() {
         )}
 
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.93)' }}
+            onClick={() => setLightboxUrl(null)}
+          >
+            <button
+              onClick={() => setLightboxUrl(null)}
+              className="absolute top-12 left-5 w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.12)' }}
+            >
+              <X size={18} className="text-white" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.88, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.88, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              src={lightboxUrl}
+              alt=""
+              className="max-w-full max-h-[80vh] rounded-2xl object-contain px-4"
+              onClick={e => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sticky bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 px-6 py-4 z-30"
