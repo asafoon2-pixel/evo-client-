@@ -103,6 +103,24 @@ function TransportIllus() {
   )
 }
 
+function EquipmentIllus() {
+  return (
+    <svg width="62" height="62" viewBox="0 0 60 60" fill="none">
+      {/* Umbrella */}
+      <path d="M30 12C18 12 10 21 10 30h40C50 21 42 12 30 12Z" stroke="#8B5CF6" strokeWidth="1.8" fill="#8B5CF6" fillOpacity="0.12"/>
+      <path d="M30 12v32" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M26 44c0 2.2 1.8 4 4 4s4-1.8 4-4" stroke="#8B5CF6" strokeWidth="1.6" strokeLinecap="round"/>
+      {/* Chair legs */}
+      <rect x="8" y="36" width="16" height="3" rx="1.5" stroke="#8B5CF6" strokeWidth="1.5" opacity="0.55"/>
+      <path d="M10 39v8M22 39v8" stroke="#8B5CF6" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
+      {/* Generator box */}
+      <rect x="37" y="36" width="14" height="10" rx="2.5" stroke="#8B5CF6" strokeWidth="1.5" opacity="0.65"/>
+      <circle cx="44" cy="41" r="2.5" stroke="#8B5CF6" strokeWidth="1.3" opacity="0.5"/>
+      <path d="M37 40h4M43 40h8" stroke="#8B5CF6" strokeWidth="1.2" opacity="0.35"/>
+    </svg>
+  )
+}
+
 // ── Card metadata ──────────────────────────────────────────────────────────
 const CARD_META = {
   sound:         { gradient: 'linear-gradient(145deg, #EEEAF8 0%, #E2DCF6 100%)', Illus: SoundIllus },
@@ -113,6 +131,7 @@ const CARD_META = {
   entertainment: { gradient: 'linear-gradient(145deg, #EEEAF8 0%, #DDD8F5 100%)', Illus: EntertainmentIllus },
   catering:      { gradient: 'linear-gradient(145deg, #FDF5E4 0%, #F5E2BC 100%)', Illus: CateringIllus },
   transport:     { gradient: 'linear-gradient(145deg, #F0F2F6 0%, #DDE2EC 100%)', Illus: TransportIllus },
+  equipment:     { gradient: 'linear-gradient(145deg, #F3F0FD 0%, #E4D9F8 100%)', Illus: EquipmentIllus },
 }
 
 export default function Categories() {

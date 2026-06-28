@@ -949,6 +949,7 @@ export const categories = [
   { id: 'entertainment', name: 'בידור',        description: 'DJ, להקות, אמנים', icon: '🎵', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80', count: 7 },
   { id: 'catering',      name: 'קייטרינג',     description: 'אוכל, צוות שירות, ציוד', icon: '🍽️', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', count: 6 },
   { id: 'transport',     name: 'תחבורה',       description: 'הסעות, לימוזינה, מיניבוסים', icon: '🚐', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80', count: 3 },
+  { id: 'equipment',    name: 'ציוד לאירועים', description: 'שמשיות, ריהוט, גנרטורים, מאווררים', icon: '🎪', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80', count: 0 },
 ]
 
 export const suppliers = {
