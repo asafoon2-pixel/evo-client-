@@ -4,27 +4,27 @@ import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
 
 // ── SVG Illustrations ──────────────────────────────────────────────────────
-function SoundIllus() {
+function SoundLightingIllus() {
   return (
     <svg width="62" height="62" viewBox="0 0 60 60" fill="none">
-      <rect x="8" y="20" width="12" height="20" rx="3" stroke="#6B5FE4" strokeWidth="1.8"/>
-      <path d="M20 23L33 14V46L20 37" stroke="#6B5FE4" strokeWidth="1.8" strokeLinejoin="round"/>
-      <path d="M37 23c3 3.5 3 10.5 0 14" stroke="#6B5FE4" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M43 18c5 6 5 18 0 24" stroke="#6B5FE4" strokeWidth="1.4" strokeLinecap="round" opacity="0.45"/>
+      <rect x="4" y="20" width="10" height="18" rx="2.5" stroke="#6B5FE4" strokeWidth="1.7"/>
+      <path d="M14 22L25 14V46L14 38" stroke="#6B5FE4" strokeWidth="1.7" strokeLinejoin="round"/>
+      <path d="M29 23c2.5 3 2.5 11 0 14" stroke="#6B5FE4" strokeWidth="1.6" strokeLinecap="round"/>
+      <circle cx="44" cy="20" r="6" stroke="#C8973A" strokeWidth="1.6"/>
+      <circle cx="44" cy="20" r="2.5" fill="#C8973A" opacity="0.25"/>
+      <path d="M41 26l-1.5 7h9l-1.5-7" stroke="#C8973A" strokeWidth="1.6" strokeLinejoin="round"/>
+      <path d="M40 33h8" stroke="#C8973A" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M44 6v4" stroke="#C8973A" strokeWidth="1.4" strokeLinecap="round" opacity="0.5"/>
+      <path d="M35 10l2.5 2.5M53 10l-2.5 2.5" stroke="#C8973A" strokeWidth="1.3" strokeLinecap="round" opacity="0.4"/>
     </svg>
   )
 }
 
-function LightingIllus() {
+function SecurityIllus() {
   return (
     <svg width="62" height="62" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="26" r="9" stroke="#C8973A" strokeWidth="1.8"/>
-      <circle cx="30" cy="26" r="4" fill="#C8973A" opacity="0.22"/>
-      <path d="M25 35l-2 9h14l-2-9" stroke="#C8973A" strokeWidth="1.8" strokeLinejoin="round"/>
-      <path d="M25 44h10" stroke="#C8973A" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M30 7v5" stroke="#C8973A" strokeWidth="1.5" strokeLinecap="round" opacity="0.55"/>
-      <path d="M13 13l3.5 3.5M47 13l-3.5 3.5" stroke="#C8973A" strokeWidth="1.4" strokeLinecap="round" opacity="0.45"/>
-      <path d="M7 28h5M48 28h5" stroke="#C8973A" strokeWidth="1.4" strokeLinecap="round" opacity="0.35"/>
+      <path d="M30 8L10 17v14c0 11 9 21 20 24 11-3 20-13 20-24V17L30 8Z" stroke="#4A7FA5" strokeWidth="1.8" fill="#4A7FA5" fillOpacity="0.10"/>
+      <path d="M21 30l6 6 12-12" stroke="#4A7FA5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   )
 }
@@ -123,15 +123,15 @@ function EquipmentIllus() {
 
 // ── Card metadata ──────────────────────────────────────────────────────────
 const CARD_META = {
-  sound:         { gradient: 'linear-gradient(145deg, #EEEAF8 0%, #E2DCF6 100%)', Illus: SoundIllus },
-  lighting:      { gradient: 'linear-gradient(145deg, #FDF5DF 0%, #F5E6BA 100%)', Illus: LightingIllus },
-  decor:         { gradient: 'linear-gradient(145deg, #EEF7F1 0%, #D6EFE0 100%)', Illus: DecorIllus },
-  bar:           { gradient: 'linear-gradient(145deg, #FDF0F3 0%, #F5D6DF 100%)', Illus: BarIllus },
-  photography:   { gradient: 'linear-gradient(145deg, #EEF5FD 0%, #D4E8F8 100%)', Illus: PhotographyIllus },
-  entertainment: { gradient: 'linear-gradient(145deg, #EEEAF8 0%, #DDD8F5 100%)', Illus: EntertainmentIllus },
-  catering:      { gradient: 'linear-gradient(145deg, #FDF5E4 0%, #F5E2BC 100%)', Illus: CateringIllus },
-  transport:     { gradient: 'linear-gradient(145deg, #F0F2F6 0%, #DDE2EC 100%)', Illus: TransportIllus },
-  equipment:     { gradient: 'linear-gradient(145deg, #F3F0FD 0%, #E4D9F8 100%)', Illus: EquipmentIllus },
+  sound_lighting: { gradient: 'linear-gradient(145deg, #EEEAF8 0%, #E2DCF6 100%)', Illus: SoundLightingIllus },
+  security:       { gradient: 'linear-gradient(145deg, #EAF2F8 0%, #D0E8F5 100%)', Illus: SecurityIllus },
+  decor:          { gradient: 'linear-gradient(145deg, #EEF7F1 0%, #D6EFE0 100%)', Illus: DecorIllus },
+  bar:            { gradient: 'linear-gradient(145deg, #FDF0F3 0%, #F5D6DF 100%)', Illus: BarIllus },
+  photography:    { gradient: 'linear-gradient(145deg, #EEF5FD 0%, #D4E8F8 100%)', Illus: PhotographyIllus },
+  entertainment:  { gradient: 'linear-gradient(145deg, #EEEAF8 0%, #DDD8F5 100%)', Illus: EntertainmentIllus },
+  catering:       { gradient: 'linear-gradient(145deg, #FDF5E4 0%, #F5E2BC 100%)', Illus: CateringIllus },
+  transport:      { gradient: 'linear-gradient(145deg, #F0F2F6 0%, #DDE2EC 100%)', Illus: TransportIllus },
+  equipment:      { gradient: 'linear-gradient(145deg, #F3F0FD 0%, #E4D9F8 100%)', Illus: EquipmentIllus },
 }
 
 export default function Categories() {

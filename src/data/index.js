@@ -941,15 +941,15 @@ export const briefBudgetTiers = [
 ]
 
 export const categories = [
-  { id: 'sound',         name: 'סאונד',        description: 'מערכות הגברה, רמקולים, ציוד DJ', icon: '🔊', image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=600&q=80', count: 6 },
-  { id: 'lighting',      name: 'תאורה',        description: 'תאורת במה, אווירה, ריגינג LED', icon: '💡', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80', count: 5 },
-  { id: 'decor',         name: 'עיצוב',        description: 'פרחים, סטיילינג, אביזרים', icon: '🌸', image: 'https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=600&q=80', count: 6 },
-  { id: 'bar',           name: 'בר',           description: 'ברים ניידים, אלכוהול, צוות', icon: '🍹', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80', count: 4 },
-  { id: 'photography',   name: 'צילום',        description: 'צילום וידאו ותמונות', icon: '📸', image: 'https://images.unsplash.com/photo-1516997121675-4c2d1696aa90?auto=format&fit=crop&w=600&q=80', count: 9 },
-  { id: 'entertainment', name: 'בידור',        description: 'DJ, להקות, אמנים', icon: '🎵', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80', count: 7 },
-  { id: 'catering',      name: 'קייטרינג',     description: 'אוכל, צוות שירות, ציוד', icon: '🍽️', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', count: 6 },
-  { id: 'transport',     name: 'תחבורה',       description: 'הסעות, לימוזינה, מיניבוסים', icon: '🚐', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80', count: 3 },
-  { id: 'equipment',    name: 'ציוד לאירועים', description: 'שמשיות, ריהוט, גנרטורים, מאווררים', icon: '🎪', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80', count: 0 },
+  { id: 'sound_lighting', name: 'הגברה ותאורה', description: 'הגברה · תאורת במה · ציוד DJ', icon: '🔊', image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=600&q=80', count: 11 },
+  { id: 'security',       name: 'אבטחה',        description: 'אנשי אבטחה, בקרת כניסה, ניהול קהל', icon: '🛡️', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80', count: 0 },
+  { id: 'decor',          name: 'עיצוב',        description: 'פרחים, סטיילינג, אביזרים', icon: '🌸', image: 'https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=600&q=80', count: 6 },
+  { id: 'bar',            name: 'בר',           description: 'ברים ניידים, אלכוהול, צוות', icon: '🍹', image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=600&q=80', count: 4 },
+  { id: 'photography',    name: 'צילום',        description: 'צילום וידאו ותמונות', icon: '📸', image: 'https://images.unsplash.com/photo-1516997121675-4c2d1696aa90?auto=format&fit=crop&w=600&q=80', count: 9 },
+  { id: 'entertainment',  name: 'בידור',        description: 'DJ, להקות, אמנים', icon: '🎵', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80', count: 7 },
+  { id: 'catering',       name: 'קייטרינג',     description: 'אוכל, צוות שירות, ציוד', icon: '🍽️', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80', count: 6 },
+  { id: 'transport',      name: 'תחבורה',       description: 'הסעות, לימוזינה, מיניבוסים', icon: '🚐', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80', count: 3 },
+  { id: 'equipment',      name: 'ציוד לאירועים', description: 'שמשיות, ריהוט, גנרטורים, מאווררים', icon: '🎪', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80', count: 0 },
 ]
 
 export const suppliers = {
