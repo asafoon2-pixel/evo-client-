@@ -29,7 +29,11 @@ export function clearCache() {
 }
 
 function toFirestoreCategory(categoryId) {
-  return categoryId.charAt(0).toUpperCase() + categoryId.slice(1)
+  const map = {
+    sound_lighting: ['Sound', 'Lighting'],
+  }
+  if (map[categoryId]) return map[categoryId]
+  return [categoryId.charAt(0).toUpperCase() + categoryId.slice(1)]
 }
 
 // Normalises a Firestore vendor doc → shape the UI components expect
@@ -109,14 +113,14 @@ export async function getVendorsByCategory(categoryId) {
   const cached = getCached(cacheKey)
   if (cached) return cached
 
-  const firestoreCat = toFirestoreCategory(categoryId)
+  const firestoreCats = toFirestoreCategory(categoryId)
   const ref = collection(db, 'vendors')
 
   // Fetch all vendors and filter in JS — avoids composite index issues
   const snap = await getDocs(ref)
   const allVendors = snap.docs.map(d => normaliseVendor(d.id, d.data()))
 
-  const inCategory = allVendors.filter(v => v.category === firestoreCat)
+  const inCategory = allVendors.filter(v => firestoreCats.includes(v.category))
   const active = inCategory.filter(v => v.isActive)
   const result = active.length > 0 ? active : inCategory
   setCached(cacheKey, result)
