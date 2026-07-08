@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, CheckCircle2, Zap } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
+import { getVendorsByCategory } from '../lib/suppliersService'
 
 // ── SVG Illustrations ──────────────────────────────────────────────────────
 function SoundLightingIllus() {
@@ -136,6 +138,17 @@ const CARD_META = {
 
 export default function Categories() {
   const { navigate, selectedSuppliers, totalBudget, setCurrentCategory, generatedEvent } = useApp()
+  const [liveCounts, setLiveCounts] = useState({})
+
+  useEffect(() => {
+    Promise.all(categories.map(cat => getVendorsByCategory(cat.id)))
+      .then(results => {
+        const counts = {}
+        categories.forEach((cat, i) => { counts[cat.id] = results[i].length })
+        setLiveCounts(counts)
+      })
+      .catch(() => {})
+  }, [])
 
   const budgetTier = 60000
   const budgetPercent = Math.min((totalBudget / budgetTier) * 100, 100)
@@ -260,7 +273,7 @@ export default function Categories() {
                   {selected ? (
                     <p className="text-[11px] mt-1 font-semibold" style={{ color: 'var(--primary)' }}>{selected.name}</p>
                   ) : (
-                    <p className="text-[11px] mt-1" style={{ color: 'var(--text-dim)' }}>{cat.count} ספקים</p>
+                    <p className="text-[11px] mt-1" style={{ color: 'var(--text-dim)' }}>{liveCounts[cat.id] ?? cat.count} ספקים</p>
                   )}
                 </div>
               </motion.button>
