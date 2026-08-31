@@ -9,6 +9,7 @@ import {
 import { useApp } from '../context/AppContext'
 import { listenToClientLeads, listenToMessages, sendMessage } from '../lib/leadsService'
 import { submitReview } from '../lib/reviewsService'
+import { updateEvent, createEvent } from '../lib/eventsService'
 
 // ── utils ─────────────────────────────────────────────────────────────────────
 const fmt = n => `₪${Number(n).toLocaleString()}`
@@ -24,7 +25,6 @@ function daysUntil(dateStr) {
 // ── HOME TAB ──────────────────────────────────────────────────────────────────
 function HomeTab({ eventName, eventDate, days, guests, leads, navigate }) {
   const realTotal = leads.reduce((sum, l) => sum + (l.order_total || 0), 0)
-  const vendorImages = leads.map(l => l.heroImage).filter(Boolean)
 
   return (
     <div className="flex flex-col pb-4">
@@ -39,14 +39,8 @@ function HomeTab({ eventName, eventDate, days, guests, leads, navigate }) {
         </button>
       </div>
 
-      {/* Event header */}
+      {/* Event header chips */}
       <div className="px-6 pb-6">
-        <p className="text-[10px] font-semibold tracking-[0.25em] uppercase mb-2" style={{ color: 'var(--primary)' }}>
-          האירוע שלך
-        </p>
-        <h1 className="text-2xl font-semibold leading-snug mb-4" style={{ color: 'var(--text-primary)' }}>
-          {eventName}
-        </h1>
         <div className="flex flex-wrap gap-2">
           {eventDate && <Chip icon={<Calendar size={11} />} label={eventDate} color="#2D1B69" />}
           {days !== null && <Chip icon={<Clock size={11} />} label={days > 0 ? `עוד ${days} ימים` : 'היום!'} color="#ec4899" />}
@@ -55,7 +49,7 @@ function HomeTab({ eventName, eventDate, days, guests, leads, navigate }) {
         </div>
       </div>
 
-      {/* Suppliers gallery — real images from leads */}
+      {/* Suppliers — clear card list */}
       <div className="px-6 mb-6">
         <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
           הספקים שלי
@@ -71,76 +65,88 @@ function HomeTab({ eventName, eventDate, days, guests, leads, navigate }) {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2">
-            {leads.map((lead, i) => (
-              <div key={lead.id} className="relative overflow-hidden rounded-2xl"
-                style={{ aspectRatio: i === 0 && leads.length > 1 ? '16/10' : '1', gridColumn: i === 0 && leads.length > 1 ? 'span 2' : 'span 1' }}>
-                {lead.heroImage ? (
-                  <img src={lead.heroImage} alt={lead.vendor_name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center"
-                    style={{ background: 'rgba(107,95,228,0.1)' }}>
-                    <span className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
-                      {lead.vendor_name?.[0]?.toUpperCase() || '?'}
-                    </span>
+          <div className="space-y-3">
+            {leads.map(lead => {
+              const isBooked = lead.status === 'booked'
+              const items = lead.order_items || []
+              const total = lead.order_total || items.reduce((s, it) => s + (it.price||0)*(it.quantity||1), 0)
+              return (
+                <motion.div key={lead.id}
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  className="rounded-2xl overflow-hidden"
+                  style={{ background: 'var(--surface)', border: `1.5px solid ${isBooked ? 'rgba(74,158,114,0.35)' : 'var(--border)'}` }}>
+
+                  {/* Supplier header row */}
+                  <div className="flex items-center gap-3 px-4 py-3"
+                    style={{ borderBottom: items.length > 0 ? '1px solid var(--border)' : 'none' }}>
+                    {/* Thumbnail */}
+                    <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0"
+                      style={{ background: 'rgba(107,95,228,0.1)' }}>
+                      {lead.heroImage
+                        ? <img src={lead.heroImage} alt={lead.vendor_name} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center text-lg font-bold"
+                            style={{ color: 'var(--primary)' }}>
+                            {lead.vendor_name?.[0]?.toUpperCase() || '?'}
+                          </div>
+                      }
+                    </div>
+                    {/* Name + category */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+                        {lead.vendor_name}
+                      </p>
+                      <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{lead.category}</p>
+                    </div>
+                    {/* Status + total */}
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        style={{
+                          background: isBooked ? 'rgba(74,158,114,0.15)' : 'rgba(245,158,11,0.12)',
+                          color: isBooked ? '#16a34a' : '#d97706',
+                        }}>
+                        {isBooked ? '✓ מאושר' : '⏳ ממתין'}
+                      </span>
+                      {total > 0 && (
+                        <p className="text-sm font-bold" style={{ color: 'var(--primary)' }}>{fmt(total)}</p>
+                      )}
+                    </div>
                   </div>
-                )}
-                <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.25)' }} />
-                <div className="absolute bottom-2 right-2 left-2">
-                  <p className="text-white text-xs font-semibold truncate">{lead.vendor_name}</p>
-                  <p className="text-white/70 text-[10px]">{lead.category}</p>
-                </div>
-                <div className="absolute top-2 left-2">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                    style={{
-                      background: lead.status === 'booked' ? 'rgba(74,158,114,0.85)' : 'rgba(245,158,11,0.85)',
-                      color: '#fff',
-                    }}>
-                    {lead.status === 'booked' ? 'מאושר' : 'ממתין'}
-                  </span>
-                </div>
-              </div>
-            ))}
+
+                  {/* Packages / products agreed */}
+                  {items.length > 0 && (
+                    <div className="px-4 py-2 space-y-1.5">
+                      {items.map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                              style={{
+                                background: item.type === 'package' ? 'rgba(107,95,228,0.1)' : 'rgba(74,158,114,0.1)',
+                                color: item.type === 'package' ? 'var(--primary)' : '#16a34a',
+                              }}>
+                              {item.type === 'package' ? 'חבילה' : 'מוצר'}
+                            </span>
+                            <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{item.item_name}</p>
+                          </div>
+                          <p className="text-xs font-semibold shrink-0 mr-2" style={{ color: 'var(--text-muted)' }}>
+                            {item.quantity > 1 ? `×${item.quantity} · ` : ''}{fmt((item.price||0)*(item.quantity||1))}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* No items yet */}
+                  {items.length === 0 && (
+                    <div className="px-4 pb-3">
+                      <p className="text-xs" style={{ color: 'var(--text-dim)' }}>ממתין לאישור חבילה מהספק</p>
+                    </div>
+                  )}
+                </motion.div>
+              )
+            })}
           </div>
         )}
       </div>
-
-      {/* Order items per supplier */}
-      {leads.some(l => l.order_items?.length > 0) && (
-        <div className="px-6 mb-6">
-          <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>
-            פירוט הזמנות
-          </p>
-          <div className="space-y-2">
-            {leads.filter(l => l.order_items?.length > 0).map(lead => (
-              <div key={lead.id} className="rounded-2xl overflow-hidden"
-                style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
-                <div className="flex items-center justify-between px-4 py-3 border-b"
-                  style={{ borderColor: 'var(--border)' }}>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{lead.vendor_name}</p>
-                  <p className="text-sm font-bold" style={{ color: 'var(--primary)' }}>
-                    {fmt(lead.order_total || lead.order_items.reduce((s, i) => s + (i.price||0)*(i.quantity||1), 0))}
-                  </p>
-                </div>
-                {lead.order_items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between px-4 py-2.5">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full shrink-0"
-                        style={{ background: 'rgba(107,95,228,0.1)', color: 'var(--primary)' }}>
-                        {item.type === 'package' ? 'חבילה' : 'מוצר'}
-                      </span>
-                      <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{item.item_name}</p>
-                    </div>
-                    <p className="text-xs font-semibold shrink-0 ml-2" style={{ color: 'var(--text-muted)' }}>
-                      {item.quantity > 1 ? `x${item.quantity} · ` : ''}{fmt((item.price||0)*(item.quantity||1))}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -799,11 +805,14 @@ const NAV_TABS = [
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function EventDashboard() {
-  const { eventPackage, briefAnswers, totalPrice, selectedSuppliers, currentUser, navigate, generatedEvent } = useApp()
+  const { eventPackage, setEventPackage, briefAnswers, totalPrice, selectedSuppliers, currentUser, navigate, generatedEvent, setGeneratedEvent, currentEventId, setCurrentEventId } = useApp()
   const [tab, setTab] = useState('home')
   const [showDeals, setShowDeals] = useState(false)
   const [leads, setLeads] = useState([])
   const dealsCount = DEALS.length
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput]     = useState('')
+  const [nameSaveStatus, setNameSaveStatus] = useState(null) // null | 'saving' | 'saved' | 'error'
 
   // Payment modal state
   const [payLead, setPayLead] = useState(null)
@@ -831,6 +840,43 @@ export default function EventDashboard() {
   const sections  = eventPackage?.sections || []
   const eventName = eventPackage?.name || generatedEvent?.name || 'האירוע שלי'
   const eventDate = briefAnswers?.date !== 'flexible' ? briefAnswers?.date : null
+
+  const startEditName = () => {
+    setNameInput(eventName)
+    setEditingName(true)
+  }
+  const saveEventName = async () => {
+    const trimmed = nameInput.trim()
+    if (!trimmed) { setEditingName(false); return }
+    setGeneratedEvent(prev => ({ ...prev, name: trimmed }))
+    setEventPackage(prev => prev ? { ...prev, name: trimmed } : prev)
+    setEditingName(false)
+    if (!currentUser) return
+    setNameSaveStatus('saving')
+    try {
+      let eventId = currentEventId
+      if (eventId) {
+        await updateEvent(eventId, { title: trimmed })
+      } else {
+        const guestMap = { intimate: 30, medium: 75, grand: 150 }
+        eventId = await createEvent(currentUser.uid, {
+          title:        trimmed,
+          type:         briefAnswers?.eventType || '',
+          date:         briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : '',
+          guest_count:  guestMap[briefAnswers?.scale] || null,
+          budget_range: briefAnswers?.budgetTier || '',
+          status:       'draft',
+        })
+        setCurrentEventId(eventId)
+      }
+      setNameSaveStatus('saved')
+      setTimeout(() => setNameSaveStatus(null), 2000)
+    } catch (e) {
+      console.error('saveEventName failed:', e)
+      setNameSaveStatus('error')
+      setTimeout(() => setNameSaveStatus(null), 3000)
+    }
+  }
   const days      = eventDate ? daysUntil(eventDate) : null
   const guestMap  = { intimate: '20–40', medium: '50–100', large: '100–200', grand: '200+' }
   const guests    = briefAnswers?.scale ? guestMap[briefAnswers.scale] : null
@@ -854,22 +900,70 @@ export default function EventDashboard() {
         ))}
       </div>
 
-      {/* Top bar — minimal, just notification bell */}
+      {/* Top bar */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3"
         style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-          {tab === 'home' ? eventName
-           : tab === 'chat' ? 'שיחות'
-           : tab === 'timeline' ? 'ציר זמן'
-           : tab === 'payments' ? 'תשלומים'
-           : 'פרופיל'}
-        </p>
-        <button className="w-9 h-9 rounded-full flex items-center justify-center relative"
+
+        {tab === 'home' ? (
+          editingName ? (
+            <div className="flex items-center gap-2 flex-1 ml-3">
+              <input
+                autoFocus
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') saveEventName(); if (e.key === 'Escape') setEditingName(false) }}
+                className="flex-1 text-base font-semibold px-3 py-1.5 rounded-xl outline-none"
+                style={{ background: 'var(--elevated)', border: '1.5px solid var(--primary)', color: 'var(--text-primary)', fontFamily: 'inherit' }}
+              />
+              <button onClick={saveEventName}
+                className="text-xs font-bold px-3 py-1.5 rounded-full"
+                style={{ background: 'var(--primary)', color: '#fff' }}>
+                שמור
+              </button>
+              <button onClick={() => setEditingName(false)}
+                className="text-xs font-medium px-2 py-1.5 rounded-full"
+                style={{ color: 'var(--text-muted)' }}>
+                ביטול
+              </button>
+            </div>
+          ) : (
+            <button onClick={startEditName}
+              className="flex items-center gap-2 group flex-1 min-w-0"
+              style={{ textAlign: 'right' }}>
+              <p className="text-base font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+                {eventName}
+              </p>
+              <Edit2 size={13} style={{ color: 'var(--text-dim)', flexShrink: 0 }} />
+            </button>
+          )
+        ) : (
+          <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+            {tab === 'chat' ? 'שיחות' : tab === 'timeline' ? 'ציר זמן' : 'תשלומים'}
+          </p>
+        )}
+
+        <button className="w-9 h-9 rounded-full flex items-center justify-center relative shrink-0 mr-2"
           style={{ background: 'var(--elevated)', border: '1px solid var(--border)' }}>
           <Bell size={15} style={{ color: 'var(--text-muted)' }} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ background: '#ef4444' }} />
         </button>
       </div>
+
+      {/* Save status toast */}
+      <AnimatePresence>
+        {nameSaveStatus && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            className="absolute top-[60px] left-1/2 z-50 px-4 py-1.5 rounded-full text-xs font-bold"
+            style={{
+              transform: 'translateX(-50%)',
+              background: nameSaveStatus === 'saved' ? 'rgba(74,158,114,0.95)' : nameSaveStatus === 'error' ? 'rgba(212,96,122,0.95)' : 'rgba(107,95,228,0.9)',
+              color: '#fff',
+            }}>
+            {nameSaveStatus === 'saving' ? 'שומר...' : nameSaveStatus === 'saved' ? '✓ נשמר' : '⚠ שגיאה בשמירה'}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto pb-24">

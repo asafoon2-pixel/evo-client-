@@ -122,7 +122,7 @@ export default function PreAISummary() {
         {/* AI flow */}
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={() => navigate('aiprompt')}
+          onClick={() => navigate('serviceSelector')}
           className="w-full py-4 flex items-center justify-center gap-3 text-sm font-bold tracking-wide transition-all"
           style={{
             borderRadius: 'var(--radius-pill)',

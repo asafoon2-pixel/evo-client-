@@ -6,9 +6,13 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
   reload,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db, googleProvider } from './firebase'
+import { sendEvoEmail } from './email/sendEvoEmail'
 
 // Create or update user doc in Firestore (full Users schema)
 async function upsertUser(firebaseUser) {
@@ -47,6 +51,31 @@ async function upsertUser(firebaseUser) {
   }
 }
 
+const ACTION_CODE_SETTINGS = {
+  url: 'https://app.evoevents.co',
+  handleCodeInApp: true,
+}
+
+export async function sendSignInLink(email) {
+  await sendSignInLinkToEmail(auth, email, ACTION_CODE_SETTINGS)
+  localStorage.setItem('evo_emailForSignIn', email)
+}
+
+export function isEmailSignInLink() {
+  return isSignInWithEmailLink(auth, window.location.href)
+}
+
+export async function completeEmailLinkSignIn() {
+  if (!isSignInWithEmailLink(auth, window.location.href)) return null
+  let email = localStorage.getItem('evo_emailForSignIn')
+  if (!email) return { needsEmail: true }
+  const result = await signInWithEmailLink(auth, email, window.location.href)
+  localStorage.removeItem('evo_emailForSignIn')
+  window.history.replaceState({}, '', window.location.pathname)
+  await upsertUser(result.user)
+  return result.user
+}
+
 export async function loginWithGoogle() {
   const result = await signInWithPopup(auth, googleProvider)
   await upsertUser(result.user)
@@ -68,10 +97,15 @@ export async function registerWithEmail(email, password) {
   const result = await createUserWithEmailAndPassword(auth, email, password)
   // Send verification email immediately
   await sendEmailVerification(result.user, {
-    url: 'https://evo-client-main.vercel.app', // redirect after verification
+    url: 'https://app.evoevents.co', // redirect after verification
     handleCodeInApp: false,
   })
   await upsertUser(result.user)
+  // Send welcome email (fire-and-forget)
+  sendEvoEmail('welcome', {
+    to: result.user.email,
+    data: { customerName: result.user.displayName || '' },
+  })
   // Sign out immediately — must verify email before using app
   await signOut(auth)
   return result.user
@@ -80,7 +114,10 @@ export async function registerWithEmail(email, password) {
 export async function resendVerificationEmail(email, password) {
   // Re-sign-in to get fresh user object, then resend
   const result = await signInWithEmailAndPassword(auth, email, password)
-  await sendEmailVerification(result.user)
+  await sendEmailVerification(result.user, {
+    url: 'https://app.evoevents.co',
+    handleCodeInApp: false,
+  })
   await signOut(auth)
 }
 

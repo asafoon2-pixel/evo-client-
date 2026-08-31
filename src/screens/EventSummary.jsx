@@ -9,7 +9,9 @@ const CATEGORY_META = {
   venue:         { label: 'החלל',      tagline: 'היכן מתחיל הערב' },
   catering:      { label: 'השולחן',    tagline: 'אוכל שאי אפשר להפסיק ממנו' },
   entertainment: { label: 'הצליל',     tagline: 'מוזיקה שמניעה את החדר' },
-  lighting:      { label: 'האווירה',   tagline: 'תאורה שמעצבת את המצב רוח' },
+  lighting:       { label: 'האווירה',        tagline: 'תאורה שמעצבת את המצב רוח' },
+  sound_lighting: { label: 'הגברה ותאורה',  tagline: 'סאונד ואור שמעצבים את הרגע' },
+  security:       { label: 'האבטחה',         tagline: 'שמירה על שקט וביטחון' },
   decor:         { label: 'התחושה',    tagline: 'פרטים שמספרים את הסיפור שלך' },
 }
 
@@ -53,14 +55,14 @@ function VendorCard({ section, index, openSwapSheet, openProfile }) {
         </div>
       </div>
 
-      {/* Collapsed row: price + tagline + chevron */}
+      {/* Collapsed row: price + package name + chevron */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="text-base font-semibold" style={{ color: 'var(--primary)' }}>
             ₪{section.vendor.price?.toLocaleString()}
           </span>
           <span className="text-xs font-light italic" style={{ color: 'var(--text-muted)' }}>
-            {meta.tagline}
+            {section.vendor.packageName || meta.tagline}
           </span>
         </div>
         <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.25 }}>
@@ -212,7 +214,9 @@ function VendorSheet({ vendor, sectionLabel, sectionId, onClose, onSwap }) {
               <span className="text-2xl font-light" style={{ color: 'var(--text-primary)' }}>
                 ₪{vendor.price?.toLocaleString()}
               </span>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>לאירוע שלך</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                {vendor.packageName ? vendor.packageName : 'לאירוע שלך'}
+              </span>
             </div>
           </div>
 
@@ -575,7 +579,12 @@ export default function EventSummary() {
             {isAIFlow && (eventPackage.sections || []).map(s => (
               <div key={s.id} className="flex justify-between py-2.5"
                 style={{ borderBottom: '1px solid var(--border)' }}>
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.vendor.name}</span>
+                <div>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.vendor.name}</span>
+                  {s.vendor.packageName && (
+                    <span className="text-[10px] block" style={{ color: 'var(--text-dim)' }}>{s.vendor.packageName}</span>
+                  )}
+                </div>
                 <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
                   {formatPrice(s.vendor.price)}
                 </span>

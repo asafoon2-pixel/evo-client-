@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { onAuthChange, logout } from '../lib/authService'
+import { onAuthChange, logout, completeEmailLinkSignIn, isEmailSignInLink } from '../lib/authService'
 import { getUser } from '../lib/usersService'
 import { createEvent, updateEvent } from '../lib/eventsService'
 import { createLead } from '../lib/leadsService'
-import { sendClientConfirmationEmail } from '../lib/emailService'
+import { sendEvoEmail } from '../lib/email/sendEvoEmail'
 
 const AppContext = createContext(null)
 
@@ -44,6 +44,22 @@ export function AppProvider({ children }) {
   const [currentEventId, setCurrentEventId]  = useState(null)
 
   useEffect(() => {
+    const processingLink = isEmailSignInLink()
+
+    // If this is a magic link, complete sign-in (keeps authLoading=true until onAuthChange fires)
+    if (processingLink) {
+      completeEmailLinkSignIn()
+        .then(result => {
+          if (result?.needsEmail) {
+            // User opened link on different device — send them to auth screen
+            setCurrentScreen('auth')
+          } else if (result) {
+            setCurrentScreen('myEvents')
+          }
+        })
+        .catch(e => console.error('completeEmailLinkSignIn failed:', e))
+    }
+
     const unsub = onAuthChange(async user => {
       setCurrentUser(user)
       setAuthLoading(false)
@@ -51,7 +67,9 @@ export function AppProvider({ children }) {
         try {
           const doc = await getUser(user.uid)
           setFirestoreUser(doc)
-        } catch (_) {}
+        } catch (e) {
+          console.error('getUser failed:', e)
+        }
       } else {
         setFirestoreUser(null)
       }
@@ -59,7 +77,7 @@ export function AppProvider({ children }) {
     return unsub
   }, [])
   const [swipeResults, setSwipeResults]       = useState([])
-  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null, hasVenue: null })
+  const [briefAnswers, setBriefAnswers]       = useState({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null, hasVenue: null, selectedCategories: [] })
   const [eventPackage, setEventPackage]       = useState(null)
   const [swapSheet, setSwapSheet]             = useState({ open: false, sectionId: null })
   const [tuneVibeOpen, setTuneVibeOpen]       = useState(false)
@@ -71,6 +89,8 @@ export function AppProvider({ children }) {
   const [eventDetails, setEventDetails]       = useState({ title: '', city: '', venueName: '', fullAddress: '', floor: '', entranceNotes: '', parkingAvailable: null, parkingNotes: '', specialRequests: '', isPrivate: false })
   const [cart, setCart]                       = useState([])
   const [chatLead, setChatLead]               = useState(null)
+  const [currentVenue, setCurrentVenue]       = useState(null)
+  const [selectedVenue, setSelectedVenue]     = useState(null)
 
   const navigate = useCallback((screen) => setCurrentScreen(screen), [])
 
@@ -182,6 +202,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!eventPackage?.sections?.length || !currentUser || currentEventId) return
     const guestMap = { intimate: 30, medium: 75, grand: 150 }
+    const draftTotal = eventPackage.sections.reduce((s, sec) => s + (sec.vendor?.price || 0), 0)
     createEvent(currentUser.uid, {
       title:       eventPackage.name || 'האירוע שלי',
       type:        briefAnswers?.eventType || '',
@@ -192,6 +213,17 @@ export function AppProvider({ children }) {
     }).then(id => {
       setCurrentEventId(id)
       console.log('Event draft saved:', id)
+      // Send request-received email (fire-and-forget)
+      sendEvoEmail('request_received', {
+        to: currentUser.email,
+        data: {
+          customerName: currentUser.displayName || '',
+          eventName:    eventPackage.name || 'האירוע שלי',
+          eventType:    briefAnswers?.eventType || '',
+          eventDate:    briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : 'גמיש',
+          requestId:    id,
+        },
+      })
     }).catch(e => console.error('Auto-save draft failed:', e))
   }, [eventPackage, currentUser])
 
@@ -250,13 +282,16 @@ export function AppProvider({ children }) {
       )
       await Promise.all(leadPromises)
 
-      // Send confirmation email to client (fire-and-forget)
-      sendClientConfirmationEmail({
-        clientEmail: briefAnswers?.clientDetails?.email || currentUser.email,
-        clientName:  briefAnswers?.clientDetails?.full_name || currentUser.displayName || '',
-        eventName:   eventPackage?.name || generatedEvent?.name || 'האירוע שלי',
-        totalPrice,
-        depositAmount,
+      // Send request-received email to client (fire-and-forget)
+      sendEvoEmail('request_received', {
+        to: briefAnswers?.clientDetails?.email || currentUser.email,
+        data: {
+          customerName: briefAnswers?.clientDetails?.full_name || currentUser.displayName || '',
+          eventName:    eventPackage?.name || generatedEvent?.name || 'האירוע שלי',
+          eventType:    briefAnswers.eventType || '',
+          eventDate:    briefAnswers.date !== 'flexible' ? briefAnswers.date : 'גמיש',
+          requestId:    eventId,
+        },
       })
 
       return eventId
@@ -269,7 +304,7 @@ export function AppProvider({ children }) {
   // Reset all event state so the user can start a fresh event
   const resetForNewEvent = useCallback(() => {
     setSwipeResults([])
-    setBriefAnswers({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null, hasVenue: null })
+    setBriefAnswers({ eventType: null, scale: null, date: null, budgetTier: null, startTime: '19:00', endTime: '23:00', indoorOutdoor: null, hasVenue: null, selectedCategories: [] })
     setEventPackage(null)
     setSelectedSuppliers({})
     setCurrentEventId(null)
@@ -323,7 +358,7 @@ export function AppProvider({ children }) {
     currentScreen, navigate,
     currentUser, authLoading, signOut,
     firestoreUser, setFirestoreUser,
-    currentEventId, createEventInDb, resetForNewEvent, loadEvent,
+    currentEventId, setCurrentEventId, createEventInDb, resetForNewEvent, loadEvent,
     authIntent, setAuthIntent,
     swipeResults, addSwipe,
     briefAnswers, updateBrief,
@@ -340,6 +375,8 @@ export function AppProvider({ children }) {
     totalBudget,
     cart, addToCart, removeFromCart, updateCartQty, clearCart, cartCount, cartTotal,
     chatLead, setChatLead,
+    currentVenue, setCurrentVenue,
+    selectedVenue, setSelectedVenue,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

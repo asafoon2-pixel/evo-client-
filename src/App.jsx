@@ -59,6 +59,10 @@ import AllSuppliersMap from './screens/AllSuppliersMap'
 import Discover        from './screens/Discover'
 import MyEvents        from './screens/MyEvents'
 import QuickOrderInfo  from './screens/QuickOrderInfo'
+import ServiceSelector     from './screens/ServiceSelector'
+import SupplierCalendar    from './screens/SupplierCalendar'
+import VenuePicker         from './screens/VenuePicker'
+import VenueDetail         from './screens/VenueDetail'
 
 const screenMap = {
   home:            Home,
@@ -94,6 +98,10 @@ const screenMap = {
   allSuppliersMap:  AllSuppliersMap,
   discover:         Discover,
   myEvents:         MyEvents,
+  serviceSelector:    ServiceSelector,
+  supplierCalendar:   SupplierCalendar,
+  venuePicker:        VenuePicker,
+  venueDetail:        VenueDetail,
 }
 
 // Screens that skip the icon splash (loading/building screens)
@@ -104,6 +112,7 @@ const PROTECTED_SCREENS = new Set([
   'dashboard', 'userprofile', 'management',
   'checkout', 'summary', 'personalquestions',
   'eventdetails', 'confirmation', 'myEvents', 'secure',
+  'supplierCalendar',
 ])
 
 function AppContent() {
@@ -155,7 +164,7 @@ function AppContent() {
   return (
     <div
       className="w-full min-h-screen flex justify-center"
-      style={{ background: 'var(--background)' }}
+      style={{ background: 'var(--background-2)' }}
     >
       <div
         className="w-full max-w-md min-h-screen overflow-x-hidden relative"

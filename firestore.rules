@@ -19,6 +19,10 @@ service cloud.firestore {
         allow read: if true;
         allow write: if request.auth != null && request.auth.uid == vendorId;
       }
+      match /availability/{dateId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == vendorId;
+      }
     }
 
     // Users — owner read/write
@@ -26,9 +30,20 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Events — any authenticated user can read (app filters by userId client-side)
+    // Admin check
+    function isAdmin() {
+      return request.auth != null && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true)
+        ||
+        (exists(/databases/$(database)/documents/vendors/$(request.auth.uid))
+          && get(/databases/$(database)/documents/vendors/$(request.auth.uid)).data.is_admin == true)
+      );
+    }
+
+    // Events — owner or admin
     match /events/{eventId} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
       allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
@@ -44,19 +59,57 @@ service cloud.firestore {
          request.auth.uid == resource.data.client_id);
 
       match /messages/{msgId} {
-        allow read, write: if request.auth != null;
+        allow read, create: if request.auth != null &&
+          (get(/databases/$(database)/documents/leads/$(leadId)).data.vendor_id == request.auth.uid ||
+           get(/databases/$(database)/documents/leads/$(leadId)).data.client_id == request.auth.uid);
+        allow update, delete: if false;
       }
     }
 
-    // Orders — authenticated users
+    // Orders — owner read, auth create, no update/delete
     match /orders/{orderId} {
-      allow read, write: if request.auth != null;
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && resource.data.client_uid == request.auth.uid;
+      allow update, delete: if false;
     }
 
     // Reviews — public read, authenticated write
     match /reviews/{reviewId} {
       allow read: if true;
       allow write: if request.auth != null;
+    }
+
+    // Venues — public read, supplier create/update own
+    match /venues/{venueId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.owner_uid == request.auth.uid
+        && request.resource.data.is_approved == false;
+      allow update: if request.auth != null
+        && resource.data.owner_uid == request.auth.uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['is_approved', 'is_active', 'avg_rating', 'total_reviews']);
+      allow delete: if false;
+
+      match /availability/{dateId} {
+        allow read: if true;
+        allow write: if request.auth != null
+          && get(/databases/$(database)/documents/venues/$(venueId)).data.owner_uid == request.auth.uid;
+      }
+
+      match /leads/{leadId} {
+        allow read: if request.auth != null
+          && get(/databases/$(database)/documents/venues/$(venueId)).data.owner_uid == request.auth.uid;
+        allow create: if request.auth != null;
+        allow update, delete: if false;
+      }
+    }
+
+    // Venue inquiries (global)
+    match /venue_inquiries/{inquiryId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && resource.data.client_uid == request.auth.uid;
+      allow update, delete: if false;
     }
   }
 }

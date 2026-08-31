@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Star, Clock, Camera, MessageCircle,
   Phone, MapPin, Globe, Instagram,
-  ChevronDown, ChevronUp, ShoppingCart, Plus, Check as CheckIcon, X,
+  ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ShoppingCart, Plus, Check as CheckIcon, X,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/index'
-import { getVendorPackages, getVendorProducts } from '../lib/suppliersService'
+import { getVendorPackages, getVendorProducts, subscribeAvailability } from '../lib/suppliersService'
 import { track } from '../lib/analyticsService'
 
 const PRICE_TYPE_LABEL = {
@@ -33,11 +33,32 @@ export default function SupplierProfile() {
   const [showAllProducts, setShowAllProducts] = useState(false)
   const [lightboxUrl, setLightboxUrl] = useState(null)
 
+  const today = new Date()
+  const [availYear,  setAvailYear]  = useState(today.getFullYear())
+  const [availMonth, setAvailMonth] = useState(today.getMonth() + 1)
+  const [availability, setAvailabilityMap] = useState({})
+
+  const prevAvailMonth = () => {
+    if (availMonth === 1) { setAvailMonth(12); setAvailYear(y => y - 1) }
+    else setAvailMonth(m => m - 1)
+  }
+  const nextAvailMonth = () => {
+    if (availMonth === 12) { setAvailMonth(1); setAvailYear(y => y + 1) }
+    else setAvailMonth(m => m + 1)
+  }
+
   // Track supplier view on mount
   useEffect(() => {
     if (!currentSupplier?.id) return
     track.viewSupplier(currentSupplier.id, currentSupplier.category)
   }, [currentSupplier?.id])
+
+  // Real-time availability
+  useEffect(() => {
+    if (!currentSupplier?.id) return
+    const unsub = subscribeAvailability(currentSupplier.id, availYear, availMonth, setAvailabilityMap)
+    return unsub
+  }, [currentSupplier?.id, availYear, availMonth])
 
   // Load packages
   useEffect(() => {
@@ -480,6 +501,79 @@ export default function SupplierProfile() {
             )}
           </div>
         )}
+
+        {/* Availability calendar */}
+        {(() => {
+          const MONTHS_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']
+          const DAYS_HE   = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']
+          const pad = n => String(n).padStart(2, '0')
+          const daysInMonth  = new Date(availYear, availMonth, 0).getDate()
+          const firstWeekday = new Date(availYear, availMonth - 1, 1).getDay()
+          const cells = Array.from({ length: firstWeekday + daysInMonth }, (_, i) =>
+            i < firstWeekday ? null : i - firstWeekday + 1
+          )
+          return (
+            <div className="mb-8">
+              <h2 className="section-title mb-3">זמינות</h2>
+              <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
+                  <button onClick={prevAvailMonth} className="w-7 h-7 rounded-full flex items-center justify-center" style={{ border: '1.5px solid var(--border)' }}>
+                    <ChevronRight size={13} style={{ color: 'var(--text-muted)' }} />
+                  </button>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    {MONTHS_HE[availMonth - 1]} {availYear}
+                  </p>
+                  <button onClick={nextAvailMonth} className="w-7 h-7 rounded-full flex items-center justify-center" style={{ border: '1.5px solid var(--border)' }}>
+                    <ChevronLeft size={13} style={{ color: 'var(--text-muted)' }} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-7 px-3 pt-3 pb-1">
+                  {DAYS_HE.map(d => (
+                    <div key={d} className="text-center text-[10px] font-semibold py-1" style={{ color: 'var(--text-dim)' }}>{d}</div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1 px-3 pb-4">
+                  {cells.map((day, i) => {
+                    if (!day) return <div key={`e-${i}`} />
+                    const key = `${availYear}-${pad(availMonth)}-${pad(day)}`
+                    const isPast = new Date(availYear, availMonth - 1, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate())
+                    const unavailable = availability[key] === false
+
+                    if (isPast) return (
+                      <div key={key} className="aspect-square rounded-lg flex items-center justify-center" style={{ opacity: 0.25 }}>
+                        <span className="text-[11px]" style={{ color: 'var(--text-dim)' }}>{day}</span>
+                      </div>
+                    )
+
+                    const bg     = unavailable ? 'rgba(212,96,122,0.15)' : 'rgba(74,158,114,0.13)'
+                    const border = unavailable ? '1.5px solid rgba(212,96,122,0.35)' : '1.5px solid rgba(74,158,114,0.3)'
+                    const color  = unavailable ? '#C8445E' : '#3A8F68'
+
+                    return (
+                      <div
+                        key={key}
+                        className="aspect-square rounded-lg flex items-center justify-center"
+                        style={{ background: bg, border }}
+                      >
+                        <span className="text-[11px] font-semibold" style={{ color }}>{day}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="flex gap-4 px-4 pb-3">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded" style={{ background: 'rgba(74,158,114,0.15)', border: '1px solid rgba(74,158,114,0.3)' }} />
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>פנוי</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded" style={{ background: 'rgba(212,96,122,0.15)', border: '1px solid rgba(212,96,122,0.3)' }} />
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>לא פנוי</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
       </div>
 

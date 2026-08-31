@@ -79,9 +79,14 @@ export default function AIChat() {
     const appCtx = { briefAnswers, eventDetails, selectedSuppliers, cart, firestoreUser }
     const reply = await sendMessage(history, appCtx)
 
+    // Parse navigation tag from reply
+    const navMatch = reply.match(/\[NAV:([\w]+)\]/)
+    const navTarget = navMatch ? navMatch[1] : null
+    const cleanReply = reply.replace(/\[NAV:[\w]+\]/g, '').trim()
+
     setMessages((prev) => [
       ...prev,
-      { id: (Date.now() + 1).toString(), role: 'assistant', content: reply },
+      { id: (Date.now() + 1).toString(), role: 'assistant', content: cleanReply, navTarget },
     ])
     setLoading(false)
   }
@@ -177,20 +182,40 @@ export default function AIChat() {
                   </div>
                 )}
 
-                <div
-                  className="max-w-[78%] rounded-2xl px-4 py-3"
-                  style={{
-                    background: isUser ? 'var(--primary)' : 'var(--surface)',
-                    border: isUser ? 'none' : '1.5px solid var(--border)',
-                    boxShadow: isUser ? 'var(--shadow-accent)' : 'var(--shadow-card)',
-                  }}
-                >
-                  <p
-                    className="text-sm leading-relaxed whitespace-pre-wrap"
-                    style={{ color: isUser ? '#fff' : 'var(--text-primary)' }}
+                <div className="flex flex-col gap-2 max-w-[78%]">
+                  <div
+                    className="rounded-2xl px-4 py-3"
+                    style={{
+                      background: isUser ? 'var(--primary)' : 'var(--surface)',
+                      border: isUser ? 'none' : '1.5px solid var(--border)',
+                      boxShadow: isUser ? 'var(--shadow-accent)' : 'var(--shadow-card)',
+                    }}
                   >
-                    {msg.content}
-                  </p>
+                    <p
+                      className="text-sm leading-relaxed whitespace-pre-wrap"
+                      style={{ color: isUser ? '#fff' : 'var(--text-primary)' }}
+                    >
+                      {msg.content}
+                    </p>
+                  </div>
+                  {msg.navTarget === 'categories' && (
+                    <button
+                      onClick={() => navigate('categories')}
+                      className="text-sm font-semibold py-2.5 px-4 rounded-2xl text-right"
+                      style={{ background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }}
+                    >
+                      בנה את האירוע בעצמך ←
+                    </button>
+                  )}
+                  {msg.navTarget === 'aiprompt' && (
+                    <button
+                      onClick={() => navigate('aiprompt')}
+                      className="text-sm font-semibold py-2.5 px-4 rounded-2xl text-right"
+                      style={{ background: 'var(--primary)', color: '#fff', boxShadow: 'var(--shadow-accent)' }}
+                    >
+                      בנה עם EVO AI ←
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )

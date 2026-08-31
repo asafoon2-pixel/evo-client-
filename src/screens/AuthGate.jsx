@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, Send } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { loginWithEmail, registerWithEmail, loginWithGoogle, resendVerificationEmail } from '../lib/authService'
+import { loginWithEmail, registerWithEmail, loginWithGoogle, resendVerificationEmail, sendSignInLink } from '../lib/authService'
 import EvoLogo from '../components/EvoLogo'
 
 const f = (delay = 0, y = 16) => ({
@@ -24,6 +24,9 @@ export default function AuthGate() {
   const [verifyScreen,  setVerifyScreen]  = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
   const [resendDone,    setResendDone]    = useState(false)
+  const [linkMode,      setLinkMode]      = useState(false)
+  const [linkSent,      setLinkSent]      = useState(false)
+  const [linkLoading,   setLinkLoading]   = useState(false)
 
   const destAfterAuth =
     authIntent === 'single' ? 'categories' :
@@ -83,6 +86,28 @@ export default function AuthGate() {
     }
   }
 
+  async function handleSendLink() {
+    if (!email.trim()) {
+      setError('נא למלא כתובת אימייל')
+      return
+    }
+    setLinkLoading(true)
+    setError('')
+    try {
+      await sendSignInLink(email)
+      setLinkSent(true)
+    } catch (e) {
+      setError(
+        e.code === 'auth/invalid-email'          ? 'כתובת אימייל לא תקינה' :
+        e.code === 'auth/too-many-requests'      ? 'יותר מדי ניסיונות — נסה מאוחר יותר' :
+        e.code === 'auth/network-request-failed' ? 'בעיית רשת — בדוק חיבור לאינטרנט' :
+        'משהו השתבש — נסה שוב'
+      )
+    } finally {
+      setLinkLoading(false)
+    }
+  }
+
   async function handleResend() {
     setResendLoading(true)
     try {
@@ -93,6 +118,34 @@ export default function AuthGate() {
     } finally {
       setResendLoading(false)
     }
+  }
+
+  // ── Magic link sent screen ────────────────────────────────────────────────
+  if (linkSent) {
+    return (
+      <div dir="rtl" className="w-full min-h-screen flex flex-col items-center justify-center px-8 text-center"
+        style={{ background: 'var(--background)' }}>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+            style={{ background: 'rgba(107,95,228,0.1)', border: '2px solid rgba(107,95,228,0.2)' }}>
+            <Mail size={32} style={{ color: 'var(--primary)' }} />
+          </div>
+          <h2 className="text-2xl font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+            בדוק את המייל שלך
+          </h2>
+          <p className="text-sm leading-relaxed mb-2" style={{ color: 'var(--text-muted)' }}>
+            שלחנו לינק ל-
+          </p>
+          <p className="text-sm font-semibold mb-8" style={{ color: 'var(--primary)' }}>{email}</p>
+          <button
+            onClick={() => { setLinkSent(false); setLinkMode(false); setEmail('') }}
+            className="w-full py-3 rounded-full text-sm"
+            style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+            חזרה
+          </button>
+        </motion.div>
+      </div>
+    )
   }
 
   // ── Email verification pending screen ─────────────────────────────────────
@@ -216,7 +269,7 @@ export default function AuthGate() {
                 style={{ color: email ? 'var(--primary)' : 'var(--text-dim)' }} />
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                onKeyDown={e => e.key === 'Enter' && (linkMode ? handleSendLink() : handleSubmit())}
                 placeholder="your@email.com"
                 className="w-full pr-11 pl-4 py-4 rounded-2xl text-sm outline-none transition-all"
                 style={{
@@ -227,31 +280,33 @@ export default function AuthGate() {
             </div>
           </div>
 
-          {/* Password */}
-          <div>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-2"
-              style={{ color: 'var(--text-muted)' }}>סיסמה</p>
-            <div className="relative">
-              <Lock size={15} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: password ? 'var(--primary)' : 'var(--text-dim)' }} />
-              <input
-                type={showPass ? 'text' : 'password'} value={password}
-                onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-                placeholder="••••••••"
-                className="w-full pr-11 pl-12 py-4 rounded-2xl text-sm outline-none transition-all"
-                style={{
-                  background: 'var(--surface)',
-                  border: `1.5px solid ${password ? 'var(--primary)' : 'var(--border)'}`,
-                  color: 'var(--text-primary)', fontFamily: 'inherit',
-                }} />
-              <button type="button" onClick={() => setShowPass(v => !v)}
-                className="absolute left-4 top-1/2 -translate-y-1/2"
-                style={{ color: 'var(--text-dim)' }}>
-                {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
+          {/* Password — hidden in link mode */}
+          {!linkMode && (
+            <div>
+              <p className="text-xs font-semibold tracking-widest uppercase mb-2"
+                style={{ color: 'var(--text-muted)' }}>סיסמה</p>
+              <div className="relative">
+                <Lock size={15} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: password ? 'var(--primary)' : 'var(--text-dim)' }} />
+                <input
+                  type={showPass ? 'text' : 'password'} value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                  placeholder="••••••••"
+                  className="w-full pr-11 pl-12 py-4 rounded-2xl text-sm outline-none transition-all"
+                  style={{
+                    background: 'var(--surface)',
+                    border: `1.5px solid ${password ? 'var(--primary)' : 'var(--border)'}`,
+                    color: 'var(--text-primary)', fontFamily: 'inherit',
+                  }} />
+                <button type="button" onClick={() => setShowPass(v => !v)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2"
+                  style={{ color: 'var(--text-dim)' }}>
+                  {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Error */}
           <AnimatePresence>
@@ -265,20 +320,38 @@ export default function AuthGate() {
           </AnimatePresence>
 
           {/* Submit */}
-          <motion.button whileTap={{ scale: 0.98 }} onClick={handleSubmit} disabled={loading}
-            className="w-full py-4 rounded-full text-white text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all"
-            style={{ background: 'var(--primary)', boxShadow: 'var(--shadow-accent)', opacity: loading ? 0.75 : 1 }}>
-            {loading ? <Loader2 size={16} className="animate-spin" /> : isRegister ? 'הרשמה' : 'כניסה'}
-          </motion.button>
+          {linkMode ? (
+            <motion.button whileTap={{ scale: 0.98 }} onClick={handleSendLink} disabled={linkLoading}
+              className="w-full py-4 rounded-full text-white text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'var(--primary)', boxShadow: 'var(--shadow-accent)', opacity: linkLoading ? 0.75 : 1 }}>
+              {linkLoading ? <Loader2 size={16} className="animate-spin" /> : 'שלח לינק כניסה'}
+            </motion.button>
+          ) : (
+            <motion.button whileTap={{ scale: 0.98 }} onClick={handleSubmit} disabled={loading}
+              className="w-full py-4 rounded-full text-white text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'var(--primary)', boxShadow: 'var(--shadow-accent)', opacity: loading ? 0.75 : 1 }}>
+              {loading ? <Loader2 size={16} className="animate-spin" /> : isRegister ? 'הרשמה' : 'כניסה'}
+            </motion.button>
+          )}
 
-          {/* Toggle */}
+          {/* Toggle link mode / password mode */}
           <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
-            {isRegister ? 'כבר יש לך חשבון? ' : 'אין לך חשבון עדיין? '}
-            <button onClick={() => { setIsRegister(v => !v); setError('') }}
+            <button onClick={() => { setLinkMode(v => !v); setError('') }}
               className="font-semibold underline" style={{ color: 'var(--primary)' }}>
-              {isRegister ? 'כניסה' : 'הרשמה'}
+              {linkMode ? 'כניסה עם סיסמה' : 'כניסה עם לינק'}
             </button>
           </p>
+
+          {/* Toggle register / login (only in password mode) */}
+          {!linkMode && (
+            <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+              {isRegister ? 'כבר יש לך חשבון? ' : 'אין לך חשבון עדיין? '}
+              <button onClick={() => { setIsRegister(v => !v); setError('') }}
+                className="font-semibold underline" style={{ color: 'var(--primary)' }}>
+                {isRegister ? 'כניסה' : 'הרשמה'}
+              </button>
+            </p>
+          )}
         </motion.div>
       </div>
     </div>

@@ -7,7 +7,9 @@ const CATEGORY_META = {
   venue:         { label: 'The Space',      tagline: 'Where the evening begins',    icon: '🏛️' },
   catering:      { label: 'The Table',      tagline: 'Food worth lingering over',   icon: '🍽️' },
   entertainment: { label: 'The Sound',      tagline: 'Music that moves the room',   icon: '🎵' },
-  lighting:      { label: 'The Atmosphere', tagline: 'Light that shapes the mood',  icon: '✨' },
+  lighting:       { label: 'The Atmosphere',   tagline: 'Light that shapes the mood',   icon: '✨' },
+  sound_lighting: { label: 'Sound & Lights',   tagline: 'Audio and atmosphere combined', icon: '🔊' },
+  security:       { label: 'Security',          tagline: 'Safe and controlled environment', icon: '🛡️' },
   decor:         { label: 'The Feeling',    tagline: 'Details that tell your story', icon: '🌸' },
 }
 
@@ -150,11 +152,22 @@ export default function PackageReveal() {
               {meta.label}
             </p>
             {/* Vendor name */}
-            <h2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 10 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 8 }}>
               {section?.vendor?.name}
             </h2>
+            {/* Package name + price */}
+            {section?.vendor?.packageName && (
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--primary)', marginBottom: 4 }}>
+                {section.vendor.packageName}
+              </p>
+            )}
+            {section?.vendor?.price > 0 && (
+              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                ₪{Number(section.vendor.price).toLocaleString()}
+              </p>
+            )}
             {/* Tagline */}
-            <p style={{ fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: 1.6 }}>
               {meta.tagline}
             </p>
           </motion.div>

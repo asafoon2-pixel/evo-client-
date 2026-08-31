@@ -1,9 +1,9 @@
 import {
   collection, doc, addDoc, getDoc, getDocs, updateDoc,
-  query, where, orderBy, onSnapshot, serverTimestamp,
+  query, where, orderBy, onSnapshot, serverTimestamp, arrayUnion, Timestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import { sendLeadEmail } from './emailService'
+import { sendEvoEmail } from './email/sendEvoEmail'
 
 // ── Create a lead when client requests a supplier ──────────────────────────
 export async function createLead(clientUser, vendor, briefAnswers, selectedPackage, cartItems) {
@@ -40,6 +40,7 @@ export async function createLead(clientUser, vendor, briefAnswers, selectedPacka
     client_email:     clientUser.email       || '',
     client_photo_url: clientUser.photoURL    || '',
     status:        'new',
+    status_history: [{ status: 'new', at: Timestamp.now() }],
     category:      vendor.category        || '',
     eventName:     'האירוע שלי',
     eventType:     briefAnswers?.eventType || '',
@@ -55,19 +56,39 @@ export async function createLead(clientUser, vendor, briefAnswers, selectedPacka
     created_at:    serverTimestamp(),
     updated_at:    serverTimestamp(),
   })
-  // Send email notification to vendor (fire-and-forget)
-  sendLeadEmail({
-    vendor,
-    lead: {
-      client_name: clientUser.displayName || '',
-      eventType:   briefAnswers?.eventType || '',
-      date:        briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : 'גמיש',
-      guestCount:  guestMap[briefAnswers?.scale] || briefAnswers?.guestCount || '',
-      budgetRange: briefAnswers?.budgetTier || '',
-    },
+
+  // Notify the vendor by email (fire-and-forget). vendor.email isn't always
+  // populated by callers (e.g. the manual cart checkout flow) — fall back to
+  // looking up the vendor doc, same as the old onLeadCreated Cloud Function did.
+  resolveVendorEmail(vendor).then(vendorEmail => {
+    sendEvoEmail('new_lead', {
+      to: vendorEmail,
+      data: {
+        supplierName:  vendor.name,
+        customerName:  clientUser.displayName || '',
+        eventType:     briefAnswers?.eventType || '',
+        eventDate:     briefAnswers?.date !== 'flexible' ? (briefAnswers?.date || '') : 'גמיש',
+        eventLocation: briefAnswers?.city || '',
+        budgetRange:   briefAnswers?.budgetTier || '',
+        leadLink:      'https://supplier.evoevents.co',
+      },
+    })
   })
 
   return ref.id
+}
+
+async function resolveVendorEmail(vendor) {
+  if (vendor.email) return vendor.email
+  try {
+    const snap = await getDoc(doc(db, 'vendors', vendor.id))
+    if (!snap.exists()) return null
+    const vendorData = snap.data()
+    return vendorData.email || vendorData.contact_email || null
+  } catch (err) {
+    console.error('resolveVendorEmail failed:', err)
+    return null
+  }
 }
 
 // ── Get all leads for a client ─────────────────────────────────────────────

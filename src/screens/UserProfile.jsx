@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle, PhoneCall, Zap, LogOut } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Instagram, Phone, Mail, MessageCircle, PhoneCall, Zap, LogOut, CalendarDays } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { updateUser } from '../lib/usersService'
+import { getVendorById } from '../lib/suppliersService'
 
 const VIBE_TAGS = [
   'אינטימי', 'מרהיב', 'מינימלי', 'נועז',
@@ -74,6 +75,12 @@ export default function UserProfile() {
           currentUser, firestoreUser, setFirestoreUser, signOut } = useApp()
   const isAIFlow = !!eventPackage
   const fileRef = useRef(null)
+  const [isVendor, setIsVendor] = useState(false)
+
+  useEffect(() => {
+    if (!currentUser) return
+    getVendorById(currentUser.uid).then(v => setIsVendor(!!v)).catch(() => {})
+  }, [currentUser])
 
   // Prefer firestoreUser data when available, fall back to context userProfile
   const src = firestoreUser || {}
@@ -518,6 +525,22 @@ export default function UserProfile() {
         </motion.div>
 
         <div className="h-4" />
+
+        {/* Supplier calendar — visible only to vendors */}
+        {isVendor && (
+          <motion.button
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
+            onClick={() => navigate('supplierCalendar')}
+            className="w-full flex items-center gap-3 px-5 py-4 rounded-2xl mb-3 transition-all active:scale-[0.98]"
+            style={{ background: 'rgba(74,158,114,0.10)', border: '1.5px solid rgba(74,158,114,0.3)' }}
+          >
+            <CalendarDays size={18} style={{ color: 'var(--success)', flexShrink: 0 }} />
+            <div className="text-right flex-1">
+              <p className="text-sm font-semibold" style={{ color: 'var(--success)' }}>ניהול זמינות</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>הגדר אילו תאריכים אתה פנוי</p>
+            </div>
+          </motion.button>
+        )}
 
         {/* Logout */}
         {currentUser && (

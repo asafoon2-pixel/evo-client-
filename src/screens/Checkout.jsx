@@ -153,12 +153,34 @@ export default function Checkout() {
           ))}
         </motion.div>
 
+        {/* Cancellation policy */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="rounded-2xl p-5"
+          style={{ background: 'rgba(232,161,48,0.06)', border: '1px solid rgba(232,161,48,0.25)' }}
+        >
+          <p className="text-[10px] font-bold tracking-[0.22em] uppercase mb-3" style={{ color: '#C87A10' }}>
+            מדיניות ביטול
+          </p>
+          {[
+            { range: 'יותר מ-7 ימים לפני האירוע', policy: 'ביטול חינם — החזר מלא' },
+            { range: '3–7 ימים לפני האירוע',      policy: 'החזר 50% מהמקדמה' },
+            { range: 'פחות מ-72 שעות',            policy: 'המקדמה אינה מוחזרת' },
+          ].map(({ range, policy }, i) => (
+            <div key={i} className="flex justify-between items-start gap-4 mb-2 last:mb-0">
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{range}</span>
+              <span className="text-xs font-medium text-right shrink-0" style={{ color: 'var(--text-primary)' }}>{policy}</span>
+            </div>
+          ))}
+        </motion.div>
+
         {/* Terms */}
         <p className="text-xs leading-relaxed text-center" style={{ color: 'var(--text-dim)' }}>
-          בהשלמת המקדמה אתה מסכים ל
+          בהשלמת הפנייה אתה מסכים ל
           <span className="underline underline-offset-2" style={{ color: 'var(--text-muted)' }}>תנאי השירות</span>
-          {' '}של EVO.
-          כל המקדמות מוחזקות בנאמנות עד למסירת האירוע.
+          {' '}של EVO ולמדיניות הביטול המפורטת למעלה.
         </p>
 
         <div className="h-4" />
